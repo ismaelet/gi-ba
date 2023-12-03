@@ -1,0 +1,123 @@
+/* Backgrounds */
+.bgr-none {background-color: transparent;}
+
+.bgr-wht {background-color: #FFF;}
+.bgr-wht-h:not(:disabled):hover {background-color: #FFF;}
+.bgr-blk {background-color: #000;}
+.bgr-blk-h:not(:disabled):hover {background-color: #000;}
+
+.bgr-f {background-color: #fff;}
+.bgr-fa {background-color: #fafafa;}
+.bgr-f6 {background-color: #f6f6f6;}
+.bgr-f3 {background-color: #f3f3f3;}
+.bgr-e {background-color: #e0e0e0;}
+.bgr-d {background-color: #d0d0d0;}
+.bgr-c {background-color: #c0c0c0;}
+.bgr-b {background-color: #b0b0b0;}
+.bgr-a {background-color: #a0a0a0;}
+.bgr-9 {background-color: #909090;}
+.bgr-8 {background-color: #808080;}
+.bgr-7 {background-color: #707070;}
+.bgr-6 {background-color: #606060;}
+.bgr-5 {background-color: #505050;}
+.bgr-4 {background-color: #404040;}
+.bgr-3 {background-color: #303030;}
+.bgr-2 {background-color: #202020;}
+.bgr-1 {background-color: #101010;}
+.bgr-0 {background-color: #000;}
+
+.bgr-gre {background-color: green;}
+.bgr-red {background-color: red;}
+
+/* Borders */
+.br-wht {border-color: #FFF;}
+.br-wht-h:not(:disabled):hover {border-color: #FFF;}
+.br-blk {border-color: #000 !important;}
+.br-blk-h:not(:disabled):hover {border-color: #000;}
+
+.br-f {border-color: #fff;}
+.br-fa {border-color: #fafafa;}
+.br-f6 {border-color: #f6f6f6;}
+.br-f3 {border-color: #f3f3f3;}
+.br-e {border-color: #e0e0e0;}
+.br-d {border-color: #d0d0d0;}
+.br-c {border-color: #c0c0c0;}
+.br-b {border-color: #b0b0b0;}
+.br-a {border-color: #a0a0a0;}
+.br-9 {border-color: #909090;}
+.br-8 {border-color: #808080;}
+.br-7 {border-color: #707070;}
+.br-6 {border-color: #606060;}
+.br-5 {border-color: #505050;}
+.br-4 {border-color: #404040;}
+.br-3 {border-color: #303030;}
+.br-2 {border-color: #202020;}
+.br-1 {border-color: #101010;}
+.br-0 {border-color: #000;}
+
+.br-red {border-color: #CE0000 !important;}
+
+/* Texts */
+.txt-wht {color: #FFF;}
+.txt-wht-h:hover, .txt-wht-h:active {color: #FFF;}
+.txt-blk {color: #000;}
+.txt-blk-h:hover, .txt-blk-h:active {color: #000;}
+
+.txt-f {color: #fff;}
+.txt-e {color: #e0e0e0;}
+.txt-d {color: #d0d0d0;}
+.txt-c {color: #c0c0c0;}
+.txt-b {color: #b0b0b0;}
+.txt-a {color: #a0a0a0;}
+.txt-9 {color: #909090;}
+.txt-8 {color: #808080;}
+.txt-7 {color: #707070;}
+.txt-6 {color: #606060;}
+.txt-5 {color: #505050;}
+.txt-4 {color: #404040;}
+.txt-3 {color: #303030;}
+.txt-2 {color: #202020;}
+.txt-1 {color: #101010;}
+.txt-0 {color: #000;}
+
+.txt-gre {color: green;}
+.txt-red {color: red;}
+
+/* App colors */
+.bgr-c1 {background-color: var(--c1);}
+.bgr-c1-h:not(:disabled):hover {background-color: var(--c1) !important;}
+.br-c1 {border-color: var(--c1);}
+.br-c1-h:not(:disabled):hover {border-color: var(--c1);}
+.txt-c1 {color: var(--c1);}
+.txt-c1-h:hover, .txt-c1-h:active {color: var(--c1);}
+
+.bgr-c2 {background-color: var(--c2);}
+.bgr-c2-h:not(:disabled):hover {background-color: var(--c2);}
+.br-c2 {border-color: var(--c2);}
+.br-c2-h:not(:disabled):hover {border-color: var(--c2);}
+.txt-c2 {color: var(--c2);}
+.txt-c2-h:hover, .txt-c2-h:active {color: var(--c2);}
+
+.bgr-c3 {background-color: var(--c3);}
+.bgr-c3-h:not(:disabled):hover {background-color: var(--c3);}
+.br-c3 {border-color: var(--c3);}
+.br-c3-h:not(:disabled):hover {border-color: var(--c3);}
+.txt-c3 {color: var(--c3);}
+.txt-c3-h:hover, .txt-c3-h:active {color: var(--c3);}
+
+.bgr-c4 {background-color: var(--c4);}
+.bgr-c4-h:not(:disabled):hover {background-color: var(--c4);}
+.br-c4 {border-color: var(--c4);}
+.br-c4-h:not(:disabled):hover {border-color: var(--c4);}
+.txt-c4 {color: var(--c4);}
+.txt-c4-h:hover, .txt-c4-h:active {color: var(--c4);}
+
+.bgr-c5 {background-color: var(--c5);}
+.bgr-c5-h:not(:disabled):hover {background-color: var(--c5);}
+.br-c5 {border-color: var(--c5);}
+.br-c5-h:not(:disabled):hover {border-color: var(--c5);}
+.txt-c5 {color: var(--c5);}
+.txt-c5-h:hover, .txt-c5-h:active {color: var(--c5);}
+
+/* Filters */
+.invert {filter: invert(1);}

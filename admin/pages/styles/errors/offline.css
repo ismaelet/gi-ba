@@ -1,0 +1,31 @@
+/* Structure */
+main {
+	height: 100vh;
+	min-height: 500px;
+}
+
+/* Background */
+#bgr {
+	opacity: .7;
+	background: linear-gradient(var(--c1), var(--c2));
+}
+
+/* Content */
+#logo {
+	width: 10rem;
+}
+
+#title {
+	font-size: min(6rem, 13vw);
+}
+
+/* Login */
+#login {
+	position: absolute;
+	bottom: 1rem;
+}
+
+#login-txt {
+	background: none;
+	border: none;
+}

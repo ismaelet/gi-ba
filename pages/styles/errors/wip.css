@@ -1,0 +1,29 @@
+/* Background */
+#bgr {
+	background: linear-gradient(to bottom, #EEAD47, #F4AB70);
+}
+
+/* Containers */
+main {
+	height: 100vh;
+	min-height: 400px;
+}
+
+.grid {
+	height: 100%;
+}
+
+/* Body */
+#logo {
+	width: 6rem;
+	height: 6rem;
+}
+
+#title {
+	letter-spacing: .1rem;
+	margin-right: -.1rem;
+}
+
+.sbtn:hover {
+	border-color: var(--c2) !important;
+}

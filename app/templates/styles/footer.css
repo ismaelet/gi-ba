@@ -1,0 +1,21 @@
+/* Contacts */
+.f-contact {
+	display: inline-block;
+	opacity: .9;
+	background-size: contain;
+	background-position: center;
+	width: 1.2rem;
+	height: 1.2rem;
+	margin: 0 10px;
+	transition: opacity .2s;
+}
+
+/* Link */
+.f-link {
+	display: inline-block;
+	margin: 0 10px;
+	font-size: .625rem;
+	letter-spacing: .2em;
+	text-transform: uppercase;
+	transition: color .2s;
+}
