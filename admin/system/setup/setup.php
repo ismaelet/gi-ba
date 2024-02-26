@@ -1,8 +1,18 @@
 <?php
 
+global $con;
+
+// Set the error log
+ini_set('error_log', __DIR__ . '/../../logs/error.log');
+
+// Load resources
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+// Load environment variables
+(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'))->load();
+
 // fetch app config
-require_once(__DIR__ . '/../../app/config/config.php');
-require_once(__DIR__ . '/../../app/config/vendor-config.php');
+require_once(__DIR__ . '/../../../app/config/config.php');
 
 // define class autoloader
 spl_autoload_register(function ($class) {
@@ -43,13 +53,6 @@ class Setup {
 		foreach ($modules as $module) include_once($module);
 	}
 
-	// vendor
-	static private function initializeVendor() {
-		if (file_exists($autoloadFile = SERVER_ROOT . '/vendor/autoload.php')) {
-			require_once $autoloadFile;
-		}
-	}
-
 	// routes
 	static private function initializeRoutes() {
 		foreach (scan('/system/routes', 'php') as $route) include_once($route);
@@ -60,16 +63,17 @@ class Setup {
 	static private function connect() {
 		global $con;
 
+
 		if (!sys_config('static')) {
 			try {
-				$con = new mysqli(sys_config('hostname'), sys_config('username'), sys_config('password'), sys_config('database'));
+				$con = new mysqli(sys_config('host'), sys_config('user'), sys_config('pass'), sys_config('db'));
 				$con->query('SET NAMES utf8');
 			} catch (Exception $e) {
 				$error = $e->getMessage();
 
 				error_log('Connection error: ' . $error . PHP_EOL . 'On page: ' . $_SERVER['REQUEST_URI']);
 
-				if (DEBUG || in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
+				if (env('DEBUG') || in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
 					echo $error;
 				}
 			}
@@ -137,7 +141,6 @@ class Setup {
 		// load resources
 		self::initializeConstants();
 		self::initializeFunctions();
-		self::initializeVendor();
 
 		// connect
 		self::connect();

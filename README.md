@@ -6,7 +6,7 @@ Password: **G@$#st6gNJKpipT**
 Port: **65002**  
 Directory: **/home/u944138369/domains/giebapromotion.com/public_html**
 
-## PHPMyAdmin
+## phpMyAdmin
 
 Url: **https://auth-db1160.hstgr.io/**  
 Username: **u944138369_gieba**  

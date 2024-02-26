@@ -2,27 +2,27 @@
 
 function sysDB($field) {
 
-	global $sysDB;
+	global $sysConfig;
 
-	return $sysDB[$field] ?? false;
+	return $sysConfig[$field] ?? false;
 }
 
 function sysData($field) {
 
-	global $sysData;
+	global $sysConfig;
 
-	return $sysData[$field] ?? false;
+	return $sysConfig[$field] ?? false;
 }
 
 function sysVar($field) {
 
-	global $sysVar;
+	global $sysConfig;
 
-	return $sysVar[$field] ?? false;
+	return $sysConfig[$field] ?? false;
 }
 
 function sysConfig($field) {
-	global $sysDB;
+	global $sysConfig;
 
-	return $sysDB[$field] ?? false;
+	return $sysConfig[$field] ?? false;
 }

@@ -1,26 +1,16 @@
 <?php
 
-global $sysDB, $sysData, $sysVar;
+global $sysConfig;
 
-$sysDB = ['static' => false];
+$sysConfig = [
+	'static' => false,
+	'host' => env('DB_HOST'),
+	'db' => env('DB_DATABASE'),
+	'user' => env('DB_USERNAME'),
+	'pass' => env('DB_PASSWORD'),
+	'domain' => 'http://localhost/Gi&Ba',
+	'admin_path' => 'http://localhost/Gi&Ba/admin',
 
-if (in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
-	$sysDB['host'] = 'localhost';
-	$sysDB['db'] = 'hostinger_gieba';
-	$sysDB['user'] = 'root';
-	$sysDB['pass'] = '';
-	$sysDB['domain'] = 'http://localhost/Gi&Ba';
-	$sysDB['admin_path'] = 'http://localhost/Gi&Ba/admin';
-} else {
-	$sysDB['host'] = 'localhost';
-	$sysDB['db'] = 'u944138369_gieba';
-	$sysDB['user'] = 'u944138369_gieba';
-	$sysDB['pass'] = 'O3a=H3lvJ';
-	$sysDB['domain'] = 'https://giebapromotion.com';
-	$sysDB['admin_path'] = 'https://giebapromotion.com/admin';
-}
-
-$sysData = [
 	'name' => 'GI&BA',
 	'name_full' => 'GI&BA di Shipping Dog SNC',
 	'desc_it' => 'Abbigliamento e accessori personalizzati',
@@ -33,7 +23,7 @@ $sysData = [
 	'lang' => 'it',
 	'multi_lang' => false,
 
-	'logo' => $sysDB['domain'] . '/app/resources/logo/logo.jpg',
+	'logo' => '/app/resources/logo/logo.jpg',
 	'VAT' => '02397230224',
 
 	'cont_fb' => 'https://www.facebook.com/GieBaPromotion',
@@ -60,9 +50,7 @@ $sysData = [
 	'google_analytics' => false,
 
 	'timezone' => 'Europe/Rome',
-];
 
-$sysVar = [
 	'c1' => '#EEAD47',
 	'c1_hover' => '#E8930D',
 	'c2' => '#271D28',

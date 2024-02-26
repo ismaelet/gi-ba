@@ -3,6 +3,15 @@
 //setup global variables
 global $user;
 
+// Set the error log
+ini_set('error_log', __DIR__ . '/../../logs/error.log');
+
+// Load resources
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Load environment variables
+(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../'))->load();
+
 //check if to use the lighter version for ajax
 $full = $full ?? true;
 
@@ -21,11 +30,11 @@ define('LOGO_DIR', '/app/resources/logo/');
 
 include_once(SERVER_ROOT . '/app/config/config.php');
 
-date_default_timezone_set($sysData['timezone']);
+date_default_timezone_set($sysConfig['timezone']);
 
 //connect
-if (!$sysDB['static']) {
-	$con = new mysqli($sysDB['host'], $sysDB['user'], $sysDB['pass'], $sysDB['db']) or false;
+if (!$sysConfig['static']) {
+	$con = new mysqli($sysConfig['host'], $sysConfig['user'], $sysConfig['pass'], $sysConfig['db']) or false;
 	$con->query('SET NAMES utf8');
 }
 
