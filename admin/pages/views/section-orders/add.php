@@ -18,7 +18,7 @@ use function Ecommerce\ecommerce_config;
 				<div class="form_body">
 					<div class="form-field">
 						<p class="form-lbl">Nome completo</p>
-						<?= render_search_input($searchCustomer) ?>
+						<?= render_old_search_input($searchCustomer) ?>
 					</div>
 					<div class="form-field">
 						<p class="form-lbl">Numero di telefono</p>
@@ -175,7 +175,7 @@ use function Ecommerce\ecommerce_config;
 							</div>
 
 							<!-- Product Name -->
-							<?= render_search_input($searchProduct) ?>
+							<?= render_old_search_input($searchProduct) ?>
 
 							<!-- Infos -->
 							<input type="text" class="js-order-info" name="orderInfo[]" value="<?= $order ? $order->info : '' ?>" title="<?= $order ? $order->info : '' ?>" placeholder="Dettagli del prodotto">

@@ -1,9 +1,16 @@
 <?php
 
-// setup page
-$tbl = 'ecommerce_customers';
-$index = 'id';
-$index_show = 'name';
+/*
+* Page configuration
+*/
+// $pageConfig['confirm'] = $pageConfig['confirm'] ?? null;
+
+/*
+* Query configuration
+*/
+$queryConfig['table'] = 'ecommerce_customers';
+$queryConfig['index-field'] = 'id';
+$queryConfig['title-field'] = 'name';
 
 // form
 $inputs = [

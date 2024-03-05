@@ -50,16 +50,26 @@ if ($pageConfig['edit']) {
 
 // add
 if (isset($_POST['add'])) {
-	if (function_exists('_expand_add')) $error = _expand_add($queryConfig['table'], $inputs);
-	else form_db_add($queryConfig['table'], $inputs);
+	if (function_exists('_expand_add')) {
+		$error = _expand_add($queryConfig['table'], $inputs);
+	} else {
+		query_from_inputs($queryConfig['table'], $inputs);
+	}
 
-	if (!$error) header('Location: ' . $pageConfig['return-url']);
+	if (!$error) {
+		header('Location: ' . $pageConfig['return-url']);
+	}
 }
 
 // edit
 if (isset($_POST['edit'])) {
-	if (function_exists('_expand_edit')) $error = _expand_edit($queryConfig['table'], $inputs, $queryConfig['index-field'], $id);
-	else form_db_update($queryConfig['table'], $inputs, $queryConfig['index-field'], $id);
+	if (function_exists('_expand_edit')) {
+		$error = _expand_edit($queryConfig['table'], $inputs, $queryConfig['index-field'], $id);
+	} else {
+		query_from_inputs($queryConfig['table'], $inputs, $id);
+	}
 
-	if (!$error) header('Location: ' . $pageConfig['return-url']);
+	if (!$error) {
+		header('Location: ' . $pageConfig['return-url']);
+	}
 }

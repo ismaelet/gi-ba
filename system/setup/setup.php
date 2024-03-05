@@ -12,6 +12,15 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 // Load environment variables
 (Dotenv\Dotenv::createImmutable(__DIR__ . '/../../'))->load();
 
+// Set the autoloader
+spl_autoload_register(function ($class) {
+	$class = str_replace('\\', '/', $class);
+
+	if (file_exists($file = __DIR__ . '/../../' . lcfirst($class) . '.php')) {
+		include_once($file);
+	}
+});
+
 //check if to use the lighter version for ajax
 $full = $full ?? true;
 

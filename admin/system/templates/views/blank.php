@@ -1,19 +1,30 @@
+<?php
+
+use App\View\View;
+use View as GlobalView;
+
+?>
+
 <!doctype html>
-<html data-theme="<?= $_SESSION['theme-color'] ?>" data-theme-fluid="<?= empty(sys_config('theme-fluid')) ? 0 : 1 ?>" data-client-root="<?= CLIENT_ROOT ?>">
+<html data-theme="dark" data-theme-fluid="<?= empty(sys_config('theme-fluid')) ? 0 : 1 ?>" data-client-root="<?= CLIENT_ROOT ?>">
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
-	<meta name="description" content="<?= View::$description ?>">
-	<meta property="og:image" content="<?= View::$thumbnail ?>">
-	<meta property="og:description" content="<?= View::$description ?>">
+	<meta name="GlobalViewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+	<meta name="description" content="<?= GlobalView::$description ?>">
+	<meta property="og:image" content="<?= GlobalView::$thumbnail ?>">
+	<meta property="og:description" content="<?= GlobalView::$description ?>">
 
-	<title><?= View::$tabTitle ?></title>
+	<title><?= GlobalView::$tabTitle ?></title>
 
 	<!-- Styles -->
 	<?= StyleLoader::load() . PHP_EOL . PHP_EOL ?>
+	<?= View::stackedStyles() ?>
 
 	<!-- Scripts -->
+	<script defer src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<?= View::stackedScripts() ?>
 	<?= ScriptLoader::load() . PHP_EOL . PHP_EOL ?>
 	<?= ScriptLoader::loadHeadInline()  . PHP_EOL . PHP_EOL ?>
 

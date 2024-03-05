@@ -18,9 +18,15 @@ require_once(__DIR__ . '/../../../app/config/config.php');
 spl_autoload_register(function ($class) {
 	$class = str_replace('\\', '/', $class);
 
-	if (file_exists($file = SERVER_ROOT . '/app/classes/' . $class . '.php')) include_once($file);
-	else if (file_exists($file = SERVER_ROOT . '/system/classes/' . $class . '.php')) include_once($file);
-	else if (defined('PUBLIC_SERVER_ROOT') && file_exists($file = PUBLIC_SERVER_ROOT . '/app/classes/' . $class . '.php')) include_once($file);
+	if (file_exists($file = __DIR__ . '/../../../' . lcfirst($class) . '.php')) {
+		include_once($file);
+	} else if (file_exists($file = SERVER_ROOT . '/app/classes/' . $class . '.php')) {
+		include_once($file);
+	} else if (file_exists($file = SERVER_ROOT . '/system/classes/' . $class . '.php')) {
+		include_once($file);
+	} else if (defined('PUBLIC_SERVER_ROOT') && file_exists($file = PUBLIC_SERVER_ROOT . '/app/classes/' . $class . '.php')) {
+		include_once($file);
+	}
 
 	if (method_exists($class, '__constructStatic')) {
 		$class::__constructStatic();
@@ -46,6 +52,12 @@ class Setup {
 
 	// functions
 	static private function initializeFunctions() {
+		$modules = glob(__DIR__ . '/../../../app/Helpers/*.php', GLOB_BRACE);
+
+		foreach ($modules as $module) {
+			include_once($module);
+		}
+
 		$modules = glob(SERVER_ROOT . '/system/functions/*.php', GLOB_BRACE);
 		foreach ($modules as $module) include_once($module);
 

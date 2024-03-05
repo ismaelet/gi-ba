@@ -11,3 +11,12 @@ Directory: **/home/u944138369/domains/giebapromotion.com/public_html**
 Url: **https://auth-db1160.hstgr.io/**  
 Username: **u944138369_gieba**  
 Password: **O3a=H3lvJ**
+
+## SSH
+
+```bash
+ssh -p 65002 u944138369@195.35.49.76
+cd domains/giebapromotion.com/public_html
+```
+
+Password: **G@$#st6gNJKpipT**

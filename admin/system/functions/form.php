@@ -1,5 +1,7 @@
 <?php
 
+use App\View\Components\Form\SearchInput;
+
 /**
  * Execute a MySQL query from inputs
  *
@@ -156,9 +158,15 @@ function generate_input($input, $data, $error, $done) {
 				<?php }
 				break;
 
-			case 'search':
+			case 'auto-filled-search':
 
 				echo render_search_input($input);
+
+				break;
+
+			case 'search':
+
+				echo render_old_search_input($input);
 
 				break;
 
@@ -309,6 +317,14 @@ function generate_input($input, $data, $error, $done) {
 
 	/**
 	 * Render a search input
+	 */
+	function render_search_input(array $config): string {
+		return SearchInput::render($config);
+	}
+
+	/**
+	 * OLD
+	 * Render a search input
 	 * 
 	 * @param array $config [
 	 *	'search' => string, the name of the table to be searched
@@ -328,7 +344,7 @@ function generate_input($input, $data, $error, $done) {
 	 * @return html
 	 */
 
-	function render_search_input(array $config) {
+	function render_old_search_input(array $config) {
 		$search = $config['search'];
 		$searchFields = is_array($config['search-fields']) ? implode(',', $config['search-fields']) :  $config['search-fields'];
 		$indexField = $config['index-field'];

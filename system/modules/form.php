@@ -152,16 +152,16 @@ function gen_form($inputs, $data = false, $error = false, $done = false) {
 
 				<textarea class="textarea" placeholder="<?= $pholder; ?>" name="<?= $name; ?>" <?php if (isset($input['max'])) echo ' maxlength="' . $input['max'] . '" '; ?>><?php
 
-																																										if ($val) echo $val;
+																																												if ($val) echo $val;
 
-																																										?></textarea>
+																																												?></textarea>
 
 			<?php
 
 				//searcher
 			} else if ($type == 'search') {
 
-				render_search_input($input['search']);
+				render_old_search_input($input['search']);
 			}
 
 			//error manager
@@ -195,9 +195,9 @@ function gen_form($inputs, $data = false, $error = false, $done = false) {
 			} else if ($type == 'file') { ?>
 
 				<input type="file" class="inp file <?= $input['size'] ?? ''; ?> <?php if (isset($input['submit'])) echo 'file-inp'; ?>" name="<?= $name; ?>" <?php
-																																							if (isset($input['required'])) echo ' required ';
-																																							if (isset($input['multiple'])) echo ' multiple ';
-																																							?>>
+																																								if (isset($input['required'])) echo ' required ';
+																																								if (isset($input['multiple'])) echo ' multiple ';
+																																								?>>
 
 			<?php
 
@@ -205,9 +205,9 @@ function gen_form($inputs, $data = false, $error = false, $done = false) {
 			} else if ($type == 'file_hidden') { ?>
 
 				<input type="file" class="hide file <?= $input['submit'] ?? 'file-inp'; ?>" name="<?= $name; ?>" <?php
-																												if (isset($input['required'])) echo ' required ';
-																												if (isset($input['multiple'])) echo ' multiple ';
-																												?>>
+																													if (isset($input['required'])) echo ' required ';
+																													if (isset($input['multiple'])) echo ' multiple ';
+																													?>>
 
 			<?php
 

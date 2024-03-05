@@ -1,33 +1,36 @@
 <?php
 
-// setup page
-$tbl = 'users';
-$index = 'id';
-$add = false;
-$rowLinks = 'edit?id={{id}}';
+/*
+* Page config
+*/
+$pageConfig['row-action'] = 'add?id={{id}}';
 
-// search
-$query['filter'] = "username LIKE CONCAT('%',?,'%') OR id=? OR email LIKE CONCAT('%',?,'%')";
+/*
+* Query config
+*/
+$queryConfig['table'] = 'ecommerce_customers';
+$queryConfig['index'] = 'id';
 
-// fields
+// handle search
+$queryConfig['where-search'] = "
+	LOWER(name) LIKE CONCAT('%',?,'%') OR
+	phone LIKE CONCAT('%',?,'%') OR
+	LOWER(info) LIKE CONCAT('%',?,'%')
+";
+
+// select fields
 $fields = [
-	['title' => 'ID', 'name' => 'id', 'size' => 1],
-	//['title' => 'Username', 'name' => 'username', 'size' => 3],
-	['title' => 'Username / Email', 'name' => 'email', 'size' => 4],
-	['title' => 'Nome', 'name' => 'firstname', 'size' => 3],
-	['title' => 'Cognome', 'name' => 'lastname', 'size' => 3],
-	//['title' => 'Email', 'name' => 'email', 'size' => 3],
-	['title' => 'Gruppo', 'name' => 'groupId', 'type' => 'find', 'find' => 'name FROM user_groups WHERE id=?', 'size' => 2],
+	['title' => 'ID', 'name' => 'id'],
+	['title' => 'Nome', 'name' => 'name', 'size' => 1],
+	['title' => 'Info', 'name' => 'info', 'size' => 1],
+	['title' => 'Telefono', 'name' => 'phone',],
+
 	['type' => 'btn'],
 ];
 
+// buttons
 $buttons = [
-	['title' => 'Modifica', 'color' => 'blu', 'url' => 'edit?id={{id}}'],
-	['title' => 'Login', 'name' => 'login', 'color' => 'gre'],
+	['type' => 'edit'],
+	['type' => 'delete'],
+	['url' => 'merge?id={{id}}', 'title' => 'Unifica', 'color' => 'green'],
 ];
-
-// login as an user
-if (isset($_POST['login'])) {
-	$_SESSION['userId'] = $_POST['id'];
-	redirect(__PUBLIC_CLIENT_URL__ . '/profile');
-}

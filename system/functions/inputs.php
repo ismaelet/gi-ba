@@ -1,6 +1,6 @@
 <?php
 
-function render_search_input($config) { ?>
+function render_old_search_input($config) { ?>
 
 	<div class="ajax-search" data-url="<?= $config['url']; ?>" data-filter="<?= $config['filter'] ?? ''; ?>" data-root="<?= __HROOT__ ?>">
 

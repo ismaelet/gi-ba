@@ -2,7 +2,7 @@
 
 <p>Seleziona l'altro articolo da unificare a questo prodotto. Il nome mantenuto sarà quello del prodotto selezionato qui sotto.</p>
 
-<?= render_search_input($searchInputConfig); ?>
+<?= render_old_search_input($searchInputConfig); ?>
 
 {% end form-body %}
 

@@ -21,6 +21,7 @@ $sysConfig = [
 	'desc_shr_pt' => '',
 
 	'lang' => 'it',
+	'default-language' => 'it',
 	'multi_lang' => false,
 
 	'logo' => '/app/resources/logo/logo.jpg',
