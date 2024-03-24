@@ -1,6 +1,6 @@
 {% block form-body %}
 
-<p>Seleziona l'altro articolo da unificare a questo prodotto. Il nome mantenuto sarà quello del prodotto selezionato qui sotto.</p>
+<p>Seleziona l'altro cliente a cui unificare questo cliente. Il cliente mantenuto sarà quello selezionato qui sotto, incluse le note e il numero di telefono.</p>
 
 <?= render_search_input($searchInputConfig); ?>
 

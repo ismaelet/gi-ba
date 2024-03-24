@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 //setup global variables
 global $user;
 
@@ -11,6 +13,22 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 // Load environment variables
 (Dotenv\Dotenv::createImmutable(__DIR__ . '/../../'))->load();
+
+// Load Eloquent ORM
+$capsule = new Capsule;
+$capsule->addConnection([
+	'driver' => 'mysql',
+	'host' => env('DB_HOST'),
+	'database' => env('DB_DATABASE'),
+	'username' => env('DB_USERNAME'),
+	'password' => env('DB_PASSWORD'),
+	'charset'   => 'utf8',
+	'collation' => 'utf8_unicode_ci',
+	'prefix'    => '',
+]);
+
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
 
 // Set the autoloader
 spl_autoload_register(function ($class) {

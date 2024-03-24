@@ -3,35 +3,33 @@
 namespace App\Http\Controllers\Ecommerce;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ecommerce\Customer;
 
 class CustomerController extends Controller {
 
 	public static function get(): array|false {
-		$filter = $_GET['filter'];
+		$filter = strtolower($_GET['filter']);
+		$exclude = isset($_GET['exclude']) ? explode(',', $_GET['exclude']) : null;
 
-		// $carts = Cart::join('addresses', 'carts.ID', '=', 'addresses.cartID')
-		// 	->where('carts.status', '!=', 0)
-		// 	->where(function ($query) use ($filter) {
-		// 		$query->where('carts.ID', 'like', '%' . $filter . '%')
-		// 			->orWhere('aname', 'like', '%' . $filter . '%');
-		// 	})
-		// 	->orderBy('carts.ID', 'desc')
-		// 	->limit(10)
-		// 	->select('carts.ID as id', 'addresses.aname as name')
-		// 	->get();
+		$customers = Customer::whereRaw("LOWER(name) LIKE '%" . $filter . "%'")
+			->whereNotIn('id', $exclude)
+			->orderBy('userId', 'desc')
+			->limit(10)
+			->select('id', 'name')
+			->get();
 
-		// if ($carts->count()) {
-		// 	$results = [];
+		if ($customers->count()) {
+			$results = [];
 
-		// 	foreach ($carts as $cart) {
-		// 		$results[] = [
-		// 			'id' => $cart->id,
-		// 			'name' => $cart->id . ' - ' . $cart->name
-		// 		];
-		// 	}
+			foreach ($customers as $customer) {
+				$results[] = [
+					'id' => $customer->id,
+					'name' => $customer->id . ' - ' . $customer->name
+				];
+			}
 
-		// 	return $results;
-		// }
+			return $results;
+		}
 
 		return false;
 	}

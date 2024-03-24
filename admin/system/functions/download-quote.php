@@ -2,21 +2,25 @@
 
 namespace Ecommerce;
 
+use App\Models\Ecommerce\Cart;
+use Ecommerce\Cart as OldCart;
+
 function download_quote(int $cartId, string $title = 'Preventivo') {
 	$debug = false;
-	$cart = new Cart($cartId);
+	$oldCart = new OldCart($cartId);
+	$cart = Cart::find($cartId);
 
 	// products
 	$productsHtml = [];
 
-	foreach ($cart->orders as $orderKey => $order) {
+	foreach ($oldCart->orders as $orderKey => $order) {
 		$productName =  $order->product->name;
 
-		if ($cart->printDescriptions && $order->description) {
+		if ($oldCart->printDescriptions && $order->description) {
 			$productName .= '<br><span style="font-size: 12px;">' . $order->description . '</span>';
 		}
 
-		if ($cart->printStatus) {
+		if ($oldCart->printStatus) {
 			$productName .= '<br><span style="font-size: 12px;">' . $order->statusString . '</span>';
 		}
 
@@ -36,27 +40,32 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 	$downPaymentHtml = '
 	<div class="recap_item">
 		<p>Acconto</p>
-		<p>' . $cart->downPaymentString . '</p>
+		<p>' . $oldCart->downPaymentString . '</p>
 	</div>';
 
 	$discountHtml = '
 	<div class="recap_item">
 		<p>Sconto</p>
-		<p>' . $cart->discountString . '</p>
+		<p>' . $oldCart->discountString . '</p>
 	</div>';
 
 	// populate
+
 	$html = file_get_contents(SERVER_ROOT . '/app/templates/views/quote.html');
 	$html = str_replace('{{ title }}', $title, $html);
 	$html = str_replace('{{ date }}', date("d/m/Y"), $html);
-	$html = str_replace('{{ quote-number }}', $cart->idCode, $html);
-	$html = str_replace('{{ cart-net-price }}', $cart->netPriceString, $html);
-	$html = str_replace('{{ cart-vat }}', $cart->vatString, $html);
-	$html = str_replace('{{ cart-gross-price }}', $cart->priceString, $html);
-	$html = str_replace('{{ customer-name }}', $cart->customer->name, $html);
+	$html = str_replace('{{ quote-number }}', $oldCart->idCode, $html);
+	$html = str_replace('{{ cart-net-price }}', $oldCart->netPriceString, $html);
+	$html = str_replace('{{ cart-vat }}', $oldCart->vatString, $html);
+	$html = str_replace('{{ cart-gross-price }}', $oldCart->priceString, $html);
+	$html = str_replace('{{ customer-name }}', $oldCart->customer->name, $html);
 	$html = str_replace('{{ products }}', $productsHtml, $html);
-	$html = str_replace('{{ cart-down-payment }}', $cart->downPayment ? $downPaymentHtml : null, $html);
-	$html = str_replace('{{ cart-discount }}', $cart->discount ? $discountHtml : null, $html);
+	$html = str_replace('{{ cart-down-payment }}', $oldCart->downPayment ? $downPaymentHtml : '', $html);
+	$html = str_replace('{{ cart-discount }}', $oldCart->discount ? $discountHtml : '', $html);
+
+	if (!$cart->print_total) {
+		$html = str_replace('<section class="recap">', '<section class="recap hidden">', $html);
+	}
 
 	// generate the pdf
 	if (!$debug) {
@@ -68,7 +77,7 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 		$dompdf->loadHtml($html);
 		$dompdf->setPaper('A4', 'portrait');
 		$dompdf->render();
-		$dompdf->stream($title . '_' . str_replace('#', '', $cart->idCode) . '.pdf');
+		$dompdf->stream($title . '_' . str_replace('#', '', $oldCart->idCode) . '.pdf');
 	} else {
 		exit($html);
 	}

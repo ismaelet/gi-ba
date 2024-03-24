@@ -41,11 +41,11 @@ use function Ecommerce\ecommerce_config;
 					<!-- Status -->
 					<div class="form-field">
 						<p class="form-lbl">Stato</p>
-						<select class="sel js-cart-status" name="cartStatus" data-status-id="<?= $cart->status ?? 1 ?>">
+						<select class="sel js-cart-status" name="cartStatus" data-status-id="<?= $oldCart->status ?? 1 ?>">
 
-							<?php foreach (ecommerce_config('cart-statuses') as $cartStatusId => $cartStatus) { ?>
+							<?php foreach (ecommerce_config('cart-statuses') as $oldCartStatusId => $oldCartStatus) { ?>
 
-								<option value="<?= $cartStatusId ?>" <?= ($newCart && $cartStatusId == 1) || (!$newCart && $cart->status == $cartStatusId) ? 'selected' : '' ?>><?= $cartStatus[1] ?></option>
+								<option value="<?= $oldCartStatusId ?>" <?= ($newCart && $oldCartStatusId == 1) || (!$newCart && $oldCart->status == $oldCartStatusId) ? 'selected' : '' ?>><?= $oldCartStatus[1] ?></option>
 
 							<?php } ?>
 
@@ -55,12 +55,12 @@ use function Ecommerce\ecommerce_config;
 					<!-- Data -->
 					<div class="form-field">
 						<p class="form-lbl">Data</p>
-						<input type="date" class="inp" name="cartDate" value="<?= $newCart ? date('Y-m-d') : $cart->date ?>">
+						<input type="date" class="inp" name="cartDate" value="<?= $newCart ? date('Y-m-d') : $oldCart->date ?>">
 					</div>
 
 					<div class="form-field">
 						<label class="checkbox">
-							<input type="checkbox" name="billed" <?= !$newCart && $cart->billed ? 'checked' : '' ?>>
+							<input type="checkbox" name="billed" <?= !$newCart && $oldCart->billed ? 'checked' : '' ?>>
 							<span></span>
 							<p>Fatturato</p>
 						</label>
@@ -68,7 +68,7 @@ use function Ecommerce\ecommerce_config;
 
 					<div class="form-field">
 						<label class="checkbox">
-							<input type="checkbox" name="printDescriptions" <?= $newCart || $cart->printDescriptions ? 'checked' : '' ?>>
+							<input type="checkbox" name="printDescriptions" <?= $newCart || $oldCart->printDescriptions ? 'checked' : '' ?>>
 							<span></span>
 							<p>Stampa la descrizione</p>
 						</label>
@@ -76,9 +76,17 @@ use function Ecommerce\ecommerce_config;
 
 					<div class="form-field">
 						<label class="checkbox">
-							<input type="checkbox" name="printStatus" <?= !$newCart && $cart->printStatus ? 'checked' : '' ?>>
+							<input type="checkbox" name="printStatus" <?= !$newCart && $oldCart->printStatus ? 'checked' : '' ?>>
 							<span></span>
 							<p>Stampa lo stato</p>
+						</label>
+					</div>
+
+					<div class="form-field">
+						<label class="checkbox">
+							<input type="checkbox" name="print_total" <?= $newCart || $cart->print_total ? 'checked' : '' ?>>
+							<span></span>
+							<p>Stampa il totale</p>
 						</label>
 					</div>
 				</div>
@@ -96,11 +104,11 @@ use function Ecommerce\ecommerce_config;
 						<p class="form-lbl">Acconto</p>
 						<div class="discount-field">
 							<div class="price-input">
-								<input type="number" class="js-down-payment" name="downPayment" value="<?= !$newCart ? $cart->formattedDownPayment : '0.00' ?>" step=".01">
+								<input type="number" class="js-down-payment" name="downPayment" value="<?= !$newCart ? $oldCart->formattedDownPayment : '0.00' ?>" step=".01">
 							</div>
 
 							<label class="checkbox">
-								<input type="checkbox" class="js-down-payment-with-vat" name="downPaymentWithVat" <?= !$newCart && $cart->downPaymentWithVat ? 'checked' : '' ?>>
+								<input type="checkbox" class="js-down-payment-with-vat" name="downPaymentWithVat" <?= !$newCart && $oldCart->downPaymentWithVat ? 'checked' : '' ?>>
 								<span></span>
 								<p>IVA</p>
 							</label>
@@ -112,11 +120,11 @@ use function Ecommerce\ecommerce_config;
 						<p class="form-lbl">Sconto fisso</p>
 						<div class="discount-field">
 							<div class="price-input">
-								<input type="number" class="js-fixed-discount" name="fixedDiscount" value="<?= !$newCart ? $cart->formattedFixedDiscount : '0.00' ?>" min="0">
+								<input type="number" class="js-fixed-discount" name="fixedDiscount" value="<?= !$newCart ? $oldCart->formattedFixedDiscount : '0.00' ?>" min="0">
 							</div>
 
 							<label class="checkbox">
-								<input type="checkbox" class="js-discount-with-vat" name="discountWithVat" <?= !$newCart && $cart->discountWithVat ? 'checked' : '' ?>>
+								<input type="checkbox" class="js-discount-with-vat" name="discountWithVat" <?= !$newCart && $oldCart->discountWithVat ? 'checked' : '' ?>>
 								<span></span>
 								<p>IVA</p>
 							</label>
@@ -126,7 +134,7 @@ use function Ecommerce\ecommerce_config;
 					<!-- Percentage discount -->
 					<div class="form-field">
 						<p class="form-lbl">Sconto percentuale</p>
-						<input type="number" class="js-percentage-discount" name="percentageDiscount" value="<?= !$newCart ? $cart->percentageDiscount : 0 ?>" min="0" max="100">
+						<input type="number" class="js-percentage-discount" name="percentageDiscount" value="<?= !$newCart ? $oldCart->percentageDiscount : 0 ?>" min="0" max="100">
 					</div>
 				</div>
 			</div>
@@ -154,7 +162,7 @@ use function Ecommerce\ecommerce_config;
 					<?php
 
 					for ($i = 1; $i <= 50; $i++) {
-						$order = $cart->orders[$i - 1] ?? false;
+						$order = $oldCart->orders[$i - 1] ?? false;
 						$searchProduct['index-value'] = $order ? $order->product->id : false;
 						$searchProduct['visible-value'] = $order ? $order->product->name : false;
 
@@ -213,7 +221,7 @@ use function Ecommerce\ecommerce_config;
 				</div>
 
 				<!-- Add an order -->
-				<div class="add-order <?= $order && count($cart->orders) >= 50 ? '' : 'active' ?> js-add-order-block">
+				<div class="add-order <?= $order && count($oldCart->orders) >= 50 ? '' : 'active' ?> js-add-order-block">
 					<div class="add-order_btn icon-box js-add-order">
 						<?= icon_embed('add') ?>
 					</div>
@@ -223,23 +231,23 @@ use function Ecommerce\ecommerce_config;
 				<div class="orders-recap">
 					<div class="orders-recap_row">
 						<p class="orders-recap_text">Imponibile</p>
-						<p class="orders-recap_text"><span class="js-recap-net"><?= $newCart ? '0.00' : $cart->formattedNetPrice ?></span> €</p>
+						<p class="orders-recap_text"><span class="js-recap-net"><?= $newCart ? '0.00' : $oldCart->formattedNetPrice ?></span> €</p>
 					</div>
 					<div class="orders-recap_row">
 						<p class="orders-recap_text">IVA</p>
-						<p class="orders-recap_text"><span class="js-recap-vat"><?= $newCart ? '0.00' : $cart->formattedVat ?></span> €</p>
+						<p class="orders-recap_text"><span class="js-recap-vat"><?= $newCart ? '0.00' : $oldCart->formattedVat ?></span> €</p>
 					</div>
 					<div class="orders-recap_row">
 						<p class="orders-recap_text">Acconto</p>
-						<p class="orders-recap_text"><span class="js-recap-down-payment"><?= $newCart ? '0.00' : $cart->formattedFullDownPayment ?></span> €</p>
+						<p class="orders-recap_text"><span class="js-recap-down-payment"><?= $newCart ? '0.00' : $oldCart->formattedFullDownPayment ?></span> €</p>
 					</div>
 					<div class="orders-recap_row">
 						<p class="orders-recap_text">Sconto</p>
-						<p class="orders-recap_text"><span class="js-recap-discount"><?= $newCart ? '0.00' : $cart->formattedFullDiscount ?></span> €</p>
+						<p class="orders-recap_text"><span class="js-recap-discount"><?= $newCart ? '0.00' : $oldCart->formattedFullDiscount ?></span> €</p>
 					</div>
 					<div class="orders-recap_row orders-recap_row--total">
 						<p class="orders-recap_text">Totale</p>
-						<p class="orders-recap_text"><span class="js-recap-total"><?= $newCart ? '0.00' : $cart->formattedPrice ?></span> €</p>
+						<p class="orders-recap_text"><span class="js-recap-total"><?= $newCart ? '0.00' : $oldCart->formattedPrice ?></span> €</p>
 					</div>
 				</div>
 			</div>

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 global $con;
 
 // Set the error log
@@ -11,6 +13,22 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // Load environment variables
 (Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'))->load();
 
+// Load Eloquent ORM
+$capsule = new Capsule;
+$capsule->addConnection([
+	'driver' => 'mysql',
+	'host' => env('DB_HOST'),
+	'database' => env('DB_DATABASE'),
+	'username' => env('DB_USERNAME'),
+	'password' => env('DB_PASSWORD'),
+	'charset'   => 'utf8',
+	'collation' => 'utf8_unicode_ci',
+	'prefix'    => '',
+]);
+
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
+
 // fetch app config
 require_once(__DIR__ . '/../../../app/config/config.php');
 
@@ -18,7 +36,9 @@ require_once(__DIR__ . '/../../../app/config/config.php');
 spl_autoload_register(function ($class) {
 	$class = str_replace('\\', '/', $class);
 
-	if (file_exists($file = __DIR__ . '/../../../' . lcfirst($class) . '.php')) {
+	if (strpos($class, 'App') === 0) {
+		include_once(public_server_path('/' . lcfirst($class) . '.php'));
+	} else if (file_exists($file = __DIR__ . '/../../../' . lcfirst($class) . '.php')) {
 		include_once($file);
 	} else if (file_exists($file = SERVER_ROOT . '/app/classes/' . $class . '.php')) {
 		include_once($file);

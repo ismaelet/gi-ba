@@ -1,3 +1,7 @@
+## Domain
+
+Url: **giebapromotion.com**
+
 ## SFTP
 
 Host: **195.35.49.76**  

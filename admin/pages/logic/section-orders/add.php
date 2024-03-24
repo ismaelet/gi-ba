@@ -1,6 +1,8 @@
 <?php
 
-use Ecommerce\Cart;
+use App\Models\Ecommerce\Cart;
+use App\Models\Ecommerce\Order;
+use Ecommerce\Cart as OldCart;
 use Ecommerce\Customer;
 use Ecommerce\Product;
 
@@ -19,8 +21,9 @@ if ($id) {
 
 // cart data
 if (!$newCart) {
-	$cart = new Cart($id);
-	$customer = $cart->customer;
+	$oldCart = new OldCart($id);
+	$cart = Cart::find($id);
+	$customer = $oldCart->customer;
 }
 
 // search fields
@@ -29,10 +32,10 @@ $searchCustomer = [
 	'search-fields' => 'name',
 	'index-field' => Customer::INDEX,
 	'index-name' => 'customerId',
-	'index-value' => $cart->customer->id ?? 0,
+	'index-value' => $oldCart->customer->id ?? 0,
 	'visible-field' => 'name',
 	'visible-name' => 'customerName',
-	'visible-value' => $cart->customer->name ?? '',
+	'visible-value' => $oldCart->customer->name ?? '',
 	'placeholder' => 'Nome completo',
 	'has-title' => true,
 	'required' => true
@@ -51,8 +54,8 @@ $searchProduct = [
 
 // form handling
 if (isset($_POST['submit'])) {
-	$cartStatus = false;
-	$cartDate = $_POST['cartDate'];
+	$cartStatus = $_POST['cartStatus'];
+	$oldCartDate = $_POST['cartDate'];
 	$customerId = $_POST['customerId'];
 	$customerName = trim($_POST['customerName']);
 	$customerPhone = $_POST['customerPhone'];
@@ -65,6 +68,7 @@ if (isset($_POST['submit'])) {
 	$billed = isset($_POST['billed']) ? 1 : 0;
 	$printDescriptions = isset($_POST['printDescriptions']) ? 1 : 0;
 	$printStatus = isset($_POST['printStatus']) ? 1 : 0;
+	$printTotal = isset($_POST['print_total']) ? 1 : 0;
 
 	/*
 	* Customer
@@ -84,9 +88,22 @@ if (isset($_POST['submit'])) {
 	*/
 	if ($newCart) {
 		$id = DB::add('ecommerce_carts ()');
+		$cart = Cart::find($id);
 	}
 
-	DB::update('ecommerce_carts SET customerId = ?, date = ?, downPayment = ?, downPaymentWithVat = ?, fixedDiscount = ?, discountWithVat = ?, percentageDiscount = ?, billed = ?, printDescriptions = ?, printStatus = ? WHERE id = ?', [$customerId, $cartDate, $downPayment, $downPaymentWithVat, $fixedDiscount, $discountWithVat, $percentageDiscount, $billed, $printDescriptions, $printStatus, $id]);
+	$cart->update([
+		'customerId' => $customerId,
+		'date' => $oldCartDate,
+		'downPayment' => $downPayment,
+		'downPaymentWithVat' => $downPaymentWithVat,
+		'fixedDiscount' => $fixedDiscount,
+		'discountWithVat' => $discountWithVat,
+		'percentageDiscount' => $percentageDiscount,
+		'billed' => $billed,
+		'printDescriptions' => $printDescriptions,
+		'printStatus' => $printStatus,
+		'print_total' => $printTotal
+	]);
 
 	/*
 	* Orders & products
@@ -104,7 +121,7 @@ if (isset($_POST['submit'])) {
 		/*
 		* Product
 		*/
-		// add a new product
+		// Add a new product
 		if (!$productId && $productName) {
 			$productId = DB::find('id FROM ecommerce_products WHERE name = ?', [$productName]);
 
@@ -113,31 +130,47 @@ if (isset($_POST['submit'])) {
 			}
 		}
 
-		// update product price
-		DB::update('ecommerce_products SET price = ? WHERE id = ?', [$orderPrice, $productId]);
+		// Update product price
+		if ($productId) {
+			DB::update('ecommerce_products SET price = ? WHERE id = ?', [$orderPrice, $productId]);
+		}
 
 		/*
 		* Order
 		*/
-		// add a new order
-		if (!$orderId) {
-			$orderId = DB::add('ecommerce_orders (cartId)', [$id]);
-		}
+		if ($productId && $orderQuantity) {
+			// If is a valid order
+			$orderParameters = [
+				'cartId' => $id,
+				'productId' => $productId,
+				'quantity' => $orderQuantity,
+				'netProductPrice' => $orderPrice,
+				'price' => $orderTotalPrice,
+				'status' => $orderStatus,
+				'hasVat' => $orderVat,
+				'info' => $orderInfo
+			];
 
-		// update the order
-		DB::update("ecommerce_orders SET netProductPrice = ?, price = ?, productId = ?, quantity = ?, status = ?, hasVat = ?, info = ? WHERE id = ?", [$orderPrice, $orderTotalPrice, $productId, $orderQuantity, $orderStatus, $orderVat, $orderInfo, $orderId]);
+			if (!$orderId) {
+				// Add the order
+				Order::create($orderParameters);
+			} else {
+				// Update the order
+				Order::find($orderId)->update($orderParameters);
+			}
 
-		// delete orders with no products or quantity
-		if (!$productId || !$orderQuantity) {
-			DB::delete('ecommerce_orders WHERE id = ?', [$orderId]);
-		} else if (!$cartStatus || $orderStatus < $cartStatus) {
-			$cartStatus = $orderStatus;
+			// Update the cart status if is not set or is higher than the order status
+			if (!$cartStatus || $orderStatus < $cartStatus) {
+				$cartStatus = $orderStatus;
+			}
+		} else if ($orderId) {
+			// Delete the order if it's not valid
+			Order::find($orderId)->delete();
 		}
 	}
 
-	$cartStatus = $cartStatus ?: $_POST['cartStatus'];
-
-	DB::update('ecommerce_carts SET status = ? WHERE id = ?', [$cartStatus, $id]);
+	// Update the cart status
+	$cart->update(['status' => $cartStatus]);
 
 	redirect($returnUrl);
 }
@@ -152,7 +185,7 @@ if (isset($_POST['delete'])) {
 
 // delete a cart
 if (isset($_POST['duplicate'])) {
-	$newCart = $cart->duplicate();
+	$newCart = $oldCart->duplicate();
 
 	redirect('?id=' . $newCart->id);
 }

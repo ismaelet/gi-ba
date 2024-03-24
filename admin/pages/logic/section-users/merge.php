@@ -1,12 +1,13 @@
 <?php
 
+use App\Models\Ecommerce\Cart;
+use App\Models\Ecommerce\Customer;
+
+$id = $_GET['id'];
+
 /*
 * Page configuration
 */
-
-use Ecommerce\Order;
-use Ecommerce\Product;
-
 $pageConfig['free'] = true;
 $pageConfig['parcial-title'] = 'Unifica il cliente';
 
@@ -24,7 +25,7 @@ $searchInputConfig = [
 	'search' => 'customers',
 	'placeholder' => 'Nome del cliente',
 	'storedName' => 'id',
-	'where' => ['id', '!=', $_GET['id']],
+	'exclude' => [$id],
 	'required' => true,
 ];
 
@@ -32,11 +33,11 @@ $searchInputConfig = [
 * Events
 */
 if (isset($_POST['submit'])) {
-	// $productId = $_GET['id'];
-	// $mainProductId = $_POST['id'];
+	$customertId = $id;
+	$mainCustomerId = $_POST['id'];
 
-	// DB::update(Order::TABLE . ' SET ' . Order::PRODUCT_INDEX . ' = ? WHERE ' . Order::PRODUCT_INDEX . ' = ?', [$mainProductId, $productId]);
-	// DB::delete(Product::TABLE . ' WHERE ' . Product::INDEX . ' = ?', [$productId]);
+	Cart::where('customerId', $customertId)->update(['customerId' => $mainCustomerId]);
+	Customer::where('id', $customertId)->delete();
 
-	// redirect('list');
+	redirect('list');
 }
