@@ -10,7 +10,7 @@ ini_set('error_log', __DIR__ . '/../../logs/error.log');
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // Load environment variables
-(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../'))->load();
+(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'))->load();
 
 //check if to use the lighter version for ajax
 $full = $full ?? true;

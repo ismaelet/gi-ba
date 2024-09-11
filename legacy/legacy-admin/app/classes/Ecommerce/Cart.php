@@ -2,7 +2,6 @@
 
 namespace Ecommerce;
 
-use DB;
 use Structure\DatabaseObject;
 
 /**

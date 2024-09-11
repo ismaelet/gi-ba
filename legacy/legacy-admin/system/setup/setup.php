@@ -9,7 +9,7 @@ ini_set('error_log', __DIR__ . '/../../logs/error.log');
 require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 // Load environment variables
-(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../'))->load();
+(Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../'))->load();
 
 // fetch app config
 require_once(__DIR__ . '/../../../app/config/config.php');
@@ -18,8 +18,10 @@ require_once(__DIR__ . '/../../../app/config/config.php');
 spl_autoload_register(function ($class) {
 	$class = str_replace('\\', '/', $class);
 
-	if (strpos($class, 'App') === 0) {
-		include_once(public_server_path('/' . lcfirst($class) . '.php'));
+	if (strpos($class, 'App/Models') === 0) {
+		include_once(__DIR__ . '/../../../app/Models/' . explode('Models/', $class)[1] . '.php');
+	} else if (strpos($class, 'App') === 0) {
+		include_once(__DIR__ . '/../../' . lcfirst($class) . '.php');
 	} else if (file_exists($file = __DIR__ . '/../../../' . lcfirst($class) . '.php')) {
 		include_once($file);
 	} else if (file_exists($file = SERVER_ROOT . '/app/classes/' . $class . '.php')) {

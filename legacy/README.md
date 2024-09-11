@@ -20,7 +20,7 @@ Password: **O3a=H3lvJ**
 
 ```bash
 ssh -p 65002 u944138369@195.35.49.76
-cd domains/giebapromotion.com/public_html
+cd domains/giebapromotion.com
 ```
 
 Password: **G@$#st6gNJKpipT**
