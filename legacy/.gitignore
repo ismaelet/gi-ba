@@ -1,0 +1,6 @@
+vendor/
+uploads/
+admin/vendor/
+admin/composer.lock
+
+*.log

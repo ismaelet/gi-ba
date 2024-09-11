@@ -1,0 +1,435 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+@import '../../custom.css';
+@config 'tailwind.config.js';
+
+/* Resets */
+:root {
+	--font-family-paragraph: 'Poppins', sans-serif;
+}
+
+svg:not([fill='none']) {
+	fill: currentColor;
+}
+
+/* General colors */
+.dark\:bg-gray-900 {
+	background-color: var(--color-background) !important;
+}
+
+.dark\:bg-gray-950 {
+	background-color: var(--color-background) !important;
+}
+
+.dark\:text-custom-400\/10 {
+	color: rgb(var(--c-400), 0.1) !important;
+}
+
+html:not(.dark) {
+	& .dark\:text-white {
+		color: var(--color-neutral-400);
+	}
+
+	& .dark\:text-gray-200 {
+		color: var(--color-neutral-700);
+	}
+
+	& .dark\:text-gray-400 {
+		color: var(--color-neutral-400);
+	}
+
+	& .dark\:text-gray-800 {
+		color: var(--color-neutral-400);
+	}
+
+	& .dark\:border-white\/10 {
+		border-color: var(--border-color);
+	}
+
+	& .dark\:ring-white\/10 {
+		--tw-ring-color: var(--border-color);
+	}
+
+	& .dark\:divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+		border-color: var(--border-color);
+	}
+}
+
+/* Top bar */
+.fi-logo,
+.fi-header-heading {
+	font-weight: var(--font-weight-medium);
+}
+
+.fi-dropdown-list-item-icon {
+	width: 1rem;
+	height: 1rem;
+	fill: currentColor;
+}
+
+/* Side bar */
+.fi-sidebar-nav,
+.fi-sidebar-header {
+	padding-inline: 2.5rem;
+}
+
+.fi-sidebar-nav {
+	* {
+		font-weight: var(--font-weight-regular);
+	}
+}
+
+.fi-sidebar-item-label {
+	font-size: var(--font-size-400);
+}
+
+.fi-sidebar-item-icon {
+	width: 1.125rem;
+	height: 1.125rem;
+	fill: currentColor;
+}
+
+.fi-sidebar-item-button {
+	background-color: transparent !important;
+	border: var(--border-width) solid transparent;
+	transition: border-color 0.2s;
+
+	&:hover,
+	&:has(.text-primary-600) {
+		color: rgb(var(--primary-500));
+		border-color: var(--border-color);
+
+		& > * {
+			color: rgb(var(--primary-500)) !important;
+			transition: color 0.2s;
+		}
+	}
+
+	&:has(.text-primary-600) {
+		border-color: rgb(var(--primary-500));
+	}
+}
+
+.fi-badge {
+	border: var(--border);
+	border-color: currentColor;
+}
+
+/* Inputs */
+div.fi-input-wrp {
+	--tw-ring-color: var(--border-color);
+	background-color: transparent !important;
+
+	&:focus-within {
+		--tw-ring-color: rgb(var(--primary-500)) !important;
+	}
+}
+
+input.fi-input,
+select.fi-select-input {
+	line-height: 2;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+select:not(.choices) {
+	background-image: none;
+}
+
+/* Checkboxes */
+.fi-fo-field-wrp-label:has([type='checkbox']),
+.fi-ta-cell .flex:has([type='checkbox']) {
+	align-items: center;
+	position: relative;
+	cursor: pointer;
+
+	input {
+		display: none;
+	}
+
+	&::before {
+		content: '';
+		width: calc(1.25rem + 2px);
+		aspect-ratio: 1;
+		border: var(--border-width) solid var(--border-color);
+		border-radius: 50%;
+		transition: border-color 0.2s;
+	}
+
+	&:has(input:checked) {
+		&::before {
+			border-color: rgb(var(--primary-500));
+		}
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		left: 7px;
+		width: 8px;
+		aspect-ratio: 1;
+		margin: auto;
+		opacity: 0;
+		background-color: rgb(var(--primary-400));
+		border-radius: 50%;
+		transition: opacity 0.2s;
+	}
+
+	&:hover::after,
+	&:has(input:checked)::after {
+		opacity: 1;
+	}
+}
+
+/* Choice inputs */
+.choices__input {
+	padding-inline: 0.5em !important;
+}
+
+.choices__list--multiple .choices__item[data-value='-1'] {
+	--primary-400: var(--status-cancelled-400);
+}
+.choices__list--multiple .choices__item[data-value='0'] {
+	--primary-400: var(--status-open-400);
+}
+.choices__list--multiple .choices__item[data-value='1'] {
+	--primary-400: var(--status-received-400);
+}
+.choices__list--multiple .choices__item[data-value='2'] {
+	--primary-400: var(--status-confirmed-400);
+}
+.choices__list--multiple .choices__item[data-value='3'] {
+	--primary-400: var(--status-awaiting-shipping-400);
+}
+.choices__list--multiple .choices__item[data-value='4'] {
+	--primary-400: var(--status-shipped-400);
+}
+.choices__list--multiple .choices__item[data-value='5'] {
+	--primary-400: var(--status-delivered-400);
+}
+
+/* Buttons */
+.fi-btn {
+	padding-inline: 2em;
+	padding-block: 1em;
+	line-height: 1;
+	font-size: var(--font-size-400);
+	font-weight: var(--font-weight-regular);
+
+	&.fi-btn-color-primary {
+		box-shadow: 0px 1rem 2rem -1rem rgb(var(--primary-500), 0.2);
+	}
+
+	&.fi-btn-color-gray,
+	&.fi-btn-color-danger {
+		background-color: transparent;
+	}
+
+	&.fi-btn-color-gray {
+		&:hover {
+			background-color: transparent;
+			--tw-ring-color: var(--color-neutral-400);
+		}
+
+		html:not(.dark) & {
+			--tw-ring-color: var(--color-neutral-250);
+
+			&:hover {
+				--tw-ring-color: var(--color-neutral-400);
+			}
+		}
+	}
+
+	&.fi-btn-color-danger {
+		border: var(--border-width) solid currentColor;
+		color: rgb(var(--c-500));
+
+		&:hover {
+			background-color: transparent;
+			color: rgb(var(--c-400));
+		}
+	}
+}
+
+/* Table: Toolbar */
+.fi-ta-header-toolbar {
+	.flex:not(:has(*)) {
+		display: none;
+	}
+}
+
+.fi-ta-search-field {
+	flex-grow: 1;
+
+	:has(> &) {
+		flex-grow: 1;
+	}
+}
+
+/* Table */
+.fi-ta-ctn:has(table) {
+	.fi-ta-content {
+		padding: 1rem 2rem;
+		border-top: var(--border);
+
+		.fi-wi-widget & {
+			padding: 0;
+		}
+	}
+
+	thead tr {
+		background-color: transparent !important;
+
+		th span {
+			color: var(--color-neutral-300) !important;
+		}
+	}
+
+	.fi-input-wrp:has(select) {
+		.border-gray-200 {
+			border-right: none;
+		}
+	}
+}
+
+.fi-pagination-items {
+	background-color: transparent !important;
+	border-radius: var(--border-radius-400);
+	box-shadow: none;
+	border: var(--border);
+
+	li {
+		border-left: none;
+		border-top: none;
+		border-bottom: none;
+	}
+
+	li:first-child {
+		border-top-left-radius: inherit;
+		border-bottom-left-radius: inherit;
+
+		button {
+			border-top-left-radius: inherit !important;
+			border-bottom-left-radius: inherit !important;
+		}
+	}
+
+	li:last-child {
+		border-right: none;
+		border-top-right-radius: inherit;
+		border-bottom-right-radius: inherit;
+
+		button {
+			border-top-right-radius: inherit !important;
+			border-bottom-right-radius: inherit !important;
+		}
+	}
+}
+
+/* Dashboard */
+.fi-wi-chart {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+
+	& > .fi-section {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: max-content;
+
+		.fi-section-content-ctn {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			align-items: center;
+		}
+	}
+
+	.dark & {
+		[x-ref='borderColorElement'] {
+			color: var(--color-neutral-1000) !important;
+		}
+
+		[x-ref='backgroundColorElement'] {
+			color: var(--color-neutral-1000) !important;
+		}
+	}
+}
+
+/* Forms */
+.fi-fo-field-wrp-label > span {
+	color: var(--color-neutral-400);
+}
+
+fieldset legend {
+	font-size: var(--font-size-500) !important;
+}
+
+.fi-input-wrp:has([wire\:model='data.status']) {
+	color: var(--status-color) !important;
+
+	select {
+		color: inherit;
+	}
+
+	&:focus-within {
+		--tw-ring-color: var(--status-color) !important;
+	}
+
+	option {
+		color: var(--color-neutral-400);
+	}
+
+	&:has([value='-1']:checked) {
+		--status-color: rgb(var(--status-cancelled-400));
+	}
+	&:has([value='0']:checked) {
+		--status-color: rgb(var(--status-open-400));
+	}
+	&:has([value='1']:checked) {
+		--status-color: rgb(var(--status-received-400));
+	}
+	&:has([value='2']:checked) {
+		--status-color: rgb(var(--status-confirmed-400));
+	}
+	&:has([value='3']:checked) {
+		--status-color: rgb(var(--status-awaiting-shipping-400));
+	}
+	&:has([value='4']:checked) {
+		--status-color: rgb(var(--status-shipped-400));
+	}
+	&:has([value='5']:checked) {
+		--status-color: rgb(var(--status-delivered-400));
+	}
+}
+
+.fi-table-cell-status select {
+	color: var(--status-color) !important;
+
+	&:has([value='-1']:checked) {
+		--status-color: rgb(var(--status-cancelled-400));
+	}
+
+	&:has([value='0']:checked) {
+		--status-color: rgb(var(--status-open-400));
+	}
+
+	&:has([value='1']:checked) {
+		--status-color: rgb(var(--status-received-400));
+	}
+
+	&:has([value='2']:checked) {
+		--status-color: rgb(var(--status-confirmed-400));
+	}
+
+	&:has([value='3']:checked) {
+		--status-color: rgb(var(--status-awaiting-shipping-400));
+	}
+
+	&:has([value='4']:checked) {
+		--status-color: rgb(var(--status-shipped-400));
+	}
+
+	&:has([value='5']:checked) {
+		--status-color: rgb(var(--status-delivered-400));
+	}
+}

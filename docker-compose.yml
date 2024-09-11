@@ -1,17 +1,19 @@
 services:
-    php-apache:
+    laravel:
+        container_name: ${APP_SLUG}-laravel
         build:
             context: .
             dockerfile: ./Dockerfile
         volumes:
             - '.:/var/www/html'
         ports:
-            - '80:80'
+            - '8000:8000'
         depends_on:
-            - mysql
+            - ${DB_HOST}
+        command: php artisan serve --host=0.0.0.0 --port=8000
         networks:
             - internal
-    mysql:
+    database:
         image: 'mysql:latest'
         ports:
             - '3306:3306'
@@ -23,18 +25,6 @@ services:
             - 'mysql:/var/lib/mysql'
         networks:
             - internal
-    phpmyadmin:
-        image: phpmyadmin
-        ports:
-            - 8080:80
-        environment:
-            PMA_HOST: mysql
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-            UPLOAD_LIMIT: 100000000
-        networks:
-            - internal
-        depends_on:
-            - mysql
 networks:
     internal:
         driver: bridge

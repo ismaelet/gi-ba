@@ -1,0 +1,13 @@
+/*
+* Layout
+*/
+main {
+	display: grid;
+	min-height: 100svh;
+}
+
+@supports not (min-height: 100svh) {
+	main {
+		min-height: 100vh;
+	}
+}
