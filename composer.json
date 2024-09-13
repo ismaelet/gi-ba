@@ -8,6 +8,7 @@
         "php": "^8.2",
         "blade-ui-kit/blade-icons": "^1.7",
         "dompdf/dompdf": "^3.0",
+        "filament/filament": "^3.2",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9"
     },
