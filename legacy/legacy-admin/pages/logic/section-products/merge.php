@@ -1,12 +1,11 @@
 <?php
 
-/*
-* Page configuration
-*/
-
 use Ecommerce\Order;
 use Ecommerce\Product;
 
+/**
+ * * Page configuration
+ */
 $pageConfig['free'] = true;
 $pageConfig['parcial-title'] = 'Unifica l\'articolo';
 

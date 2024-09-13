@@ -1609,8 +1609,8 @@ h3,
 
 .confirmation-message {
 	background-color: var(--clr-good-200);
-	border-color: var(--clr-good-400);
-	color: var(--clr-good-400);
+	border-color: lightgreen;
+	color: lightgreen;
 }
 
 .error-warning {

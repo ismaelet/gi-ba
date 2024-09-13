@@ -14,11 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
 		$middleware->validateCsrfTokens(except: [
 			'legacy-admin/login',
 			'legacy-admin/logout',
+			'legacy-admin/gallery/list',
 			'legacy-admin/orders/add',
 			'legacy-admin/orders/list',
+			'legacy-admin/orders/merge',
 			'legacy-admin/products/list',
 			'legacy-admin/users/list',
-			'legacy-admin/gallery/list',
+			'legacy-admin/settings/sections/add',
+			'legacy-admin/settings/sections/list',
 		]);
 	})
 	->withExceptions(function (Exceptions $exceptions) {

@@ -1,10 +1,14 @@
 <?php
 
+use App\Models\Action;
 use App\Models\Ecommerce\Cart;
 use App\Models\Ecommerce\Order;
 use Ecommerce\Cart as OldCart;
 use Ecommerce\Customer;
 use Ecommerce\Product;
+use Illuminate\Support\Facades\Auth;
+
+global $user;
 
 $id = $_GET['id'] ?? false;
 $redirectFilterStatus = $_GET['filter-status'] ?? false;
@@ -104,6 +108,22 @@ if (isset($_POST['submit'])) {
 		'printStatus' => $printStatus,
 		'print_total' => $printTotal
 	]);
+
+	if ($newCart) {
+
+		// Save the action
+		Action::create([
+			'user_id' => $user->id,
+			'action' => 'Ha creato l\'ordine ' . $id,
+		]);
+	} else {
+
+		// Save the action
+		Action::create([
+			'user_id' => $user->id,
+			'action' => 'Ha modificato l\'ordine ' . $id,
+		]);
+	}
 
 	/*
 	* Orders & products
