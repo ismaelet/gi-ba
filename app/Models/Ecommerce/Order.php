@@ -18,5 +18,19 @@ class Order extends Model {
 	 *
 	 * @var array
 	 */
-	protected $fillable = [];
+	protected $fillable = [
+		'customerId',
+		'date',
+		'downPayment',
+		'downPaymentWithVat',
+		'fixedDiscount',
+		'discountWithVat',
+		'percentageDiscount',
+		'billed',
+		'printDescriptions',
+		'printStatus',
+		'print_total',
+		'print_total',
+		'status'
+	];
 }

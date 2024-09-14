@@ -20,5 +20,12 @@ class OrderItem extends Model {
 	 */
 	protected $fillable = [
 		'cartId',
+		'productId',
+		'quantity',
+		'netProductPrice',
+		'price',
+		'status',
+		'hasVat',
+		'info',
 	];
 }

@@ -1,12 +1,11 @@
 <?php
 
 use App\Models\Action;
-use App\Models\Ecommerce\Cart;
 use App\Models\Ecommerce\Order;
+use App\Models\Ecommerce\OrderItem;
 use Ecommerce\Cart as OldCart;
 use Ecommerce\Customer;
 use Ecommerce\Product;
-use Illuminate\Support\Facades\Auth;
 
 global $user;
 
@@ -26,7 +25,7 @@ if ($id) {
 // cart data
 if (!$newCart) {
 	$oldCart = new OldCart($id);
-	$cart = Cart::find($id);
+	$cart = Order::find($id);
 	$customer = $oldCart->customer;
 }
 
@@ -92,7 +91,7 @@ if (isset($_POST['submit'])) {
 	*/
 	if ($newCart) {
 		$id = \Legacy\System\Classes\DB::add('ecommerce_carts ()');
-		$cart = Cart::find($id);
+		$cart = Order::find($id);
 	}
 
 	$cart->update([
@@ -173,10 +172,10 @@ if (isset($_POST['submit'])) {
 
 			if (!$orderId) {
 				// Add the order
-				Order::create($orderParameters);
+				OrderItem::create($orderParameters);
 			} else {
 				// Update the order
-				Order::find($orderId)->update($orderParameters);
+				OrderItem::find($orderId)->update($orderParameters);
 			}
 
 			// Update the cart status if is not set or is higher than the order status
@@ -185,7 +184,7 @@ if (isset($_POST['submit'])) {
 			}
 		} else if ($orderId) {
 			// Delete the order if it's not valid
-			Order::find($orderId)->delete();
+			OrderItem::find($orderId)->delete();
 		}
 	}
 

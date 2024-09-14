@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Ecommerce\Cart;
 use App\Models\Ecommerce\Customer;
+use App\Models\Ecommerce\Order;
 
 $id = $_GET['id'];
 
@@ -36,7 +36,7 @@ if (isset($_POST['submit'])) {
 	$customertId = $id;
 	$mainCustomerId = $_POST['id'];
 
-	Cart::where('customerId', $customertId)->update(['customerId' => $mainCustomerId]);
+	Order::where('customerId', $customertId)->update(['customerId' => $mainCustomerId]);
 	Customer::where('id', $customertId)->delete();
 
 	legacy_redirect('list');

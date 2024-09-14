@@ -2,13 +2,13 @@
 
 namespace Ecommerce;
 
-use App\Models\Ecommerce\Cart;
+use App\Models\Ecommerce\Order;
 use Ecommerce\Cart as OldCart;
 
 function download_quote(int $cartId, string $title = 'Preventivo') {
 	$debug = false;
 	$oldCart = new OldCart($cartId);
-	$cart = Cart::find($cartId);
+	$cart = Order::find($cartId);
 
 	// products
 	$productsHtml = [];
