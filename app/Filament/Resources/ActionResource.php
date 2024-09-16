@@ -65,7 +65,10 @@ class ActionResource extends Resource {
 					Tables\Actions\DeleteBulkAction::make(),
 				]),
 			])
-			->defaultSort('created_at', 'desc');
+			->defaultSort('created_at', 'desc')
+			->paginated([10, 25, 50, 100, 'all'])
+			->defaultPaginationPageOption(100)
+		;
 	}
 
 	public static function getRelations(): array {
