@@ -65,7 +65,7 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 
 	if (!$cart->print_total) {
 		$html = str_replace('<section class="recap">', '<section class="recap hidden">', $html);
-		$html = str_replace('<p class="iva-warning hidden">', '<p class="iva-warning">', $html);
+		$html = str_replace('<p class="iva-warning hidden', '<p class="iva-warning', $html);
 	}
 
 	// generate the pdf

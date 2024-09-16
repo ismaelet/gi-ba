@@ -3,6 +3,7 @@
 namespace App\Models\Ecommerce;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model {
 
@@ -33,4 +34,22 @@ class Order extends Model {
 		'print_total',
 		'status'
 	];
+
+	/**
+	 * Get the order items for the order.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	function order_items(): HasMany {
+		return $this->hasMany(OrderItem::class);
+	}
+
+	/**
+	 * Get the total quantity of the order's items.
+	 * 
+	 * @return int
+	 */
+	function quantity(): int {
+		return $this->order_items->sum('quantity');
+	}
 }

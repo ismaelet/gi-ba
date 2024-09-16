@@ -7,6 +7,8 @@ use Ecommerce\Cart as OldCart;
 use Ecommerce\Customer;
 use Ecommerce\Product;
 
+use function Ecommerce\ecommerce_config;
+
 global $user;
 
 $id = $_GET['id'] ?? false;
@@ -115,18 +117,14 @@ if (isset($_POST['submit'])) {
 			'user_id' => $user->id,
 			'action' => 'Ha creato l\'ordine ' . $id,
 		]);
-	} else {
-
-		// Save the action
-		Action::create([
-			'user_id' => $user->id,
-			'action' => 'Ha modificato l\'ordine ' . $id,
-		]);
 	}
 
 	/*
 	* Orders & products
 	*/
+	$oldOrderQuantity = $oldCart->quantity;
+	$newOrderQuantity = 0;
+
 	foreach ($_POST['productId'] as $productKey => $productId) {
 		$orderId = $_POST['orderId'][$productKey];
 		$orderInfo = $_POST['orderInfo'][$productKey];
@@ -182,14 +180,39 @@ if (isset($_POST['submit'])) {
 			if (!$cartStatus || $orderStatus < $cartStatus) {
 				$cartStatus = $orderStatus;
 			}
+
+			$newOrderQuantity += $orderQuantity;
 		} else if ($orderId) {
 			// Delete the order if it's not valid
 			OrderItem::find($orderId)->delete();
 		}
 	}
 
+	// Total order item quantity
+	if (!$newCart && $newOrderQuantity != $oldOrderQuantity) {
+		Action::create([
+			'user_id' => $user->id,
+			'action' => 'Ha modificato la quantità di articoli dell\'ordine ' . $id . ' da ' . $oldOrderQuantity . ' a ' . $newOrderQuantity,
+		]);
+	}
+
 	// Update the cart status
-	$cart->update(['status' => $cartStatus]);
+	$olderStatus = $cart->status;
+	$newStatus = $cartStatus;
+
+	if ($olderStatus != $newStatus) {
+		$cart->update(['status' => $cartStatus]);
+
+		if (!$newCart) {
+			$olderStatusString = ecommerce_config('cart-statuses')[$olderStatus][1];
+			$newStatusString = ecommerce_config('cart-statuses')[$newStatus][1];
+
+			Action::create([
+				'user_id' => $user->id,
+				'action' => 'Ha modificato lo stato dell\'ordine ' . $id . ' da "' . $olderStatusString . '" a "' . $newStatusString . '"',
+			]);
+		}
+	}
 
 	legacy_redirect($returnUrl);
 }
