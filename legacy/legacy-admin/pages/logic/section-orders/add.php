@@ -122,7 +122,7 @@ if (isset($_POST['submit'])) {
 	/*
 	* Orders & products
 	*/
-	$oldOrderQuantity = $oldCart->quantity;
+	$oldOrderQuantity = $oldCart->quantity ?? 0;
 	$newOrderQuantity = 0;
 
 	foreach ($_POST['productId'] as $productKey => $productId) {
