@@ -192,6 +192,10 @@
 				background-color: #b6c4e0;
 				font-weight: bold;
 			}
+
+			.no-prices .visible-price {
+				display: none !important;
+			}
 		</style>
 	</head>
 
@@ -246,8 +250,8 @@
 							<p>Codice</p>
 							<p>Descrizione</p>
 							<p>Quantità</p>
-							<p>Prezzo sin.</p>
-							<p>Prezzo tot.</p>
+							<p class="visible-price">Prezzo sin.</p>
+							<p class="visible-price">Prezzo tot.</p>
 						</div>
 
 						{{ products }}
@@ -266,7 +270,7 @@
 				<p class="iva-warning hidden" style="text-align: right; margin-top: 2rem">Prezzi da intendersi <strong>IVA ESCLUSA</strong></p>
 
 				<!-- Recap -->
-				<section class="recap">
+				<section class="recap visible-price">
 					<div class="recap_item">
 						<p>Imponibile</p>
 						<p>{{ cart-net-price }}</p>

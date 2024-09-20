@@ -158,9 +158,17 @@ body.fixed {
 }
 
 /* 3.2 Grids and flexboxes */
+.grid {
+	display: grid;
+}
+
 .grid-flow {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
+}
+
+.gap-2 {
+	gap: 0.5rem;
 }
 
 .grid-flow[data-columns='2'] {
@@ -209,6 +217,20 @@ body.fixed {
 .flex-group[data-columns='40rem'] > * {
 	flex-grow: 1;
 	width: min(40rem, 100%);
+}
+
+.grid-cols-1 {
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+	.lg\:grid-cols-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 .flex-group {

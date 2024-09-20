@@ -58,44 +58,54 @@ use function Ecommerce\ecommerce_config;
 						<input type="date" class="inp" name="cartDate" value="<?= $newCart ? date('Y-m-d') : $oldCart->date ?>">
 					</div>
 
-					<div class="form-field">
-						<label class="checkbox">
-							<input type="checkbox" name="billed" <?= !$newCart && $oldCart->billed ? 'checked' : '' ?>>
-							<span></span>
-							<p>Fatturato</p>
-						</label>
-					</div>
+					<div class="grid lg:grid-cols-2 gap-2 grid-cols-1">
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="billed" <?= !$newCart && $oldCart->billed ? 'checked' : '' ?>>
+								<span></span>
+								<p>Fatturato</p>
+							</label>
+						</div>
 
-					<div class="form-field">
-						<label class="checkbox">
-							<input type="checkbox" name="printDescriptions" <?= $newCart || $oldCart->printDescriptions ? 'checked' : '' ?>>
-							<span></span>
-							<p>Stampa dettagli articolo</p>
-						</label>
-					</div>
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="printDescriptions" <?= $newCart || $oldCart->printDescriptions ? 'checked' : '' ?>>
+								<span></span>
+								<p>Stampa dettagli articolo</p>
+							</label>
+						</div>
 
-					<div class="form-field">
-						<label class="checkbox">
-							<input type="checkbox" name="print_notes" <?= !$newCart && $oldCart->print_notes ? 'checked' : '' ?>>
-							<span></span>
-							<p>Stampa le note</p>
-						</label>
-					</div>
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="print_notes" <?= !$newCart && $oldCart->print_notes ? 'checked' : '' ?>>
+								<span></span>
+								<p>Stampa le note</p>
+							</label>
+						</div>
 
-					<div class="form-field">
-						<label class="checkbox">
-							<input type="checkbox" name="printStatus" <?= !$newCart && $oldCart->printStatus ? 'checked' : '' ?>>
-							<span></span>
-							<p>Stampa lo stato</p>
-						</label>
-					</div>
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="printStatus" <?= !$newCart && $oldCart->printStatus ? 'checked' : '' ?>>
+								<span></span>
+								<p>Stampa lo stato</p>
+							</label>
+						</div>
 
-					<div class="form-field">
-						<label class="checkbox">
-							<input type="checkbox" name="print_total" <?= $newCart || $cart->print_total ? 'checked' : '' ?>>
-							<span></span>
-							<p>Stampa il totale</p>
-						</label>
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="always_print_prices" <?= !$newCart && $cart->always_print_prices ? 'checked' : '' ?>>
+								<span></span>
+								<p>Stampa i prezzi nella bolla</p>
+							</label>
+						</div>
+
+						<div class="form-field">
+							<label class="checkbox">
+								<input type="checkbox" name="print_total" <?= $newCart || $cart->print_total ? 'checked' : '' ?>>
+								<span></span>
+								<p>Stampa il totale</p>
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>

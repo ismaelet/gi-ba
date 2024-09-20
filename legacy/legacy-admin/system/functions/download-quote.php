@@ -5,7 +5,7 @@ namespace Ecommerce;
 use App\Models\Ecommerce\Order;
 use Ecommerce\Cart as OldCart;
 
-function download_quote(int $cartId, string $title = 'Preventivo') {
+function download_quote(int $cartId, string $title, int $type) {
 	$debug = false;
 	$oldCart = new OldCart($cartId);
 	$cart = Order::find($cartId);
@@ -29,8 +29,8 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 			<p>' . $order->product->idCode . '</p>
 			<p>' . $productName . '</p>
 			<p>' . $order->quantity . '</p>
-			<p>' . $order->netProductPriceString . '</p>
-			<p>' . $order->netPriceString . '</p>
+			<p class="visible-price">' . $order->netProductPriceString . '</p>
+			<p class="visible-price">' . $order->netPriceString . '</p>
 		</div>';
 	}
 
@@ -65,12 +65,17 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 	$html = str_replace('{{ notes }}', $oldCart->print_notes ? $oldCart->customer->info : '', $html);
 
 	if (!$cart->print_total) {
-		$html = str_replace('<section class="recap">', '<section class="recap hidden">', $html);
+		$html = str_replace('<section class="recap', '<section class="recap hidden', $html);
 		$html = str_replace('<p class="iva-warning hidden', '<p class="iva-warning', $html);
 	}
 
 	if (!$cart->print_notes) {
 		$html = str_replace('<p class="notes">', '<p class="notes hidden">', $html);
+	}
+
+	// Bolla di consegna
+	if ($type == 2 && !$cart->always_print_prices) {
+		$html = str_replace('<div class="page-content', '<div class="page-content no-prices', $html);
 	}
 
 	// generate the pdf

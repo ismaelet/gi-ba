@@ -140,11 +140,11 @@ function _expand_results(&$entry, $field, $key, $row) {
 if (isset($_POST['download-quote'])) {
 	$cartId = $_POST['download-quote'];
 
-	download_quote($cartId);
+	download_quote($cartId, 'Preventivo', 1);
 }
 
 if (isset($_POST['download-delivery-quote'])) {
 	$cartId = $_POST['download-delivery-quote'];
 
-	download_quote($cartId, 'Bolla di Consegna');
+	download_quote($cartId, 'Bolla di Consegna', 2);
 }

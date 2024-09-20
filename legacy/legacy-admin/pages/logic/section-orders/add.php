@@ -75,6 +75,7 @@ if (isset($_POST['submit'])) {
 	$printStatus = isset($_POST['printStatus']) ? 1 : 0;
 	$printTotal = isset($_POST['print_total']) ? 1 : 0;
 	$printNotes = isset($_POST['print_notes']);
+	$alwaysPrintPrices = isset($_POST['always_print_prices']);
 
 	/*
 	* Customer
@@ -110,6 +111,7 @@ if (isset($_POST['submit'])) {
 		'printStatus' => $printStatus,
 		'print_total' => $printTotal,
 		'print_notes' => $printNotes,
+		'always_print_prices' => $alwaysPrintPrices,
 	]);
 
 	if ($newCart) {

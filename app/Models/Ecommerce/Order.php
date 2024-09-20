@@ -33,6 +33,7 @@ class Order extends Model {
 		'printStatus',
 		'print_total',
 		'print_notes',
+		'always_print_prices',
 		'status',
 	];
 
