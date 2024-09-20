@@ -62,10 +62,15 @@ function download_quote(int $cartId, string $title = 'Preventivo') {
 	$html = str_replace('{{ products }}', $productsHtml, $html);
 	$html = str_replace('{{ cart-down-payment }}', $oldCart->downPayment ? $downPaymentHtml : '', $html);
 	$html = str_replace('{{ cart-discount }}', $oldCart->discount ? $discountHtml : '', $html);
+	$html = str_replace('{{ notes }}', $oldCart->print_notes ? $oldCart->customer->info : '', $html);
 
 	if (!$cart->print_total) {
 		$html = str_replace('<section class="recap">', '<section class="recap hidden">', $html);
 		$html = str_replace('<p class="iva-warning hidden', '<p class="iva-warning', $html);
+	}
+
+	if (!$cart->print_notes) {
+		$html = str_replace('<p class="notes">', '<p class="notes hidden">', $html);
 	}
 
 	// generate the pdf

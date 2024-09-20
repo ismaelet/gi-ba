@@ -70,7 +70,15 @@ use function Ecommerce\ecommerce_config;
 						<label class="checkbox">
 							<input type="checkbox" name="printDescriptions" <?= $newCart || $oldCart->printDescriptions ? 'checked' : '' ?>>
 							<span></span>
-							<p>Stampa la descrizione</p>
+							<p>Stampa dettagli articolo</p>
+						</label>
+					</div>
+
+					<div class="form-field">
+						<label class="checkbox">
+							<input type="checkbox" name="print_notes" <?= !$newCart && $oldCart->print_notes ? 'checked' : '' ?>>
+							<span></span>
+							<p>Stampa le note</p>
 						</label>
 					</div>
 

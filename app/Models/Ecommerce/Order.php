@@ -3,6 +3,7 @@
 namespace App\Models\Ecommerce;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model {
@@ -31,8 +32,8 @@ class Order extends Model {
 		'printDescriptions',
 		'printStatus',
 		'print_total',
-		'print_total',
-		'status'
+		'print_notes',
+		'status',
 	];
 
 	/**
@@ -42,6 +43,15 @@ class Order extends Model {
 	 */
 	function order_items(): HasMany {
 		return $this->hasMany(OrderItem::class);
+	}
+
+	/**
+	 * Get the customer that owns the order.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	function customer(): BelongsTo {
+		return $this->belongsTo(Customer::class, 'customerId');
 	}
 
 	/**
