@@ -65,15 +65,15 @@ if (isset($_POST['submit'])) {
 	$customerName = trim($_POST['customerName']);
 	$customerPhone = $_POST['customerPhone'];
 	$customerInfo = trim($_POST['customerInfo']);
-	$downPayment = $_POST['downPayment'];
-	$downPaymentWithVat = isset($_POST['downPaymentWithVat']) ? 1 : 0;
-	$fixedDiscount = $_POST['fixedDiscount'];
-	$discountWithVat = isset($_POST['discountWithVat']) ? 1 : 0;
-	$percentageDiscount = $_POST['percentageDiscount'];
-	$billed = isset($_POST['billed']) ? 1 : 0;
-	$printDescriptions = isset($_POST['printDescriptions']) ? 1 : 0;
-	$printStatus = isset($_POST['printStatus']) ? 1 : 0;
-	$printTotal = isset($_POST['print_total']) ? 1 : 0;
+	$downPayment = $_POST['downPayment'] ?: 0;
+	$downPaymentWithVat = isset($_POST['downPaymentWithVat']);
+	$fixedDiscount = $_POST['fixedDiscount'] ?: 0;
+	$discountWithVat = isset($_POST['discountWithVat']);
+	$percentageDiscount = $_POST['percentageDiscount'] ?: 0;
+	$billed = isset($_POST['billed']);
+	$printDescriptions = isset($_POST['printDescriptions']);
+	$printStatus = isset($_POST['printStatus']);
+	$printTotal = isset($_POST['print_total']);
 	$printNotes = isset($_POST['print_notes']);
 	$alwaysPrintPrices = isset($_POST['always_print_prices']);
 
