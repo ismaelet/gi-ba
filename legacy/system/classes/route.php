@@ -25,18 +25,20 @@ class Route {
 		$path_found = false;
 
 		//parse url
-		$path = parse_url($_SERVER['REQUEST_URI'])['path'];
+		$path = parse_url($_SERVER['REQUEST_URI'])['path'] ?? null;
 
-		foreach (self::$routes as $route) {
+		if ($path !== null) {
+			foreach (self::$routes as $route) {
 
-			// Check path match	
-			if (in_array($path, [$route['path'], $route['path'] . '/'])) {
+				// Check path match	
+				if (in_array($path, [$route['path'], $route['path'] . '/'])) {
 
-				$path_found = true;
+					$path_found = true;
 
-				call_user_func_array($route['function'], [$route['arguments']]);
+					call_user_func_array($route['function'], [$route['arguments']]);
 
-				break;
+					break;
+				}
 			}
 		}
 
