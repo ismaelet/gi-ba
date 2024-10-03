@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
 			'legacy-admin/orders/list',
 			'legacy-admin/orders/merge',
 			'legacy-admin/products/list',
+			'legacy-admin/products/merge',
 			'legacy-admin/users/list',
 			'legacy-admin/settings/sections/add',
 			'legacy-admin/settings/sections/list',
