@@ -12,6 +12,8 @@
 	<p class="error-warning">Ordine da unire non trovato</p>
 <?php } ?>
 
+<p>Verrano tenuti i dati del cliente, sconti e informazioni dell'ordine principale, mentre dell'ordine da unire verrano tenuti solo gli articoli.</p>
+
 <div>
 	<label for="firstId">ID ordine principale</label>
 	<input type="number" name="firstId" value="" placeholder="ID ordine principale">

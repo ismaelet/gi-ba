@@ -28,7 +28,7 @@
 	grid-template-rows: max-content;
 }
 
-.section--customer-data {
+.section--order-data {
 	@media (min-width: 769px) {
 		grid-column: span 2;
 	}
