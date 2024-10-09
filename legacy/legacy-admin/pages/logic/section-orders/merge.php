@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Action;
 use App\Models\Ecommerce\Order;
 use App\Models\Ecommerce\OrderItem;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * * Page configuration
@@ -40,6 +42,11 @@ function mergeOrders(): string|true {
 	);
 
 	Order::find($secondId)?->delete();
+
+	Action::create([
+		'user_id' => Auth::id(),
+		'action' => 'Ha unito l\'ordine ' . $secondId . ' con l\'ordine ' . $firstId,
+	]);
 
 	return true;
 }

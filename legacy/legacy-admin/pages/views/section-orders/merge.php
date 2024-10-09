@@ -5,21 +5,21 @@
 <?php } ?>
 
 <?php if ($error == 'first-order-not-found') { ?>
-	<p class="error-warning">Primo ordine non trovato</p>
+	<p class="error-warning">Ordine principale non trovato</p>
 <?php } ?>
 
 <?php if ($error == 'second-order-not-found') { ?>
-	<p class="error-warning">Secondo ordine non trovato</p>
+	<p class="error-warning">Ordine da unire non trovato</p>
 <?php } ?>
 
 <div>
-	<label for="firstId">ID primo ordine</label>
-	<input type="number" name="firstId" value="" placeholder="ID primo ordine">
+	<label for="firstId">ID ordine principale</label>
+	<input type="number" name="firstId" value="" placeholder="ID ordine principale">
 </div>
 
 <div>
-	<label for="secondId">ID secondo ordine</label>
-	<input type="number" name="secondId" value="" placeholder="ID secondo ordine">
+	<label for="secondId">ID ordine da unire</label>
+	<input type="number" name="secondId" value="" placeholder="ID ordine da unire">
 </div>
 
 {% end form-body %}
