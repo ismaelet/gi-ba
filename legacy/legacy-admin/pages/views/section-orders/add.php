@@ -11,6 +11,27 @@ use function Ecommerce\ecommerce_config;
 	<!-- Page body -->
 	<div class="sections">
 
+		<!-- Customer data -->
+		<section class="section section--customer-data">
+			<h2 class="panel__title panel__title--outside">Dati del cliente</h2>
+			<div class="panel">
+				<div class="form_body">
+					<div class="form-field">
+						<p class="form-lbl">Nome completo</p>
+						<?= render_old_search_input($searchCustomer) ?>
+					</div>
+					<div class="form-field">
+						<p class="form-lbl">Numero di telefono</p>
+						<input type="text" class="inp" name="customerPhone" value="<?= $customer->phone ?? '' ?>" placeholder="Numero di telefono">
+					</div>
+					<div class="form-field">
+						<p class="form-lbl">Info del cliente</p>
+						<textarea class="textarea" name="customerInfo" placeholder="Info del cliente"><?= $customer->info ?? '' ?></textarea>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<!-- Cart data -->
 		<section class="section section--order-data">
 			<h2 class="panel__title panel__title--outside">Dati dell'ordine</h2>
@@ -92,27 +113,6 @@ use function Ecommerce\ecommerce_config;
 								<p>Stampa il totale</p>
 							</label>
 						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- Customer data -->
-		<section class="section section--customer-data">
-			<h2 class="panel__title panel__title--outside">Dati del cliente</h2>
-			<div class="panel">
-				<div class="form_body">
-					<div class="form-field">
-						<p class="form-lbl">Nome completo</p>
-						<?= render_old_search_input($searchCustomer) ?>
-					</div>
-					<div class="form-field">
-						<p class="form-lbl">Numero di telefono</p>
-						<input type="text" class="inp" name="customerPhone" value="<?= $customer->phone ?? '' ?>" placeholder="Numero di telefono">
-					</div>
-					<div class="form-field">
-						<p class="form-lbl">Info del cliente</p>
-						<textarea class="textarea" name="customerInfo" placeholder="Info del cliente"><?= $customer->info ?? '' ?></textarea>
 					</div>
 				</div>
 			</div>
