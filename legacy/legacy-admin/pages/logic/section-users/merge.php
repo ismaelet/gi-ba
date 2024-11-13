@@ -22,10 +22,12 @@ $queryConfig['title-field'] = 'name';
 * Form
 */
 $searchInputConfig = [
-	'search' => 'customers',
+	'search' => 'ecommerce_customers',
+	'search-fields' => ['name'],
+	'index-field' => 'id',
+	'visible-field' => 'name',
 	'placeholder' => 'Nome del cliente',
-	'storedName' => 'id',
-	'exclude' => [$id],
+	'filter' => 'id <> ' . $id,
 	'required' => true,
 ];
 

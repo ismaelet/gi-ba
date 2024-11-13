@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
 			'legacy-admin/settings/sections/list',
 			'legacy-admin/users/add',
 			'legacy-admin/users/list',
+			'legacy-admin/users/merge',
 		]);
 	})
 	->withExceptions(function (Exceptions $exceptions) {
