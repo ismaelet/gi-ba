@@ -39,7 +39,8 @@ $queryConfig['from'] = '
 ';
 $queryConfig['order-index'] = 'date DESC, id';
 
-$queryConfig['where'] = '((status IN (' . $selectedCartStatusesSql . ') OR ecommerce_carts.id IN (SELECT cartId FROM ecommerce_orders WHERE status IN (' . $selectedCartStatusesSql . '))) AND billed IN (' . $selectedBilledStatusesSql . ') AND time >= "' . $startDate . '" AND time <= "' . $endDate . '")';
+// $queryConfig['where'] = '((status IN (' . $selectedCartStatusesSql . ') OR ecommerce_carts.id IN (SELECT cartId FROM ecommerce_orders WHERE status IN (' . $selectedCartStatusesSql . '))) AND billed IN (' . $selectedBilledStatusesSql . ') AND time >= "' . $startDate . '" AND time <= "' . $endDate . '")';
+$queryConfig['where'] = '((ecommerce_carts.id IN (SELECT cartId FROM ecommerce_orders WHERE status IN (' . $selectedCartStatusesSql . '))) AND billed IN (' . $selectedBilledStatusesSql . ') AND time >= "' . $startDate . '" AND time <= "' . $endDate . '")';
 
 // handle search
 $queryConfig['where-search'] = "
@@ -54,10 +55,13 @@ $queryConfig['where-search'] = "
 				INNER JOIN ecommerce_products
 				ON ecommerce_orders.productId = ecommerce_products.id
 				WHERE
-					LOWER(name) LIKE CONCAT('%',?,'%') OR
-					LOWER(info) LIKE CONCAT('%',?,'%')
+					(
+						LOWER(name) LIKE CONCAT('%',?,'%') OR
+						LOWER(info) LIKE CONCAT('%',?,'%')
+					)
+				AND status IN (" . $selectedCartStatusesSql . ")
 			)
-		)
+	)
 ";
 
 // select fields
