@@ -115,7 +115,7 @@ function _expand_results(&$entry, $field, $key, $row) {
 				$orderRows[] = '
 			<span class="order-row">
 			<span class="order-status order-status--' . $order->status . '"></span>
-			<span><strong>' . $order->quantity . ' x</strong> ' . $order->product->name . '</span>
+			<span><strong>' . $order->quantity . ' x</strong> ' . ($order->product->name ?: '[Articolo Rimosso]') . '</span>
 			</span>';
 			}
 
