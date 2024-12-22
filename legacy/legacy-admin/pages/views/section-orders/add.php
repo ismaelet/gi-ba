@@ -189,7 +189,7 @@ use function Ecommerce\ecommerce_config;
 					for ($i = 1; $i <= 50; $i++) {
 						$order = $oldCart->orders[$i - 1] ?? false;
 						$searchProduct['index-value'] = $order ? $order->product->id : false;
-						$searchProduct['visible-value'] = $order ? $order->product->name : false;
+						$searchProduct['visible-value'] = $order ? ($order->product->name ?: '[Articolo Rimosso]') : false;
 
 						$orderStatusStr = $order ? $order->statusString : '';
 						$orderQuantity = $order ? $order->quantity : 1;

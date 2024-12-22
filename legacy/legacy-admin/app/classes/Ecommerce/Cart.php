@@ -161,7 +161,7 @@ class Cart {
 	}
 
 	private function getOrders() {
-		return rows_to_objects(\Legacy\System\Classes\DB::select('ecommerce_orders.id AS id FROM ecommerce_orders JOIN ecommerce_products ON ecommerce_orders.productId = ecommerce_products.id WHERE cartId = ? ORDER BY status DESC, name ASC, ecommerce_orders.id ASC', [$this->id]), Order::class);
+		return rows_to_objects(\Legacy\System\Classes\DB::select('ecommerce_orders.id AS id FROM ecommerce_orders LEFT JOIN ecommerce_products ON ecommerce_orders.productId = ecommerce_products.id WHERE cartId = ? ORDER BY status DESC, name ASC, ecommerce_orders.id ASC', [$this->id]), Order::class);
 	}
 
 	private function getOrdersSortedById() {
