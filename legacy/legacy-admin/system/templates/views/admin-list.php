@@ -4,6 +4,9 @@
 
 <form class="js-list-form" method="POST">
 
+	<input type="hidden" name="index" value="<?= $queryConfig['order-index'] ?? null ?>">
+	<input type="hidden" name="order" value="<?= $queryConfig['order-direction'] ?? null ?>">
+
 	<!-- Title -->
 	<section id="title" class="mar-b-1">
 		<h1 class="txt-med"><?= \Legacy\System\Classes\View::$title ?></h1>
