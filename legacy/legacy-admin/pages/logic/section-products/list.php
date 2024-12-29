@@ -17,7 +17,7 @@ $queryConfig['index'] = 'id';
 $queryConfig['select'] = ['id', 'name', 'price', 'saleCount'];
 $queryConfig['from'] = '
 	ecommerce_products
-	LEFT JOIN (SELECT productId, SUM(quantity) AS saleCount FROM ecommerce_orders GROUP BY productId) orderCount
+	LEFT JOIN (SELECT productId, SUM(quantity) AS saleCount FROM ecommerce_orders WHERE status NOT IN (8, 99) GROUP BY productId) orderCount
 	ON orderCount.productId = ecommerce_products.id';
 $queryConfig['where-search'] = "LOWER(name) LIKE CONCAT('%',?,'%')";
 
