@@ -145,7 +145,7 @@ use function Ecommerce\ecommerce_config;
 						<p class="form-lbl">Sconto fisso</p>
 						<div class="discount-field">
 							<div class="price-input">
-								<input type="number" class="js-fixed-discount" name="fixedDiscount" value="<?= !$newCart ? $oldCart->formattedFixedDiscount : '0.00' ?>" min="0">
+								<input type="number" class="js-fixed-discount" name="fixedDiscount" value="<?= !$newCart ? $oldCart->formattedFixedDiscount : '0.00' ?>" min="0" step=".01">
 							</div>
 
 							<label class="checkbox">
