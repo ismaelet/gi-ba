@@ -188,27 +188,20 @@ main {
 }
 
 .lbox-close-icon {
-	opacity: 0.8;
-	background-color: #f3f3f3;
-	background-image: url(../resources/icons/actions/close.svg);
 	background-position: center;
-	background-size: 50%;
-	border-radius: 50%;
-	width: 2rem;
-	height: 2rem;
+	opacity: 0.7;
+	width: 1.5rem;
+	height: 1.5rem;
 	position: absolute;
+	color: #fff;
 	top: 1rem;
 	right: 1rem;
 	cursor: pointer;
-	transition: background 0.3s;
+	transition: opacity 0.2s;
 }
 
 .lbox-close-icon:hover {
-	background-color: var(--color-primary-400);
-}
-
-.lbox-close-icon.wht {
-	filter: invert(1);
+	opacity: 1;
 }
 
 /* Ajax search */

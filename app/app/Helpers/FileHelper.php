@@ -11,14 +11,14 @@ class FileHelper {
     /**
      * Get the versioned path of a file in the public storage directory
      */
-    public static function publicAsset(string $file): string {
-        $storagePath = public_path($file);
-
-        if (!file_exists($storagePath)) {
+    public static function storageAsset(string $file): string {
+        if (!self::exists($file)) {
             throw new \Exception('File not found: ' . $file);
         }
 
-        return asset($file) . '?v=' . filemtime($storagePath);
+        $timestamp = self::lastModified($file);
+
+        return asset('storage/' . $file) . '?v=' . $timestamp;
     }
 
     /**
@@ -26,6 +26,13 @@ class FileHelper {
      */
     public static function exists(string $path): bool {
         return Storage::disk('public')->exists($path);
+    }
+
+    /**
+     * Get the last modified timestamp of a file in the storage
+     */
+    public static function lastModified(string $path): int {
+        return Storage::disk('public')->lastModified($path);
     }
 
     /**

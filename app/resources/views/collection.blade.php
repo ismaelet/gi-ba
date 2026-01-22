@@ -129,59 +129,57 @@
 
 @pushOnce('scripts')
 	<script defer>
-		$(window).ready(function() {
+		document.addEventListener('DOMContentLoaded', function() {
 
-			const count = $('#gallery').data('count');
-			var pos = 0;
+			const gallery = document.getElementById('gallery');
+			const count = parseInt(gallery.dataset.count, 10);
+			let pos = 0;
 
-			$('.image').click(function() {
-				pos = $(this).parents('.image-box').data('pos');
+			document.querySelectorAll('.image').forEach(function(image) {
+				image.addEventListener('click', function() {
+					pos = parseInt(this.closest('.image-box').dataset.pos, 10);
+				});
 			});
 
-			$('.arrow').click(function() {
-
-				const self = $(this);
-
-				if (self.hasClass('right')) {
-					pos++;
-				} else {
-					pos--;
-				}
-
-				$('#image' + pos).click();
-
-			});
-
-			document.onkeydown = function(e) {
-
-
-				if ($('.lbox:visible').length) {
-
-					if (e.which == 37) {
-
+			document.querySelectorAll('.arrow').forEach(function(arrow) {
+				arrow.addEventListener('click', function() {
+					if (this.classList.contains('right')) {
+						pos++;
+					} else {
 						pos--;
+					}
 
+					const targetImage = document.getElementById('image' + pos);
+					if (targetImage) {
+						targetImage.click();
+					}
+				});
+			});
+
+			document.addEventListener('keydown', function(e) {
+				const visibleLightbox = document.querySelector('.lbox:not([style*="display: none"])');
+				if (visibleLightbox) {
+					if (e.key === 'ArrowLeft') {
+						pos--;
 						if (pos < 1) {
 							pos = 1;
 						}
-
-						$('#image' + pos).click();
-
-					} else if (e.which == 39) {
-
+						const targetImage = document.getElementById('image' + pos);
+						if (targetImage) {
+							targetImage.click();
+						}
+					} else if (e.key === 'ArrowRight') {
 						pos++;
-
 						if (pos > count) {
 							pos = count;
 						}
-
-						$('#image' + pos).click();
-
+						const targetImage = document.getElementById('image' + pos);
+						if (targetImage) {
+							targetImage.click();
+						}
 					}
-
 				}
-
-			};
+			});
 
 		});
 	</script>
@@ -200,13 +198,13 @@
 		<div class="background bgr bgr-2">
 			<div
 				class="image bgr"
-				style="background-image: url('{{ public_asset('storage/collections/' . $collection['id'] . '.jpg') }}')"
+				style="background-image: url('{{ storage_asset('collections/' . $collection['id'] . '.jpg') }}')"
 			></div>
 		</div>
 
 		<div class="title-box cenY rel txt-cen">
 
-			<h1 class="title txt-wht wrap txt-bold marb2">{{ $collection['name'] }}</h1>
+			<h1 class="title txt-wht wrap txt-bold marb2 leading-none">{{ $collection['name'] }}</h1>
 
 		</div>
 
@@ -234,13 +232,6 @@
 		<div class="maro-1 txt-0rem">
 
 			@foreach ($images as $index => $image)
-				@php
-					$imagePath = '/uploads/images/' . $image['id'] . '_m.webp';
-					$imageClientPath = file_exists(base_path() . '/public/legacy' . $imagePath)
-					    ? asset($imagePath)
-					    : asset('/uploads/images/' . $image['id'] . '_m.jpg');
-				@endphp
-
 				<!-- Image -->
 				<div
 					class="image-box pad1 ele4 ele3-1024w ele2-480w"
@@ -254,7 +245,7 @@
 					>
 
 						<img
-							src="{{ $imageClientPath }}"
+							src="{{ $image->path('medium') }}"
 							alt=""
 							loading="lazy"
 							class="img-cover"
@@ -262,7 +253,7 @@
 
 						<div class="bgr overlay"></div>
 
-						<x-icon-expand class="icon bgr-wht" />
+						<x-icon-expand class="icon text-white" />
 
 					</div>
 
@@ -274,23 +265,25 @@
 
 						<div class="lbox-bgr"></div>
 
-						<div class="lbox-close-icon"></div>
+						<div class="lbox-close-icon">
+							<x-icon-close class="" />
+						</div>
 
 						<img
-							src="{{ str_replace('_m', '', $imageClientPath) }}"
+							src="{{ $image->path() }}"
 							alt=""
 							class="lbox-img lbox-close clickable"
 						>
 
 						@if (!$loop->first)
 							<div class="arrow left cenY">
-								<x-icon-arrow-simple-right class="icon cen bgr-wht clickable" />
+								<x-icon-arrow-simple-right class="icon cen clickable text-white" />
 							</div>
 						@endif
 
 						@if (!$loop->last)
 							<div class="arrow right cenY">
-								<x-icon-arrow-simple-right class="icon cen bgr-wht clickable" />
+								<x-icon-arrow-simple-right class="icon cen clickable text-white" />
 							</div>
 						@endif
 
