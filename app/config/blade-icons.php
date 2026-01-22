@@ -14,24 +14,66 @@ return [
     */
 
 	'sets' => [
-		'rounded-filled-400' => [
-			'path' => 'resources/svg/icons/rounded/filled/400',
+		'icons' => [
+
+			/*
+		    |-----------------------------------------------------------------
+		    | Icons Path
+		    |-----------------------------------------------------------------
+		    |
+		    | Provide the relative path from your app root to your SVG icons
+		    | directory. Icons are loaded recursively so there's no need to
+		    | list every sub-directory.
+		    |
+		    | Relative to the disk root when the disk option is set.
+		    |
+		    */
+
+			'path' => 'resources/svg/icons',
+
+			/*
+		    |-----------------------------------------------------------------
+		    | Default Prefix
+		    |-----------------------------------------------------------------
+		    |
+		    | This config option allows you to define a default prefix for
+		    | your icons. The dash separator will be applied automatically
+		    | to every icon name. It's required and needs to be unique.
+		    |
+		    */
+
 			'prefix' => 'icon',
 		],
 
-		'rounded-filled-200' => [
-			'path' => 'resources/svg/icons/rounded/filled/200',
-			'prefix' => 'icon.200',
-		],
+		'svg' => [
 
-		'rounded-stroked-400' => [
-			'path' => 'resources/svg/icons/rounded/stroked/400',
-			'prefix' => 'icon.s',
-		],
+			/*
+		    |-----------------------------------------------------------------
+		    | Icons Path
+		    |-----------------------------------------------------------------
+		    |
+		    | Provide the relative path from your app root to your SVG icons
+		    | directory. Icons are loaded recursively so there's no need to
+		    | list every sub-directory.
+		    |
+		    | Relative to the disk root when the disk option is set.
+		    |
+		    */
 
-		'rounded-stroked-200' => [
-			'path' => 'resources/svg/icons/rounded/stroked/200',
-			'prefix' => 'icon.s.200',
+			'path' => 'resources/svg',
+
+			/*
+		    |-----------------------------------------------------------------
+		    | Default Prefix
+		    |-----------------------------------------------------------------
+		    |
+		    | This config option allows you to define a default prefix for
+		    | your icons. The dash separator will be applied automatically
+		    | to every icon name. It's required and needs to be unique.
+		    |
+		    */
+
+			'prefix' => 'svg',
 		],
 	],
 
@@ -45,7 +87,7 @@ return [
     |
     */
 
-	'class' => 'svg-icon',
+	'class' => '',
 
 	/*
     |--------------------------------------------------------------------------

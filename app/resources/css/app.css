@@ -1,8 +1,7 @@
+@import 'tailwindcss';
 @import './base.css';
-@import './custom.css';
+@import './theme.css';
 
-@layer reset, base, layout, components, utilities;
+@source "../views";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@custom-variant dark (&:where(.dark, .dark *));

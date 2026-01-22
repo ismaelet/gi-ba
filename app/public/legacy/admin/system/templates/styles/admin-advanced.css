@@ -163,7 +163,9 @@ textarea[name='info'] {
 	width: 2rem;
 	height: 1.7rem;
 	cursor: pointer;
-	transition: transform 0.3s, opacity 0.3s;
+	transition:
+		transform 0.3s,
+		opacity 0.3s;
 }
 
 .item-img-overlay .item-img-icon {
@@ -281,7 +283,7 @@ textarea[name='info'] {
 
 .add-variation-btn {
 	aspect-ratio: 1;
-	background-color: var(--c1);
+	background-color: var(--color-primary-400);
 	border: none;
 	border-radius: var(--border-radius);
 	cursor: pointer;
@@ -326,7 +328,7 @@ textarea[name='info'] {
 }
 
 .add-variant svg {
-	fill: var(--c1);
+	fill: var(--color-primary-400);
 }
 
 .delete-variation,

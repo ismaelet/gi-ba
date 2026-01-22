@@ -1,6 +1,6 @@
 /* Background */
 #bgr {
-	background: linear-gradient(to bottom, #EEAD47, #F4AB70);
+	background: linear-gradient(to bottom, #eead47, #f4ab70);
 }
 
 /* Containers */
@@ -20,10 +20,10 @@ main {
 }
 
 #title {
-	letter-spacing: .1rem;
-	margin-right: -.1rem;
+	letter-spacing: 0.1rem;
+	margin-right: -0.1rem;
 }
 
 .sbtn:hover {
-	border-color: var(--c2) !important;
+	border-color: var(--color-neutral-heading) !important;
 }

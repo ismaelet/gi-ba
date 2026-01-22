@@ -1,5 +1,7 @@
 /* Structure */
-main {background-color: #EBEAE8;}
+main {
+	background-color: #ebeae8;
+}
 
 /* Form */
 .form {
@@ -16,7 +18,9 @@ main {background-color: #EBEAE8;}
 	text-transform: uppercase;
 }
 
-.form-foot {border: none;}
+.form-foot {
+	border: none;
+}
 
 /* Inputs */
 .inp {
@@ -26,7 +30,7 @@ main {background-color: #EBEAE8;}
 
 .redir {
 	margin: 1rem 0;
-	color: rgba(200,242,255,.6);
+	color: rgba(200, 242, 255, 0.6);
 }
 
 .cbx-icon {
@@ -37,11 +41,17 @@ main {background-color: #EBEAE8;}
 	height: 1.2rem;
 }
 
-input:checked + .cbx-icon {border-color: var(--c2);}
+input:checked + .cbx-icon {
+	border-color: var(--color-neutral-heading);
+}
 
-.cbx-icon-dot {border-radius: 3px;}
+.cbx-icon-dot {
+	border-radius: 3px;
+}
 
 /* Responsive */
 @media (max-width: 1024px) {
-	#bgr {display: block;}
+	#bgr {
+		display: block;
+	}
 }
