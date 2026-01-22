@@ -18,11 +18,11 @@ class Action extends Model {
 	];
 
 	/**
-	 * Get the user that performed the action.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function user(): BelongsTo {
+     * Get the user that performed the action.
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo {
 		return $this->belongsTo(User::class);
 	}
 }

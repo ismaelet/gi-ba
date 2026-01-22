@@ -1,0 +1,72 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/*
+* Custom Filament Admin Theme Styles
+*/
+
+/* Status colors */
+@theme {
+	--color-status-1: oklch(0.75 0.2 270);
+	--color-status-2: oklch(0.75 0.2 220);
+	--color-status-3: oklch(0.75 0.2 180);
+	--color-status-4: oklch(0.75 0.2 150);
+	--color-status-5: oklch(0.75 0.2 110);
+	--color-status-6: oklch(0.75 0.2 70);
+	--color-status-7: oklch(0.75 0.2 40);
+	--color-status-8: oklch(0.75 0.2 20);
+	--color-status-99: oklch(0.75 0.2 340);
+	--color-status-all: var(--color-slate-400);
+	--color-billed-false: #d5abe2;
+	--color-billed-true: #e934e0;
+}
+
+.text-status-1 {
+	color: var(--color-status-1);
+}
+
+.text-status-2 {
+	color: var(--color-status-2);
+}
+
+.text-status-3 {
+	color: var(--color-status-3);
+}
+
+.text-status-4 {
+	color: var(--color-status-4);
+}
+
+.text-status-5 {
+	color: var(--color-status-5);
+}
+
+.text-status-6 {
+	color: var(--color-status-6);
+}
+
+.text-status-7 {
+	color: var(--color-status-7);
+}
+
+.text-status-8 {
+	color: var(--color-status-8);
+}
+
+.text-status-99 {
+	color: var(--color-status-99);
+}
+
+.text-status-all {
+	color: var(--color-status-all);
+}
+
+.text-billed-false {
+	color: var(--color-billed-false);
+}
+
+.text-billed-true {
+	color: var(--color-billed-true);
+}

@@ -49,22 +49,22 @@ class User extends Authenticatable implements FilamentUser {
 	}
 
 	/**
-	 * Get the username
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Casts\Attribute
-	 */
-	public function name(): Attribute {
+     * Get the username
+     *
+     * @return Attribute
+     */
+    public function name(): Attribute {
 		return Attribute::make(
 			get: fn(?string $value): string => $value ?: $this->email,
 		);
 	}
 
 	/**
-	 * Determine if the user has access to the admin panel.
-	 * 
-	 * @param \Filament\Panel $panel
-	 */
-	public function canAccessPanel(Panel $panel): bool {
+     * Determine if the user has access to the admin panel.
+     *
+     * @param Panel $panel
+     */
+    public function canAccessPanel(Panel $panel): bool {
 		return $this->admin;
 	}
 }

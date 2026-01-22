@@ -6,8 +6,9 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@tailwindcss/forms": "^0.5.10",
+        "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/typography": "^0.5.19",
+        "@tailwindcss/vite": "^4.1.18",
         "autoprefixer": "^10.4.21",
         "axios": "^1.13.2",
         "laravel-vite-plugin": "^2.0",
@@ -19,7 +20,6 @@
         "vite": "^7.2"
     },
     "dependencies": {
-        "@tailwindcss/vite": "^4.1.18",
         "ts-node": "^10.9.2"
     }
 }

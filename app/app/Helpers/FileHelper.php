@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -13,7 +14,7 @@ class FileHelper {
      */
     public static function storageAsset(string $file): string {
         if (!self::exists($file)) {
-            throw new \Exception('File not found: ' . $file);
+            throw new Exception('File not found: ' . $file);
         }
 
         $timestamp = self::lastModified($file);
