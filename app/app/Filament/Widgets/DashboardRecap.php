@@ -17,7 +17,7 @@ class DashboardRecap extends Widget {
      */
     public function statusData(): array {
         $recapData = [];
-        $statuses = config('ecommerce.order-statuses');
+        $statuses = config('ecommerce.order_statuses');
 
         foreach ($statuses as $statusId => $status) {
             $statusData = [];

@@ -44,7 +44,9 @@ class CustomersTable {
             ])
             ->recordActions([
                 EditAction::make(),
+
                 DeleteAction::make(),
+
                 Action::make('merge')
                     ->label('Unisci')
                     ->color('info')
@@ -58,13 +60,8 @@ class CustomersTable {
                             ->getSearchResultsUsing(
                                 fn(string $search) => Customer::query()
                                     ->whereKeyNot($record->id)
-                                    ->where(function ($query) use ($search) {
-                                        $query->whereRaw(
-                                            'LOWER(name) LIKE ?',
-                                            ['%' . mb_strtolower($search) . '%']
-                                        )
-                                            ->orWhere('id', $search);
-                                    })
+                                    ->where('name', 'like', '%' . $search . '%')
+                                    ->orWhere('id', $search)
                                     ->limit(50)
                                     ->pluck('name', 'id')
                                     ->all()

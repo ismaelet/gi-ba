@@ -24,7 +24,7 @@ class CustomerResource extends Resource {
     /**
      * Property: The navigation icon
      */
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::UserGroup;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     /**
      * Property: The label of a singular resource
@@ -35,6 +35,11 @@ class CustomerResource extends Resource {
      * Property: The label of a plural resource
      */
     protected static ?string $pluralLabel = 'Clienti';
+
+    /**
+     * Property: The navigation sort order
+     */
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema {
         return CustomerForm::configure($schema);

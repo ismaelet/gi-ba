@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'order-statuses' => [
+    'order_statuses' => [
         '1' => ['tag' => 'to-order', 'label' => 'Da ordinare', 'color' => '#92e9ff', 'icon' => 'added'],
         '2' => ['tag' => 'added', 'label' => 'Da fare', 'color' => '#92e9ff', 'icon' => 'added'],
         '3' => ['tag' => 'in-cart', 'label' => 'Nel carrello', 'color' => '#92e9ff', 'icon' => 'added'],

@@ -23,50 +23,117 @@
 	--color-billed-true: #e934e0;
 }
 
-.text-status-1 {
+.text-status-1,
+.fi-color-status-1 {
 	color: var(--color-status-1);
 }
 
-.text-status-2 {
+.text-status-2,
+.fi-color-status-2 {
 	color: var(--color-status-2);
 }
 
-.text-status-3 {
+.text-status-3,
+.fi-color-status-3 {
 	color: var(--color-status-3);
 }
 
-.text-status-4 {
+.text-status-4,
+.fi-color-status-4 {
 	color: var(--color-status-4);
 }
 
-.text-status-5 {
+.text-status-5,
+.fi-color-status-5 {
 	color: var(--color-status-5);
 }
 
-.text-status-6 {
+.text-status-6,
+.fi-color-status-6 {
 	color: var(--color-status-6);
 }
 
-.text-status-7 {
+.text-status-7,
+.fi-color-status-7 {
 	color: var(--color-status-7);
 }
 
-.text-status-8 {
+.text-status-8,
+.fi-color-status-8 {
 	color: var(--color-status-8);
 }
 
-.text-status-99 {
+.text-status-99,
+.fi-color-status-99 {
 	color: var(--color-status-99);
 }
 
-.text-status-all {
+.text-status-all,
+.fi-color-status-all {
 	color: var(--color-status-all);
 }
 
-.text-billed-false {
+.text-billed-false,
+.fi-color-billed-false {
 	color: var(--color-billed-false);
 }
 
-.text-billed-true {
+.text-billed-true,
+.fi-color-billed-true {
 	color: var(--color-billed-true);
+}
+
+.bg-status-1 {
+	background-color: var(--color-status-1);
+}
+
+.bg-status-2 {
+	background-color: var(--color-status-2);
+}
+
+.bg-status-3 {
+	background-color: var(--color-status-3);
+}
+
+.bg-status-4 {
+	background-color: var(--color-status-4);
+}
+
+.bg-status-5 {
+	background-color: var(--color-status-5);
+}
+
+.bg-status-6 {
+	background-color: var(--color-status-6);
+}
+
+.bg-status-7 {
+	background-color: var(--color-status-7);
+}
+
+.bg-status-8 {
+	background-color: var(--color-status-8);
+}
+
+.bg-status-99 {
+	background-color: var(--color-status-99);
+}
+
+.bg-status-all {
+	background-color: var(--color-status-all);
+}
+
+.bg-billed-false {
+	background-color: var(--color-billed-false);
+}
+
+.bg-billed-true {
+	background-color: var(--color-billed-true);
+}
+
+/*
+* Custom Filament Select Input Styles
+*/
+.fi-select-input option {
+	color: var(--color-white);
 }

@@ -24,7 +24,7 @@ class ProductResource extends Resource {
     /**
      * Property: The navigation icon
      */
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Tag;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     /**
      * Property: The label of a singular resource
@@ -35,6 +35,11 @@ class ProductResource extends Resource {
      * Property: The label of a plural resource
      */
     protected static ?string $pluralLabel = 'Prodotti';
+
+    /**
+     * Property: The navigation sort order
+     */
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema {
         return ProductForm::configure($schema);

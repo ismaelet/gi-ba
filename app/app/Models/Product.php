@@ -18,7 +18,14 @@ class Product extends Model {
     /**
      * Relationship: The orders items for the product
      */
-    function order_items(): HasMany {
+    public function order_items(): HasMany {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get the ID code of the product
+     */
+    public function idCode() {
+        return '#' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
     }
 }
