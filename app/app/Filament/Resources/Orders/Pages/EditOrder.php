@@ -24,6 +24,10 @@ class EditOrder extends EditRecord {
     }
 
     protected function afterSave(): void {
+        $this->record->order_items->each(function ($item) {
+            $item->recalculateUnitPrices();
+        });
+
         $this->record->recalculateTotals();
 
         $this->redirect(

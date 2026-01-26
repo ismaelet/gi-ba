@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use App\Models\OrderItem;
+use Dom\Text;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -83,15 +85,13 @@ class OrderForm {
                         TextInput::make('down_payment')
                             ->label('Acconto')
                             ->placeholder('0')
-                            ->numeric()
-                            ->suffix('€'),
+                            ->numeric(),
                         Checkbox::make('down_payment_with_vat')
                             ->label('L\'acconto è comprensivo di IVA'),
                         TextInput::make('fixed_discount')
                             ->label('Sconto fisso')
                             ->placeholder('0')
-                            ->numeric()
-                            ->suffix('€'),
+                            ->numeric(),
                         Checkbox::make('discount_with_vat')
                             ->label('Lo sconto fisso è comprensivo di IVA'),
                         TextInput::make('percentage_discount')
@@ -109,19 +109,26 @@ class OrderForm {
                         self::updateOrderTotals($get, $set);
                     })
                     ->schema([
+                        TextInput::make('real_unit_price_net')
+                            ->hidden()
+                            ->dehydrated(false)
+                            ->afterStateHydrated(function (Set $set, ?OrderItem $record) {
+                                $set('real_unit_price_net', $record?->unit_price_net);
+                            }),
+
                         Select::make('product_id')
                             ->label('Prodotto')
                             ->relationship('product', 'name')
                             ->searchable()
                             ->required()
-                            ->columnSpan(4),
+                            ->columnSpan(6),
                         Textarea::make('info')
-                            ->label('Dettagli aggiuntivi')
+                            ->label('Dettagli')
                             ->placeholder('Informazioni aggiuntive sul prodotto')
                             ->autosize()
-                            ->columnSpan(4),
+                            ->columnSpan(6),
                         TextInput::make('quantity')
-                            ->label('Quantità')
+                            ->label('Qty')
                             ->numeric()
                             ->default(1)
                             ->live(debounce: 500)
@@ -131,9 +138,10 @@ class OrderForm {
                                     set: $set,
                                     fieldName: $component->getName()
                                 );
-                            }),
+                            })
+                            ->columnSpan(3),
                         Select::make('status')
-                            ->label('Stato articolo')
+                            ->label('Stato')
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
                                     ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
@@ -143,14 +151,15 @@ class OrderForm {
                                 'class' => 'text-status-' . $get('status'),
                             ])
                             ->required()
-                            ->columnSpan(3),
+                            ->columnSpan(4),
                         TextInput::make('unit_price_net')
-                            ->label('Pr. unitario netto')
-                            ->inputMode('decimal')
-                            ->default('0.00')
-                            ->suffix('€')
-                            ->columnSpan(2)
+                            ->label('Pr. netto')
+                            ->numeric()
+                            ->columnSpan(3)
                             ->live(debounce: 500)
+                            ->formatStateUsing(
+                                fn($state) => self::formatNumber($state)
+                            )
                             ->afterStateUpdated(function (TextInput $component, callable $set, callable $get) {
                                 self::updatePrices(
                                     get: $get,
@@ -159,12 +168,14 @@ class OrderForm {
                                 );
                             }),
                         TextInput::make('unit_price_gross')
-                            ->label('Pr. unitario ivato')
-                            ->inputMode('decimal')
-                            ->default('0.00')
-                            ->suffix('€')
-                            ->columnSpan(2)
+                            ->label('Pr. ivato')
+                            ->default(0)
+                            ->numeric()
+                            ->columnSpan(3)
                             ->live(debounce: 500)
+                            ->formatStateUsing(
+                                fn($state) => self::formatNumber($state)
+                            )
                             ->afterStateUpdated(function (TextInput $component, callable $set, callable $get) {
                                 self::updatePrices(
                                     get: $get,
@@ -185,11 +196,9 @@ class OrderForm {
                             })
                             ->columnSpan(2),
                         TextInput::make('total_price_gross')
-                            ->label('Prezzo totale')
-                            ->inputMode('decimal')
-                            ->default('0.00')
-                            ->suffix('€')
-                            ->columnSpan(2)
+                            ->label('Totale')
+                            ->default(0)
+                            ->columnSpan(3)
                             ->live(debounce: 500)
                             ->afterStateUpdated(function (TextInput $component, callable $set, callable $get) {
                                 self::updatePrices(
@@ -199,7 +208,7 @@ class OrderForm {
                                 );
                             }),
                     ])
-                    ->columns(20)
+                    ->columns(30)
                     ->columnSpanFull()
                     ->defaultItems(1)
                     ->required(),
@@ -208,65 +217,79 @@ class OrderForm {
                     ->schema([
                         TextInput::make('price_net')
                             ->label('Imponibile')
-                            ->placeholder('0')
-                            ->numeric()
-                            ->readOnly()
-                            ->suffix('€'),
+                            ->inputMode('decimal')
+                            ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->readOnly(),
                         TextInput::make('vat')
                             ->label('IVA')
-                            ->placeholder('0')
-                            ->numeric()
-                            ->readOnly()
-                            ->suffix('€'),
+                            ->inputMode('decimal')
+                            ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->readOnly(),
                         TextInput::make('down_payment')
                             ->label('Acconto')
-                            ->placeholder('0')
-                            ->numeric()
-                            ->readOnly()
-                            ->suffix('€'),
+                            ->inputMode('decimal')
+                            ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->readOnly(),
                         TextInput::make('total_discount')
                             ->label('Sconto')
-                            ->placeholder('0')
-                            ->numeric()
-                            ->readOnly()
-                            ->suffix('€'),
+                            ->inputMode('decimal')
+                            ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->readOnly(),
                         TextInput::make('price_gross')
                             ->label('Totale ordine')
-                            ->placeholder('0')
-                            ->numeric()
-                            ->readOnly()
-                            ->suffix('€'),
+                            ->inputMode('decimal')
+                            ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->readOnly(),
                     ])->columns(5)
                     ->columnSpanFull(),
             ]);
     }
 
+    /**
+     * Update the order item prices based on the changed field
+     */
     private static function updatePrices(callable $get, callable $set, string $fieldName): void {
         $quantity = max(1, (int) $get('quantity'));
         $hasVat = $get('has_vat');
 
-        $unitPriceNet = match ($fieldName) {
-            'unit_price_net' => (float) $get('unit_price_net'),
-            'unit_price_gross' => $hasVat
-                ? (float) $get('unit_price_gross') / (1 + self::VAT)
-                : (float) $get('unit_price_gross'),
-            'total_price_gross' => $hasVat
-                ? (float) $get('total_price_gross') / (1 + self::VAT) / $quantity
-                : (float) $get('total_price_gross') / $quantity,
-            default => (float) $get('unit_price_net'),
-        };
+        if ($fieldName === 'unit_price_net') {
+            // Calculate prices based on unit net price
+            $unitPriceNet = (float) $get('unit_price_net');
+            $unitPriceGross = $hasVat ? $unitPriceNet * (1 + self::VAT) : $unitPriceNet;
+            $totalGross = $unitPriceGross * $quantity;
 
-        $unitPriceGross = $hasVat ? $unitPriceNet * (1 + self::VAT) : $unitPriceNet;
-        $totalGross = $unitPriceGross * $quantity;
+            $set('real_unit_price_net', $unitPriceNet);
+        } else if ($fieldName === 'unit_price_gross') {
+            // Calculate prices based on unit gross price
+            $unitPriceGross = (float) $get('unit_price_gross');
+            $unitPriceNet = $hasVat ? $unitPriceGross / (1 + self::VAT) : $unitPriceGross;
+            $totalGross = $unitPriceGross * $quantity;
+
+            $set('real_unit_price_net', $unitPriceNet);
+        } else if ($fieldName === 'total_price_gross') {
+            // Calculate prices based on total gross price
+            $totalGross = (float) $get('total_price_gross');
+            $unitPriceGross = $totalGross / $quantity;
+            $unitPriceNet = $hasVat ? $unitPriceGross / (1 + self::VAT) : $unitPriceGross;
+
+            $set('real_unit_price_net', $unitPriceNet);
+        } else if ($fieldName === 'quantity' || $fieldName === 'has_vat') {
+            $unitPriceNet = (float) $get('real_unit_price_net');
+            $unitPriceGross = $hasVat ? $unitPriceNet * (1 + self::VAT) : $unitPriceNet;
+            $totalGross = $unitPriceGross * $quantity;
+        }
 
         if ($fieldName !== 'unit_price_net')
-            $set('unit_price_net', self::format($unitPriceNet));
+            $set('unit_price_net', self::formatNumber($unitPriceNet));
         if ($fieldName !== 'unit_price_gross')
-            $set('unit_price_gross', self::format($unitPriceGross));
+            $set('unit_price_gross', self::formatNumber($unitPriceGross));
         if ($fieldName !== 'total_price_gross')
-            $set('total_price_gross', self::format($totalGross));
+            $set('total_price_gross', self::formatNumber($totalGross));
     }
 
+    /**
+     * Update the order totals based on the order items
+     */
     private static function updateOrderTotals(Get $get, Set $set): void {
         $items = $get('order_items') ?? [];
 
@@ -276,20 +299,16 @@ class OrderForm {
         foreach ($items as $item) {
             $qty = max(1, (int) ($item['quantity'] ?? 1));
 
-            $unitNet = self::format($item['unit_price_net'] ?? 0);
-            $unitGross = self::format($item['unit_price_gross'] ?? 0);
+            $unitNet = $item['real_unit_price_net'] ?? 0;
+            $unitGross = $item['has_vat'] ? $unitNet * (1 + self::VAT) : $unitNet;
 
             $sumNet += $unitNet * $qty;
             $sumGross += $unitGross * $qty;
         }
 
-        $set('price_net', self::format($sumNet));
-        $set('price_gross', self::format($sumGross));
-        $set('vat', self::format($sumGross - $sumNet));
-    }
-
-    private static function format(float $value): string {
-        return number_format($value, 2, '.', '');
+        $set('price_net', self::formatNumber($sumNet));
+        $set('price_gross', self::formatNumber($sumGross));
+        $set('vat', self::formatNumber($sumGross - $sumNet));
     }
 
     private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
@@ -302,5 +321,24 @@ class OrderForm {
         }, $items);
 
         $set('order_items', $items);
+    }
+
+    private static function formatNumber($number): string {
+        return number_format((float) $number, 2, '.', '');
+    }
+
+    private static function extraAttributesForPrices(): array {
+        return [
+            'type' => 'text',
+            'inputmode' => 'decimal',
+            'oninput' => "let v = this.value
+                    .replace(/,/g, '.')
+                    .replace(/[^0-9.]/g, '')
+                    .replace(/(\..*)\./g, '$1');
+                const parts = v.split('.');
+                if (parts.length === 2) parts[1] = parts[1].slice(0, 2);
+                this.value = parts.join('.');
+            ",
+        ];
     }
 }

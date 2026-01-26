@@ -69,6 +69,33 @@ class OrderItem extends Model {
     }
 
     /**
+     * Get the unit net price of the order item from total price and quantity
+     */
+    public function calcUnitNetPrice(): float {
+        if ($this->has_vat) {
+            return $this->total_price_gross / (1 + self::VAT) / $this->quantity;
+        } else {
+            return $this->total_price_gross / $this->quantity;
+        }
+    }
+
+    /**
+     * Get the unit gross price of the order item from total price and quantity
+     */
+    public function calcUnitGrossPrice(): float {
+        return $this->total_price_gross / $this->quantity;
+    }
+
+    /**
+     * Recalculate and update the unit prices based on total price and quantity
+     */
+    public function recalculateUnitPrices(): void {
+        $this->unit_price_net = $this->calcUnitNetPrice();
+        $this->unit_price_gross = $this->calcUnitGrossPrice();
+        $this->save();
+    }
+
+    /**
      * Get the status name of the order
      */
     public function statusName(): string {

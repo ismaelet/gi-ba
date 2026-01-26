@@ -118,6 +118,7 @@ class Order extends Model {
     public function recalculateTotals(): void {
         $this->quantity = $this->calcQuantity();
         $this->price_net = $this->calcPriceNet();
+
         $this->price_gross = $this->calcPriceGross();
         $this->vat = $this->calcVat();
         $this->total_discount = $this->calcTotalDiscount();
