@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Tables\Columns\OrderItemsColumn;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -22,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\URL;
 use Livewire\Component;
 
 class OrdersTable {
@@ -123,7 +125,11 @@ class OrdersTable {
             ->deferFilters(false)
             ->recordActions([
                 ActionGroup::make([
-                    EditAction::make(),
+                    EditAction::make()
+                        ->url(fn($record) => OrderResource::getUrl('edit', [
+                            'record' => $record,
+                            'return' => URL::full(),
+                        ])),
 
                     Action::make('download-quote')
                         ->label('Scarica preventivo')

@@ -226,6 +226,7 @@ class OrderForm {
                             ->columnSpan(2),
                         TextInput::make('total_price_gross')
                             ->label('Totale')
+                            ->numeric()
                             ->default(0)
                             ->columnSpan(3)
                             ->live(debounce: 500)

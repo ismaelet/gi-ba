@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 class EditOrder extends EditRecord {
     protected static string $resource = OrderResource::class;
 
+    public ?string $returnUrl = null;
+
     protected function getHeaderActions(): array {
         return [
             DeleteAction::make(),
@@ -22,6 +24,12 @@ class EditOrder extends EditRecord {
                 ->requiresConfirmation()
                 ->action(fn() => $this->duplicateRecord()),
         ];
+    }
+
+    public function mount($record): void {
+        parent::mount($record);
+
+        $this->returnUrl = request()->query('return');
     }
 
     protected function afterSave(): void {
@@ -47,7 +55,7 @@ class EditOrder extends EditRecord {
 
         // Redirect to the list page
         $this->redirect(
-            static::getResource()::getUrl('index')
+            $this->returnUrl ?? static::getResource()::getUrl('index')
         );
     }
 
