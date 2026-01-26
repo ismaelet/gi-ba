@@ -25,6 +25,10 @@ class EditOrder extends EditRecord {
 
     protected function afterSave(): void {
         $this->record->recalculateTotals();
+
+        $this->redirect(
+            static::getResource()::getUrl('index')
+        );
     }
 
     protected function duplicateRecord(): void {
