@@ -30,8 +30,7 @@ class OrderForm {
                             ->required(),
                         TextInput::make('phone')
                             ->label('Numero di telefono')
-                            ->placeholder('Numero di telefono')
-                            ->tel(),
+                            ->placeholder('Numero di telefono'),
                         Textarea::make('info')
                             ->label('Informazioni aggiuntive')
                             ->placeholder('Informazioni aggiuntive')
