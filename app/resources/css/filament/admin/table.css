@@ -1,0 +1,116 @@
+.fi-ta {
+	/*
+* Filters
+*/
+	.fi-select-input {
+		.fi-badge[data-value='1'] {
+			--dark-text: var(--color-status-1);
+			--text: var(--color-status-1);
+			--color-300: var(--color-status-1);
+			--color-400: var(--color-status-1);
+		}
+
+		.fi-badge[data-value='2'] {
+			--dark-text: var(--color-status-2);
+			--text: var(--color-status-2);
+			--color-300: var(--color-status-2);
+			--color-400: var(--color-status-2);
+		}
+
+		.fi-badge[data-value='3'] {
+			--dark-text: var(--color-status-3);
+			--text: var(--color-status-3);
+			--color-300: var(--color-status-3);
+			--color-400: var(--color-status-3);
+		}
+
+		.fi-badge[data-value='4'] {
+			--dark-text: var(--color-status-4);
+			--text: var(--color-status-4);
+			--color-300: var(--color-status-4);
+			--color-400: var(--color-status-4);
+		}
+
+		.fi-badge[data-value='5'] {
+			--dark-text: var(--color-status-5);
+			--text: var(--color-status-5);
+			--color-300: var(--color-status-5);
+			--color-400: var(--color-status-5);
+		}
+
+		.fi-badge[data-value='6'] {
+			--dark-text: var(--color-status-6);
+			--text: var(--color-status-6);
+			--color-300: var(--color-status-6);
+			--color-400: var(--color-status-6);
+		}
+
+		.fi-badge[data-value='7'] {
+			--dark-text: var(--color-status-7);
+			--text: var(--color-status-7);
+			--color-300: var(--color-status-7);
+			--color-400: var(--color-status-7);
+		}
+
+		.fi-badge[data-value='8'] {
+			--dark-text: var(--color-status-8);
+			--text: var(--color-status-8);
+			--color-300: var(--color-status-8);
+			--color-400: var(--color-status-8);
+		}
+
+		.fi-badge[data-value='9'] {
+			--dark-text: var(--color-status-9);
+			--text: var(--color-status-9);
+			--color-300: var(--color-status-9);
+			--color-400: var(--color-status-9);
+		}
+
+		.fi-badge[data-value='99'] {
+			--dark-text: var(--color-status-99);
+			--text: var(--color-status-99);
+			--color-300: var(--color-status-99);
+			--color-400: var(--color-status-99);
+		}
+
+		.fi-select-input-option[data-value='1'] {
+			color: var(--color-status-1);
+		}
+
+		.fi-select-input-option[data-value='2'] {
+			color: var(--color-status-2);
+		}
+
+		.fi-select-input-option[data-value='3'] {
+			color: var(--color-status-3);
+		}
+
+		.fi-select-input-option[data-value='4'] {
+			color: var(--color-status-4);
+		}
+
+		.fi-select-input-option[data-value='5'] {
+			color: var(--color-status-5);
+		}
+
+		.fi-select-input-option[data-value='6'] {
+			color: var(--color-status-6);
+		}
+
+		.fi-select-input-option[data-value='7'] {
+			color: var(--color-status-7);
+		}
+
+		.fi-select-input-option[data-value='8'] {
+			color: var(--color-status-8);
+		}
+
+		.fi-select-input-option[data-value='9'] {
+			color: var(--color-status-9);
+		}
+
+		.fi-select-input-option[data-value='99'] {
+			color: var(--color-status-99);
+		}
+	}
+}

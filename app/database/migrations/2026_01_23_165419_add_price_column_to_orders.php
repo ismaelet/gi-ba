@@ -18,7 +18,7 @@ return new class extends Migration {
         $orders = Order::with('order_items')->get();
 
         foreach ($orders as $order) {
-            $order->price = $order->calcPrice();
+            $order->price = $order->calcPriceGross();
             $order->quantity = $order->calcQuantity();
             $order->save();
         }

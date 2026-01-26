@@ -38,7 +38,7 @@ services:
       MAIL_USERNAME: no-reply@giebapromotion.com
       MAIL_PASSWORD: "REDACTED_SMTP_PASSWORD"
       MAIL_FROM_ADDRESS: no-reply@giebapromotion.com
-      MAIL_FROM_NAME: Gi&Ba
+      MAIL_FROM_NAME: GI&BA
 
       SENTRY_LARAVEL_DSN: null
       SENTRY_TRACES_SAMPLE_RATE: 0

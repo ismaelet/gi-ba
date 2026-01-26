@@ -115,7 +115,7 @@ class Order extends Model {
     /**
      * Recalculate and update the order's total quantity and price
      */
-    public function recalculateTotals() {
+    public function recalculateTotals(): void {
         $this->quantity = $this->calcQuantity();
         $this->price_net = $this->calcPriceNet();
         $this->price_gross = $this->calcPriceGross();

@@ -7,35 +7,33 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\Actions\Pages\ListActions;
-use App\Filament\Resources\ActionResource\Pages;
-use App\Filament\Resources\ActionResource\RelationManagers;
 use App\Models\Action;
-use Filament\Forms;
+use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ActionResource extends Resource {
 
     /**
-     * The label of a singular resource.
-     * 
-     * @var string
+     * Property: The model the resource corresponds to
+     */
+    protected static ?string $model = Action::class;
+
+    /**
+     * The label of a singular resource
      */
     protected static ?string $label = 'Azione';
 
     /**
-     * The label of a plural resource.
-     * 
-     * @var string
+     * The label of a plural resource
      */
     protected static ?string $pluralLabel = 'Storico';
 
-    protected static ?string $model = Action::class;
-
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clock';
+    /**
+     * Property: The navigation icon
+     */
+    protected static BackedEnum|string|null $navigationIcon = Heroicon::OutlinedClock;
 
     /**
      * Property: The navigation sort order

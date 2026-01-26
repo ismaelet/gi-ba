@@ -23,7 +23,7 @@ class DashboardRecap extends Widget {
             $statusData = [];
 
             $statusData['title'] = $status['label'];
-            $statusData['value'] = OrderItem::where('status', $statusId)->sum('price');
+            $statusData['value'] = OrderItem::where('status', $statusId)->sum('total_price_gross');
             $statusData['slug'] = $status['tag'] ?? Str::slug($status['label']);
 
             $recapData[$statusId] = $statusData;
@@ -39,7 +39,7 @@ class DashboardRecap extends Widget {
         return OrderItem::whereHas('order', function ($query) {
             $query->where('billed', 1)
                 ->where('status', 6);
-        })->sum('price');
+        })->sum('total_price_gross');
     }
 
     /**
@@ -49,6 +49,6 @@ class DashboardRecap extends Widget {
         return OrderItem::whereHas('order', function ($query) {
             $query->where('billed', 0)
                 ->where('status', 6);
-        })->sum('price');
+        })->sum('total_price_gross');
     }
 }
