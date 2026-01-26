@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrderResource;
+use App\Models\Customer;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -24,12 +25,27 @@ class EditOrder extends EditRecord {
     }
 
     protected function afterSave(): void {
+        // Update related customer data
+        $state = $this->form->getState();
+
+        $customerId = $state['customer_id'] ?? null;
+
+        if ($customerId) {
+            Customer::find($customerId)->update([
+                'phone' => data_get($state, 'customer_data.phone'),
+                'info'  => data_get($state, 'customer_data.info'),
+            ]);
+        }
+
+        // Recalculate unit prices
         $this->record->order_items->each(function ($item) {
             $item->recalculateUnitPrices();
         });
 
+        // Recalculate totals
         $this->record->recalculateTotals();
 
+        // Redirect to the list page
         $this->redirect(
             static::getResource()::getUrl('index')
         );

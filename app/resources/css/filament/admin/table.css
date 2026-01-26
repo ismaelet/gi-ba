@@ -1,4 +1,9 @@
 .fi-ta {
+	/* Header actions */
+	.fi-ta-actions {
+		margin-inline-start: unset;
+	}
+
 	/* Filters */
 	.fi-select-input {
 		.fi-badge[data-value='1'] {

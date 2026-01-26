@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use App\Models\Customer;
+use App\Models\Order;
 use App\Models\OrderItem;
 use Dom\Text;
 use Filament\Forms\Components\Checkbox;
@@ -13,6 +15,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -24,20 +27,38 @@ class OrderForm {
         return $schema
             ->components([
                 Fieldset::make('Dati del cliente')
-                    ->relationship('customer')
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nome completo')
-                            ->placeholder('Nome completo')
-                            ->required(),
-                        TextInput::make('phone')
-                            ->label('Numero di telefono')
-                            ->placeholder('Numero di telefono'),
-                        Textarea::make('info')
-                            ->label('Informazioni aggiuntive')
-                            ->placeholder('Informazioni aggiuntive')
-                            ->columnSpanFull(),
+                        Select::make('customer_id')
+                            ->label('Cliente')
+                            ->relationship('customer', 'name')
+                            ->searchable(['name', 'phone'])
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                $customer = filled($state) ? Customer::find($state) : null;
+
+                                $set('customer_data', [
+                                    'phone' => $customer?->phone ?? '',
+                                    'info'  => $customer?->info  ?? '',
+                                ]);
+                            }),
+
+                        Group::make()
+                            ->statePath('customer_data')
+                            ->visible(fn(Get $get) => filled($get('customer_id')))
+                            ->schema([
+                                TextInput::make('phone')
+                                    ->label('Numero di telefono')
+                                    ->placeholder('Numero di telefono')
+                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('phone', $record?->customer?->phone ?? '')),
+                                Textarea::make('info')
+                                    ->label('Dettagli cliente')
+                                    ->placeholder('Dettagli cliente')
+                                    ->autosize()
+                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('info', $record?->customer?->info ?? '')),
+                            ]),
                     ])
+                    ->columns(1)
                     ->columnSpanFull(),
 
                 Fieldset::make('Dati dell\'ordine')
@@ -46,10 +67,13 @@ class OrderForm {
                             ->label('Numero dell\'ordine')
                             ->placeholder('Numero dell\'ordine')
                             ->readOnly()
+                            ->dehydrated(false)
+                            ->visible(fn(?Order $record) => filled($record))
                             ->copyable(),
                         DatePicker::make('created_at')
                             ->label('Data')
-                            ->readOnly(),
+                            ->readOnly()
+                            ->columnSpan(fn(?Order $record) => filled($record) ? 1 : 2),
                         Select::make('status')
                             ->label('Stato')
                             ->options(
@@ -84,21 +108,26 @@ class OrderForm {
                     ->schema([
                         TextInput::make('down_payment')
                             ->label('Acconto')
-                            ->placeholder('0')
-                            ->numeric(),
+                            ->suffix('€')
+                            ->default('0.00')
+                            ->step(0.01)
+                            ->formatStateUsing(fn($state) => self::formatNumber($state)),
                         Checkbox::make('down_payment_with_vat')
                             ->label('L\'acconto è comprensivo di IVA'),
                         TextInput::make('fixed_discount')
                             ->label('Sconto fisso')
-                            ->placeholder('0')
-                            ->numeric(),
+                            ->suffix('€')
+                            ->default('0.00')
+                            ->step(0.01)
+                            ->formatStateUsing(fn($state) => self::formatNumber($state)),
                         Checkbox::make('discount_with_vat')
                             ->label('Lo sconto fisso è comprensivo di IVA'),
                         TextInput::make('percentage_discount')
                             ->label('Sconto percentuale')
-                            ->placeholder('0')
+                            ->suffix('%')
                             ->numeric()
-                            ->suffix('%'),
+                            ->step(0.01)
+                            ->default('0'),
                     ])->columns(1),
 
                 Repeater::make('order_items')
@@ -219,25 +248,30 @@ class OrderForm {
                             ->label('Imponibile')
                             ->inputMode('decimal')
                             ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->dehydrated(false)
                             ->readOnly(),
                         TextInput::make('vat')
                             ->label('IVA')
                             ->inputMode('decimal')
                             ->formatStateUsing(fn($state) => self::formatNumber($state))
+                            ->dehydrated(false)
                             ->readOnly(),
                         TextInput::make('down_payment')
                             ->label('Acconto')
                             ->inputMode('decimal')
+                            ->dehydrated(false)
                             ->formatStateUsing(fn($state) => self::formatNumber($state))
                             ->readOnly(),
                         TextInput::make('total_discount')
                             ->label('Sconto')
                             ->inputMode('decimal')
+                            ->dehydrated(false)
                             ->formatStateUsing(fn($state) => self::formatNumber($state))
                             ->readOnly(),
                         TextInput::make('price_gross')
                             ->label('Totale ordine')
                             ->inputMode('decimal')
+                            ->dehydrated(false)
                             ->formatStateUsing(fn($state) => self::formatNumber($state))
                             ->readOnly(),
                     ])->columns(5)

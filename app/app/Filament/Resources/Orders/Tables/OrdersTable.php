@@ -21,6 +21,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class OrdersTable {
     public static function configure(Table $table): Table {
@@ -184,7 +186,54 @@ class OrdersTable {
                         }),
                 ]),
             ])
+            ->headerActions([
+                Action::make('selectAllStatuses')
+                    ->label('Seleziona tutti gli stati')
+                    ->icon(Heroicon::OutlinedCheck)
+                    ->color('primary')
+                    ->outlined()
+                    ->visible(function (Component $livewire): bool {
+                        $filters = $livewire->getTableFiltersForm()?->getState() ?? [];
+
+                        $selected = data_get($filters, 'status.values', []);
+
+                        $allStatuses = array_keys(config('ecommerce.order_statuses'));
+
+                        sort($selected);
+                        sort($allStatuses);
+
+                        return $selected !== $allStatuses;
+                    })
+                    ->action(function (Component $livewire): void {
+                        $form = $livewire->getTableFiltersForm();
+
+                        $filters = $form?->getState() ?? [];
+                        $all = array_map('strval', array_keys(config('ecommerce.order_statuses')));
+
+                        // Push the state back into the filters form
+                        $filters['status']['values'] = $all;
+                        $form?->fill($filters);
+
+                        // Now apply (Filament will read from the form state)
+                    }),
+                Action::make('clearStatusFilter')
+                    ->label('Deseleziona tutti gli stati')
+                    ->icon(Heroicon::XMark)
+                    ->color('danger')
+                    ->outlined()
+                    ->visible(function (Component $livewire): bool {
+                        $filters = $livewire->getTableFiltersForm()?->getState() ?? [];
+
+                        $values = data_get($filters, 'status.values', []);
+
+                        return ! empty($values);
+                    })
+                    ->action(function (Component $livewire): void {
+                        $livewire->removeTableFilter('status');
+                    }),
+            ])
             ->toolbarActions([
+
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
