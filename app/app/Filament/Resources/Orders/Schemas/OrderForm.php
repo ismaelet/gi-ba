@@ -106,27 +106,19 @@ class OrderForm {
                         self::updateOrderTotals($get, $set);
                     })
                     ->schema([
-                        Grid::make()
-                            ->schema([
-                                Select::make('product_id')
-                                    ->label('Prodotto')
-                                    ->relationship('product', 'name')
-                                    ->searchable()
-                                    ->required(),
-                                Checkbox::make('has_vat')
-                                    ->label('Il prodotto è comprensivo di IVA')
-                                    ->default(true)
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function (Checkbox $component, callable $set, callable $get) {
-                                        self::updatePrices(
-                                            get: $get,
-                                            set: $set,
-                                            fieldName: $component->getName()
-                                        );
-                                    }),
-                            ])->columns(1)
+                        Select::make('product_id')
+                            ->label('Prodotto')
+                            ->relationship('product', 'name')
+                            ->searchable()
+                            ->required()
+                            ->columnSpan(4),
+                        Textarea::make('info')
+                            ->label('Dettagli aggiuntivi')
+                            ->placeholder('Informazioni aggiuntive sul prodotto')
+                            ->autosize()
                             ->columnSpan(4),
                         TextInput::make('quantity')
+                            ->label('Quantità')
                             ->numeric()
                             ->default(1)
                             ->live(debounce: 500)
@@ -137,8 +129,20 @@ class OrderForm {
                                     fieldName: $component->getName()
                                 );
                             }),
+                        Select::make('status')
+                            ->label('Stato articolo')
+                            ->options(
+                                collect(config('ecommerce.order_statuses'))
+                                    ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
+                                    ->toArray()
+                            )
+                            ->extraInputAttributes(fn(callable $get) => [
+                                'class' => 'text-status-' . $get('status'),
+                            ])
+                            ->required()
+                            ->columnSpan(3),
                         TextInput::make('unit_price_net')
-                            ->label('Prezzo unitario netto')
+                            ->label('Pr. unitario netto')
                             ->inputMode('decimal')
                             ->default('0.00')
                             ->suffix('€')
@@ -152,7 +156,7 @@ class OrderForm {
                                 );
                             }),
                         TextInput::make('unit_price_gross')
-                            ->label('Prezzo unitario ivato')
+                            ->label('Pr. unitario ivato')
                             ->inputMode('decimal')
                             ->default('0.00')
                             ->suffix('€')
@@ -165,6 +169,18 @@ class OrderForm {
                                     fieldName: $component->getName()
                                 );
                             }),
+                        Checkbox::make('has_vat')
+                            ->label('ha IVA')
+                            ->default(true)
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(function (Checkbox $component, callable $set, callable $get) {
+                                self::updatePrices(
+                                    get: $get,
+                                    set: $set,
+                                    fieldName: $component->getName()
+                                );
+                            })
+                            ->columnSpan(2),
                         TextInput::make('total_price_gross')
                             ->label('Prezzo totale')
                             ->inputMode('decimal')
@@ -179,12 +195,8 @@ class OrderForm {
                                     fieldName: $component->getName()
                                 );
                             }),
-                        Textarea::make('info')
-                            ->label('Dettagli aggiuntivi')
-                            ->placeholder('Informazioni aggiuntive sul prodotto')
-                            ->columnSpanFull(),
                     ])
-                    ->columns(11)
+                    ->columns(20)
                     ->columnSpanFull()
                     ->defaultItems(1)
                     ->required(),

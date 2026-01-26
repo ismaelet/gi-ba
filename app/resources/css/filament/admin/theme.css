@@ -1,5 +1,6 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 @import './table.css';
+@import './form.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -140,11 +141,4 @@
 
 .bg-billed-true {
 	background-color: var(--color-billed-true);
-}
-
-/*
-* Custom Filament Select Input Styles
-*/
-.fi-select-input option {
-	color: var(--color-white);
 }
