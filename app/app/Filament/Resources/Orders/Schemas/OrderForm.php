@@ -55,10 +55,13 @@ class OrderForm {
                                     ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
                                     ->toArray()
                             )
-                            ->live(debounce: 500)
                             ->extraInputAttributes(fn(callable $get) => [
                                 'class' => 'text-status-' . $get('status'),
                             ])
+                            ->live()
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                self::updateOrderItemsStatuses($state, $get, $set);
+                            })
                             ->required()
                             ->columnSpanFull(),
                         Checkbox::make('billed')
@@ -287,5 +290,17 @@ class OrderForm {
 
     private static function format(float $value): string {
         return number_format($value, 2, '.', '');
+    }
+
+    private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
+        $items = $get('order_items') ?? [];
+
+        // Update every repeater item's status
+        $items = array_map(function (array $item) use ($state) {
+            $item['status'] = $state;
+            return $item;
+        }, $items);
+
+        $set('order_items', $items);
     }
 }
