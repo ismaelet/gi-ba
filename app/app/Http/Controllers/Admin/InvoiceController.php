@@ -29,6 +29,7 @@ class InvoiceController extends Controller {
     }
 
     private function generateInvoice(Order $order, string $type) {
+        $order->load('customer', 'order_items.product');
         $title = $type == 'quote' ? 'Preventivo' : 'Bolla di consegna';
 
         // Products
@@ -50,8 +51,8 @@ class InvoiceController extends Controller {
 			<p>' . $orderItem->product->idCode() . '</p>
 			<p>' . $productName . '</p>
 			<p>' . $orderItem->quantity . '</p>
-			<p class="visible-price">' . price($orderItem->product_price_net) . '</p>
-			<p class="visible-price">' . price($orderItem->total_net_price) . '</p>
+			<p class="visible-price">' . price($orderItem->unit_price_net) . '</p>
+			<p class="visible-price">' . price($orderItem->total_price_net) . '</p>
 		</div>';
         }
 
@@ -76,9 +77,9 @@ class InvoiceController extends Controller {
         $html = str_replace('{{ title }}', $title, $html);
         $html = str_replace('{{ date }}', date("d/m/Y"), $html);
         $html = str_replace('{{ quote-number }}', $order->idCode(), $html);
-        $html = str_replace('{{ cart-net-price }}', price($order->calcBasePrice()), $html);
-        $html = str_replace('{{ cart-vat }}', price($order->calcVAT()), $html);
-        $html = str_replace('{{ cart-gross-price }}', price($order->price), $html);
+        $html = str_replace('{{ cart-net-price }}', price($order->price_net), $html);
+        $html = str_replace('{{ cart-vat }}', price($order->vat), $html);
+        $html = str_replace('{{ cart-gross-price }}', price($order->price_gross), $html);
         $html = str_replace('{{ customer-name }}', $order->customer->name, $html);
         $html = str_replace('{{ products }}', $productsHtml, $html);
         $html = str_replace('{{ cart-down-payment }}', $order->calcTotalDownPayment() ? $downPaymentHtml : '', $html);
