@@ -184,7 +184,7 @@ class OrderForm {
                                 );
                             }),
                         Checkbox::make('has_vat')
-                            ->label('ha IVA')
+                            ->label('IVA')
                             ->default(true)
                             ->live(debounce: 500)
                             ->afterStateUpdated(function (Checkbox $component, callable $set, callable $get) {

@@ -1,3 +1,7 @@
+html:has(.fi-resource-orders) {
+	--sidebar-width: 15rem;
+}
+
 .fi-main:has(.fi-resource-orders) {
 	width: 100%;
 	max-width: unset;
@@ -53,15 +57,18 @@
 	.fi-fo-repeater-item {
 		display: grid;
 		grid-template-columns: max-content minmax(0, 1fr);
+		gap: 0.5rem;
 		background: none;
 		box-shadow: none;
 
+		/* Labels */
 		&:not(:first-child) {
 			.fi-fo-field-label-col:not(:has(input[type='checkbox'])) {
 				display: none;
 			}
 		}
 
+		/* Content */
 		.fi-fo-repeater-item-content {
 			border: 1px solid var(--color-slate-800);
 			border-radius: var(--radius-lg);
@@ -71,11 +78,23 @@
 			gap: calc(var(--spacing) * 2);
 		}
 
+		/* Checkbox */
 		.fi-sc-component:has(input[type='checkbox']) {
 			display: flex;
 			align-items: flex-end;
 			justify-content: center;
 			padding-bottom: 2rem;
+		}
+
+		/* Delete button */
+		.fi-fo-repeater-item-header {
+			display: contents;
+		}
+
+		.fi-ac-icon-btn-action {
+			width: unset;
+			height: unset;
+			margin: unset;
 		}
 	}
 }
