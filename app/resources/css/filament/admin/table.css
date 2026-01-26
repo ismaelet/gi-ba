@@ -1,7 +1,5 @@
 .fi-ta {
-	/*
-* Filters
-*/
+	/* Filters */
 	.fi-select-input {
 		.fi-badge[data-value='1'] {
 			--dark-text: var(--color-status-1);
@@ -111,6 +109,25 @@
 
 		.fi-select-input-option[data-value='99'] {
 			color: var(--color-status-99);
+		}
+	}
+
+	/* Search bar */
+	.fi-ta-header-toolbar {
+		justify-content: flex-start;
+		gap: 0;
+
+		> div {
+			margin-inline: unset;
+			width: 100%;
+		}
+
+		.fi-ta-search-field {
+			width: 100%;
+
+			.fi-input {
+				padding-block: 0.65rem;
+			}
 		}
 	}
 }
