@@ -10,6 +10,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
@@ -21,7 +22,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class OrdersTable {
@@ -60,18 +60,7 @@ class OrdersTable {
                     ->sortable()
                     ->badge()
                     ->formatStateUsing(fn(string $state): string => config('ecommerce.order_statuses')[$state]['label'] ?? $state)
-                    ->color(fn(int $state): string => match ($state) {
-                        1 => 'status-1',
-                        2 => 'status-2',
-                        3 => 'status-3',
-                        4 => 'status-4',
-                        5 => 'status-5',
-                        6 => 'status-6',
-                        7 => 'status-7',
-                        8 => 'status-8',
-                        99 => 'status-99',
-                        default => 'primary',
-                    }),
+                    ->color(fn(int $state): string => 'status-' . $state),
 
                 ToggleColumn::make('billed')
                     ->label('Fatturato')
@@ -83,15 +72,23 @@ class OrdersTable {
                     ->dateTime('d/m/Y'),
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->label('Stato')
-                    ->options(
-                        collect(config('ecommerce.order_statuses'))
-                            ->mapWithKeys(fn($status, $key) => [$key => $status['label']])
-                            ->toArray()
-                    )
-                    ->default([1, 2, 3, 4, 5, 6])
-                    ->multiple(),
+                Filter::make('status')
+                    ->schema([
+                        CheckboxList::make('statuses')
+                            ->label('Stato')
+                            ->options(
+                                collect(config('ecommerce.order_statuses'))
+                                    ->mapWithKeys(fn($status, $key) => [$key => $status['label']])
+                                    ->toArray()
+                            )
+                            ->columns(4)
+                            ->default([1, 2, 3, 4, 5, 6]),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (! empty($data['statuses'])) {
+                            $query->whereIn('status', $data['statuses']);
+                        }
+                    })->columnSpan(2),
 
                 TernaryFilter::make('billed')
                     ->label('Fatturato')
@@ -122,7 +119,7 @@ class OrdersTable {
                             );
                     }),
             ], layout: FiltersLayout::AboveContent)
-            ->filtersFormColumns(3)
+            ->filtersFormColumns(4)
             ->deferFilters(false)
             ->recordActions([
                 ActionGroup::make([
@@ -195,7 +192,7 @@ class OrdersTable {
                     ->visible(function (Component $livewire): bool {
                         $filters = $livewire->getTableFiltersForm()?->getState() ?? [];
 
-                        $selected = data_get($filters, 'status.values', []);
+                        $selected = data_get($filters, 'status.statuses', []);
 
                         $allStatuses = array_keys(config('ecommerce.order_statuses'));
 
@@ -211,7 +208,7 @@ class OrdersTable {
                         $all = array_map('strval', array_keys(config('ecommerce.order_statuses')));
 
                         // Push the state back into the filters form
-                        $filters['status']['values'] = $all;
+                        $filters['status']['statuses'] = $all;
                         $form?->fill($filters);
 
                         // Now apply (Filament will read from the form state)
@@ -224,7 +221,7 @@ class OrdersTable {
                     ->visible(function (Component $livewire): bool {
                         $filters = $livewire->getTableFiltersForm()?->getState() ?? [];
 
-                        $values = data_get($filters, 'status.values', []);
+                        $values = data_get($filters, 'status.statuses', []);
 
                         return ! empty($values);
                     })

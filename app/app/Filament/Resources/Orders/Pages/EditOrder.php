@@ -53,7 +53,6 @@ class EditOrder extends EditRecord {
 
     protected function duplicateRecord(): void {
         DB::transaction(function () {
-            /** @var \App\Models\Order $original */
             $original = $this->record->load('order_items');
 
             // 1. Duplicate main record
@@ -61,6 +60,8 @@ class EditOrder extends EditRecord {
                 'id',
                 'created_at',
                 'updated_at',
+                'status',
+                'billed'
             ]);
 
             $copy->created_at = now();
@@ -72,6 +73,7 @@ class EditOrder extends EditRecord {
                     $item->replicate([
                         'id',
                         'order_id',
+                        'status',
                         'created_at',
                         'updated_at',
                     ])->toArray()

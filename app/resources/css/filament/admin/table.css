@@ -5,75 +5,63 @@
 	}
 
 	/* Filters */
-	.fi-select-input {
-		.fi-badge[data-value='1'] {
-			--dark-text: var(--color-status-1);
-			--text: var(--color-status-1);
-			--color-300: var(--color-status-1);
-			--color-400: var(--color-status-1);
+	.fi-ta-filters-heading {
+		display: none;
+	}
+
+	.fi-fo-checkbox-list-option {
+		> * {
+			cursor: pointer;
 		}
 
-		.fi-badge[data-value='2'] {
-			--dark-text: var(--color-status-2);
-			--text: var(--color-status-2);
-			--color-300: var(--color-status-2);
-			--color-400: var(--color-status-2);
+		&:has(input[value='1']) {
+			--primary-500: var(--color-status-1);
+			--color-white: var(--color-status-1);
 		}
 
-		.fi-badge[data-value='3'] {
-			--dark-text: var(--color-status-3);
-			--text: var(--color-status-3);
-			--color-300: var(--color-status-3);
-			--color-400: var(--color-status-3);
+		&:has(input[value='2']) {
+			--primary-500: var(--color-status-2);
+			--color-white: var(--color-status-2);
 		}
 
-		.fi-badge[data-value='4'] {
-			--dark-text: var(--color-status-4);
-			--text: var(--color-status-4);
-			--color-300: var(--color-status-4);
-			--color-400: var(--color-status-4);
+		&:has(input[value='3']) {
+			--primary-500: var(--color-status-3);
+			--color-white: var(--color-status-3);
 		}
 
-		.fi-badge[data-value='5'] {
-			--dark-text: var(--color-status-5);
-			--text: var(--color-status-5);
-			--color-300: var(--color-status-5);
-			--color-400: var(--color-status-5);
+		&:has(input[value='4']) {
+			--primary-500: var(--color-status-4);
+			--color-white: var(--color-status-4);
 		}
 
-		.fi-badge[data-value='6'] {
-			--dark-text: var(--color-status-6);
-			--text: var(--color-status-6);
-			--color-300: var(--color-status-6);
-			--color-400: var(--color-status-6);
+		&:has(input[value='5']) {
+			--primary-500: var(--color-status-5);
+			--color-white: var(--color-status-5);
 		}
 
-		.fi-badge[data-value='7'] {
-			--dark-text: var(--color-status-7);
-			--text: var(--color-status-7);
-			--color-300: var(--color-status-7);
-			--color-400: var(--color-status-7);
+		&:has(input[value='6']) {
+			--primary-500: var(--color-status-6);
+			--color-white: var(--color-status-6);
 		}
 
-		.fi-badge[data-value='8'] {
-			--dark-text: var(--color-status-8);
-			--text: var(--color-status-8);
-			--color-300: var(--color-status-8);
-			--color-400: var(--color-status-8);
+		&:has(input[value='7']) {
+			--primary-500: var(--color-status-7);
+			--color-white: var(--color-status-7);
 		}
 
-		.fi-badge[data-value='9'] {
-			--dark-text: var(--color-status-9);
-			--text: var(--color-status-9);
-			--color-300: var(--color-status-9);
-			--color-400: var(--color-status-9);
+		&:has(input[value='8']) {
+			--primary-500: var(--color-status-8);
+			--color-white: var(--color-status-8);
 		}
 
-		.fi-badge[data-value='99'] {
-			--dark-text: var(--color-status-99);
-			--text: var(--color-status-99);
-			--color-300: var(--color-status-99);
-			--color-400: var(--color-status-99);
+		&:has(input[value='9']) {
+			--primary-500: var(--color-status-9);
+			--color-white: var(--color-status-9);
+		}
+
+		&:has(input[value='99']) {
+			--primary-500: var(--color-status-99);
+			--color-white: var(--color-status-99);
 		}
 
 		.fi-select-input-option[data-value='1'] {
