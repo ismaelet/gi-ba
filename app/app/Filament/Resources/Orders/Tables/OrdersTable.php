@@ -43,7 +43,8 @@ class OrdersTable {
                     ->wrap()
                     ->formatStateUsing(fn(string $state, Order $record): string => $state . '<br>' . $record->customer->phone),
 
-                OrderItemsColumn::make('order_items.name')
+                OrderItemsColumn::make('order_items.product.name')
+                    ->searchable()
                     ->label('Articoli'),
 
                 TextColumn::make('price_gross')
