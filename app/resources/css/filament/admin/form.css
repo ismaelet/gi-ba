@@ -83,7 +83,7 @@ html:has(.fi-resource-orders) {
 			display: flex;
 			align-items: flex-end;
 			justify-content: center;
-			padding-bottom: 2rem;
+			translate: 0 -0.5rem;
 		}
 
 		/* Delete button */
