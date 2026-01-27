@@ -29,7 +29,10 @@ class EditOrder extends EditRecord {
     public function mount($record): void {
         parent::mount($record);
 
-        $this->returnUrl = request()->query('return');
+        $candidate = request()->query('return')
+            ?? request()->header('referer');
+
+        $this->returnUrl = $this->sanitizeReturnUrl($candidate);
     }
 
     protected function afterSave(): void {
@@ -93,5 +96,25 @@ class EditOrder extends EditRecord {
                 static::getResource()::getUrl('edit', ['record' => $copy])
             );
         });
+    }
+
+
+    private function sanitizeReturnUrl(?string $url): ?string {
+        if (!filled($url)) {
+            return null;
+        }
+
+        if (str_contains($url, '/livewire') || str_contains($url, '/livewire-')) {
+            return null;
+        }
+
+        $parts = parse_url($url);
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+
+        if (!empty($parts['host']) && $parts['host'] !== $appHost) {
+            return null;
+        }
+
+        return $url;
     }
 }
