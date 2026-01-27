@@ -13,6 +13,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -41,6 +42,41 @@ class OrderForm {
                                     'phone' => $customer?->phone ?? '',
                                     'info'  => $customer?->info  ?? '',
                                 ]);
+                            })
+
+                            // Customer creation form
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('Nome completo')
+                                    ->placeholder('Nome completo')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                TextInput::make('phone')
+                                    ->label('Numero di telefono')
+                                    ->placeholder('Numero di telefono')
+                                    ->maxLength(50),
+
+                                Textarea::make('info')
+                                    ->label('Dettagli cliente')
+                                    ->placeholder('Dettagli cliente')
+                                    ->autosize(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                $customer = \App\Models\Customer::create($data);
+
+                                Notification::make()
+                                    ->title('Cliente creato')
+                                    ->success()
+                                    ->send();
+
+                                return $customer->getKey();
+                            })
+                            ->createOptionAction(function ($action) {
+                                return $action
+                                    ->label('Nuovo cliente')
+                                    ->modalHeading('Crea cliente')
+                                    ->modalSubmitActionLabel('Crea');
                             }),
 
                         Group::make()
@@ -77,6 +113,7 @@ class OrderForm {
                             ->columnSpan(fn(?Order $record) => filled($record) ? 1 : 2),
                         Select::make('status')
                             ->label('Stato')
+                            ->default('1')
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
                                     ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
@@ -137,10 +174,6 @@ class OrderForm {
                     ->label('Articoli dell\'ordine')
                     ->addActionLabel('+')
                     ->relationship()
-                    ->live(debounce: 500)
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        self::updateOrderTotals($get, $set);
-                    })
                     ->schema([
                         TextInput::make('real_unit_price_net')
                             ->hidden()
@@ -292,19 +325,24 @@ class OrderForm {
             $totalGross = $unitPriceGross * $quantity;
         }
 
-        if ($fieldName !== 'unit_price_net')
+        if ($fieldName !== 'unit_price_net') {
             $set('unit_price_net', self::parseNumber($unitPriceNet));
-        if ($fieldName !== 'unit_price_gross')
+        }
+        if ($fieldName !== 'unit_price_gross') {
             $set('unit_price_gross', self::parseNumber($unitPriceGross));
-        if ($fieldName !== 'total_price_gross')
+        }
+        if ($fieldName !== 'total_price_gross') {
             $set('total_price_gross', self::parseNumber($totalGross));
+        }
+
+        self::updateOrderTotals(get: $get, set: $set);
     }
 
     /**
      * Update the order totals based on the order items
      */
     private static function updateOrderTotals(Get $get, Set $set): void {
-        $items = $get('order_items') ?? [];
+        $items = $get('../../order_items') ?? [];
 
         $sumNet = 0.0;
         $sumGross = 0.0;
@@ -319,9 +357,9 @@ class OrderForm {
             $sumGross += $unitGross * $qty;
         }
 
-        $set('price_net', self::parseNumber($sumNet));
-        $set('price_gross', self::parseNumber($sumGross));
-        $set('vat', self::parseNumber($sumGross - $sumNet));
+        $set('../../price_net', self::parseNumber($sumNet));
+        $set('../../price_gross', self::parseNumber($sumGross));
+        $set('../../vat', self::parseNumber($sumGross - $sumNet));
     }
 
     private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
