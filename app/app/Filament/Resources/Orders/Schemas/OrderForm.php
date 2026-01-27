@@ -106,11 +106,13 @@ class OrderForm {
                             ->dehydrated(false)
                             ->visible(fn(?Order $record) => filled($record))
                             ->copyable(),
+
                         DatePicker::make('created_at')
                             ->label('Data')
                             ->default(now())
                             ->readOnly()
                             ->columnSpan(fn(?Order $record) => filled($record) ? 1 : 2),
+
                         Select::make('status')
                             ->label('Stato')
                             ->default('1')
@@ -128,6 +130,7 @@ class OrderForm {
                             })
                             ->required()
                             ->columnSpanFull(),
+
                         Checkbox::make('billed')
                             ->label('Fatturato'),
                         Checkbox::make('print_descriptions')
@@ -210,12 +213,14 @@ class OrderForm {
                         Select::make('status')
                             ->label('Stato')
                             ->default('1')
+                            ->live()
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
                                     ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
                                     ->toArray()
                             )
                             ->extraInputAttributes(fn(callable $get) => ['class' => 'text-status-' . $get('status'),])
+                            ->afterStateUpdated(fn(callable $set, callable $get) => self::updateOrderStatus($get, $set))
                             ->required()
                             ->columnSpan(4),
 
@@ -238,12 +243,14 @@ class OrderForm {
                             ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
                             ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
                             ->columnSpan(2),
+
                         Checkbox::make('has_vat')
                             ->label('IVA')
                             ->default(true)
                             ->live(debounce: 500)
                             ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
                             ->columnSpan(2),
+
                         TextInput::make('total_price_gross')
                             ->label('Totale')
                             ->default(0)
@@ -362,6 +369,9 @@ class OrderForm {
         $set('../../vat', self::parseNumber($sumGross - $sumNet));
     }
 
+    /**
+     * Update the order item statuses based on the order status
+     */
     private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
         $items = $get('order_items') ?? [];
 
@@ -372,6 +382,41 @@ class OrderForm {
         }, $items);
 
         $set('order_items', $items);
+    }
+
+    /**
+     * Update the order status based on the order item statuses
+     */
+    public static function updateOrderStatus(Get $get, Set $set): void {
+        $items = $get('../../order_items') ?? [];
+
+        $statuses = [];
+
+        foreach ($items as $item) {
+            if (! array_key_exists('status', $item)) {
+                continue;
+            }
+
+            $value = $item['status'];
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $statuses[] = (int) $value;
+        }
+
+        if ($statuses === []) {
+            return;
+        }
+
+        $min = (string) min($statuses);
+
+        if ((string) $get('../../status') === $min) {
+            return;
+        }
+
+        $set('../../status', $min);
     }
 
     private static function parseNumber(?string $number): string {
