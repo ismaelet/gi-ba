@@ -19,7 +19,9 @@ class OrderItem extends Model {
         'quantity',
         'unit_price_net',
         'unit_price_gross',
+        'total_price_net',
         'total_price_gross',
+        'total_vat',
         'status',
         'has_vat',
         'info',
@@ -33,24 +35,6 @@ class OrderItem extends Model {
             get: function () {
                 return $this->product ? $this->product->name : 'N/A';
             },
-        );
-    }
-
-    /**
-     * Get the total net price of the order item
-     */
-    public function totalPriceNet(): Attribute {
-        return Attribute::make(
-            get: fn() => $this->unit_price_net * $this->quantity
-        );
-    }
-
-    /**
-     * Get the VAT amount for the order item
-     */
-    public function totalVat(): Attribute {
-        return Attribute::make(
-            get: fn() => $this->has_vat ? $this->total_price_net * self::VAT : 0
         );
     }
 
@@ -71,7 +55,7 @@ class OrderItem extends Model {
     /**
      * Get the unit net price of the order item from total price and quantity
      */
-    public function calcUnitNetPrice(): float {
+    public function calcUnitPriceNet(): float {
         if ($this->has_vat) {
             return $this->total_price_gross / (1 + self::VAT) / $this->quantity;
         } else {
@@ -82,16 +66,37 @@ class OrderItem extends Model {
     /**
      * Get the unit gross price of the order item from total price and quantity
      */
-    public function calcUnitGrossPrice(): float {
+    public function calcUnitPriceGross(): float {
         return $this->total_price_gross / $this->quantity;
+    }
+
+    /**
+     * Get the VAT amount for the order item
+     */
+    public function calcTotalVat(): float {
+        return $this->has_vat ? round($this->total_price_gross - $this->total_price_net, 2) : 0;
+    }
+
+
+    /**
+     * Get the total net price of the order item
+     */
+    public function calcTotalPriceNet(): float {
+        if ($this->has_vat) {
+            return $this->unit_price_net * $this->quantity;
+        } else {
+            return $this->total_price_gross;
+        }
     }
 
     /**
      * Recalculate and update the unit prices based on total price and quantity
      */
-    public function recalculateUnitPrices(): void {
-        $this->unit_price_net = $this->calcUnitNetPrice();
-        $this->unit_price_gross = $this->calcUnitGrossPrice();
+    public function recalculatePrices(): void {
+        $this->unit_price_net = $this->calcUnitPriceNet();
+        $this->unit_price_gross = $this->calcUnitPriceGross();
+        $this->total_price_net = $this->calcTotalPriceNet();
+        $this->total_vat = $this->calcTotalVat();
         $this->save();
     }
 

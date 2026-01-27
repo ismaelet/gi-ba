@@ -8,12 +8,25 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Url;
 
 class EditOrder extends EditRecord {
+
+    /**
+     * Property: The resource class associated with this page
+     */
     protected static string $resource = OrderResource::class;
 
+    /**
+     * Property: The URL to return to after saving the record
+     */
+    #[Url(as: 'return')]
     public ?string $returnUrl = null;
 
+    /**
+     * Filament Method: Get the header actions for the edit page
+     */
     protected function getHeaderActions(): array {
         return [
             DeleteAction::make(),
@@ -26,17 +39,21 @@ class EditOrder extends EditRecord {
         ];
     }
 
+    /**
+     * Filament Method: Mount the edit page with the given record
+     */
     public function mount($record): void {
         parent::mount($record);
 
-        $candidate = request()->query('return')
-            ?? request()->header('referer');
-
-        $this->returnUrl = $this->sanitizeReturnUrl($candidate);
+        $this->returnUrl = $this->normalizeReturnUrl(
+            request()->query('return') ?? request()->header('referer') ?? url()->previous()
+        );
     }
 
+    /**
+     * Filament Method: Actions to perform after saving the record
+     */
     protected function afterSave(): void {
-        // Update related customer data
         $state = $this->form->getState();
 
         $customerId = $state['customer_id'] ?? null;
@@ -50,16 +67,14 @@ class EditOrder extends EditRecord {
 
         // Recalculate unit prices
         $this->record->order_items->each(function ($item) {
-            $item->recalculateUnitPrices();
+            $item->recalculatePrices();
         });
 
         // Recalculate totals
         $this->record->recalculateTotals();
 
         // Redirect to the list page
-        $this->redirect(
-            $this->returnUrl ?? static::getResource()::getUrl('index')
-        );
+        $this->redirect($this->returnUrl);
     }
 
     protected function duplicateRecord(): void {
@@ -98,23 +113,44 @@ class EditOrder extends EditRecord {
         });
     }
 
+    /**
+     * Normalize a candidate return URL to ensure it's safe and valid
+     */
+    private function normalizeReturnUrl(?string $candidate): string {
+        $indexUrl  = static::getResource()::getUrl('index');
+        $indexPath = parse_url($indexUrl, PHP_URL_PATH) ?? $indexUrl;
 
-    private function sanitizeReturnUrl(?string $url): ?string {
-        if (!filled($url)) {
-            return null;
+        $fallback = $indexPath;
+
+        if (! filled($candidate)) {
+            return $fallback;
         }
 
-        if (str_contains($url, '/livewire') || str_contains($url, '/livewire-')) {
-            return null;
+        $parts = parse_url($candidate);
+        if ($parts === false) {
+            return $fallback;
         }
 
-        $parts = parse_url($url);
-        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
-
-        if (!empty($parts['host']) && $parts['host'] !== $appHost) {
-            return null;
+        $path = $parts['path'] ?? null;
+        if (! filled($path)) {
+            return $fallback;
         }
 
-        return $url;
+        if (! empty($parts['host'])) {
+            $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+            if ($appHost && ! Str::is($appHost, $parts['host'])) {
+                return $fallback;
+            }
+        }
+
+        if (rtrim($path, '/') !== rtrim($indexPath, '/')) {
+            return $fallback;
+        }
+
+        $query = isset($parts['query']) && filled($parts['query'])
+            ? ('?' . $parts['query'])
+            : '';
+
+        return $indexPath . $query;
     }
 }

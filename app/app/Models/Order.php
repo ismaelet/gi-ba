@@ -67,7 +67,7 @@ class Order extends Model {
      * Get the total quantity of the order's items
      */
     public function calcQuantity(): int {
-        return $this->order_items->sum('quantity');
+        return $this->order_items()->sum('quantity');
     }
 
     /**
@@ -81,7 +81,7 @@ class Order extends Model {
      * Calculate the total price of the order
      */
     public function calcPriceNet() {
-        return $this->order_items->sum('total_price_net');
+        return $this->order_items()->sum('total_price_net');
     }
 
     /**
@@ -102,7 +102,7 @@ class Order extends Model {
      * Calculate the VAT amount for the order
      */
     public function calcVat(): float {
-        return $this->order_items->sum('total_vat');
+        return $this->order_items()->sum('total_vat');
     }
 
     /**

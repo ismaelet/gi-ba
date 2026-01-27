@@ -20,7 +20,7 @@ return new class extends Migration {
         $orderItems = OrderItem::all();
 
         foreach ($orderItems as $item) {
-            $item->recalculateUnitPrices();
+            $item->recalculatePrices();
         }
 
         $orders = Order::with('order_items')->get();

@@ -16,13 +16,11 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Livewire\Component;
 
 class OrderForm {
     private const VAT = 0.22;
@@ -30,6 +28,14 @@ class OrderForm {
     public static function configure(Schema $schema): Schema {
         return $schema
             ->components([
+                Hidden::make('_internal_update')
+                    ->dehydrated(false)
+                    ->live()
+                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                        dump('Internal update state changed to: ' . ($state ? 'true' : 'false'));
+                    })
+                    ->default(false),
+
                 Fieldset::make('Dati del cliente')
                     ->schema([
                         Select::make('customer_id')
@@ -57,7 +63,7 @@ class OrderForm {
 
                                         $name = Customer::whereKey($customerId)->value('name');
 
-                                        if (! $name) {
+                                        if (!$name) {
                                             return;
                                         }
 
@@ -205,8 +211,7 @@ class OrderForm {
                     ->addActionLabel('+')
                     ->relationship()
                     ->schema([
-                        TextInput::make('real_unit_price_net')
-                            ->hidden()
+                        Hidden::make('real_unit_price_net')
                             ->dehydrated(false)
                             ->afterStateHydrated(function (Set $set, ?OrderItem $record) {
                                 $set('real_unit_price_net', $record?->unit_price_net);
@@ -232,9 +237,13 @@ class OrderForm {
                         TextInput::make('quantity')
                             ->label('Qty')
                             ->default(1)
-                            ->live(debounce: 500)
+                            ->live(onBlur: true)
                             ->extraInputAttributes(self::extraAttributesForInt())
-                            ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
+                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
+                                self::runInternally($get, $set, function () use ($component, $get, $set) {
+                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
+                                });
+                            })
                             ->columnSpan(2),
 
                         Select::make('status')
@@ -254,38 +263,54 @@ class OrderForm {
                         TextInput::make('unit_price_net')
                             ->label('Pr. netto')
                             ->default(0)
-                            ->live(debounce: 500)
+                            ->live(onBlur: true)
                             ->extraInputAttributes(self::extraAttributesForPrices())
                             ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
                             ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
+                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
+                                self::runInternally($get, $set, function () use ($component, $get, $set) {
+                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
+                                });
+                            })
                             ->columnSpan(2),
 
                         TextInput::make('unit_price_gross')
                             ->label('Pr. ivato')
                             ->default(0)
-                            ->live(debounce: 500)
+                            ->live(onBlur: true)
                             ->extraInputAttributes(self::extraAttributesForPrices())
                             ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
                             ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
+                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
+                                self::runInternally($get, $set, function () use ($component, $get, $set) {
+                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
+                                });
+                            })
                             ->columnSpan(2),
 
                         Checkbox::make('has_vat')
                             ->label('IVA')
                             ->default(true)
-                            ->live(debounce: 500)
-                            ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Checkbox $component, Get $get, Set $set) {
+                                self::runInternally($get, $set, function () use ($component, $get, $set) {
+                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
+                                });
+                            })
                             ->columnSpan(2),
 
                         TextInput::make('total_price_gross')
                             ->label('Totale')
                             ->default(0)
-                            ->live(debounce: 500)
+                            ->live(onBlur: true)
                             ->extraInputAttributes(self::extraAttributesForPrices())
                             ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
                             ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(fn(TextInput $component, callable $set, callable $get) => self::updatePrices(get: $get, set: $set, fieldName: $component->getName()))
+                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
+                                self::runInternally($get, $set, function () use ($component, $get, $set) {
+                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
+                                });
+                            })
                             ->columnSpan(2),
                     ])
                     ->columns(30)
@@ -325,10 +350,24 @@ class OrderForm {
             ]);
     }
 
+    private static function runInternally(Get $get, Set $set, callable $fn): void {
+        if ($get('../../../_internal_update')) {
+            return;
+        }
+
+        $set('../../../_internal_update', true);
+
+        try {
+            $fn();
+        } finally {
+            $set('../../../_internal_update', false);
+        }
+    }
+
     /**
      * Update the order item prices based on the changed field
      */
-    private static function updatePrices(callable $get, callable $set, string $fieldName): void {
+    private static function updatePrices(Get $get, Set $set, string $fieldName): void {
         $quantity = max(1, (int) $get('quantity'));
         $hasVat = $get('has_vat');
 
@@ -359,15 +398,15 @@ class OrderForm {
             $totalGross = $unitPriceGross * $quantity;
         }
 
-        if ($fieldName !== 'unit_price_net') {
-            $set('unit_price_net', self::parseNumber($unitPriceNet));
-        }
-        if ($fieldName !== 'unit_price_gross') {
-            $set('unit_price_gross', self::parseNumber($unitPriceGross));
-        }
-        if ($fieldName !== 'total_price_gross') {
-            $set('total_price_gross', self::parseNumber($totalGross));
-        }
+        // if ($fieldName !== 'unit_price_net') {
+        $set('unit_price_net', self::parseNumber($unitPriceNet));
+        // }
+        // if ($fieldName !== 'unit_price_gross') {
+        $set('unit_price_gross', self::parseNumber($unitPriceGross));
+        // }
+        // if ($fieldName !== 'total_price_gross') {
+        $set('total_price_gross', self::parseNumber($totalGross));
+        // }
 
         self::updateOrderTotals(get: $get, set: $set);
     }
