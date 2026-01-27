@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Schemas;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Dom\Text;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
@@ -222,6 +223,21 @@ class OrderForm {
                             ->relationship('product', 'name')
                             ->searchable()
                             ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
+                                if ((float) $get('unit_price_net') > 0) {
+                                    return;
+                                }
+
+                                $product = filled($state) ? Product::find($state) : null;
+                                $customer = Customer::find($get('../../customer_id'));
+                                $unitPriceNet = (float) $customer ? OrderItem::where('product_id', $state)
+                                    ->whereHas('order.customer', fn($query) => $query->whereKey($customer->getKey()))
+                                    ->orderByDesc('created_at')
+                                    ->value('unit_price_net') : $product?->price;
+
+                                self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
+                            })
                             ->columnSpan(6),
 
                         TextInput::make('info')
@@ -291,7 +307,7 @@ class OrderForm {
                         Checkbox::make('has_vat')
                             ->label('IVA')
                             ->default(true)
-                            ->live(onBlur: true)
+                            ->live()
                             ->afterStateUpdated(function (Checkbox $component, Get $get, Set $set) {
                                 self::runInternally($get, $set, function () use ($component, $get, $set) {
                                     self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
@@ -351,62 +367,35 @@ class OrderForm {
     }
 
     private static function runInternally(Get $get, Set $set, callable $fn): void {
-        if ($get('../../../_internal_update')) {
-            return;
-        }
-
-        $set('../../../_internal_update', true);
-
-        try {
-            $fn();
-        } finally {
-            $set('../../../_internal_update', false);
-        }
+        $fn();
     }
 
     /**
      * Update the order item prices based on the changed field
      */
-    private static function updatePrices(Get $get, Set $set, string $fieldName): void {
+    private static function updatePrices(Get $get, Set $set, ?string $fieldName = null, ?float $unitPriceNet = null): void {
         $quantity = max(1, (int) $get('quantity'));
-        $hasVat = $get('has_vat');
+        $hasVat = (bool) $get('has_vat');
+        $vatMul = 1 + self::VAT;
 
-        if ($fieldName === 'unit_price_net') {
-            // Calculate prices based on unit net price
-            $unitPriceNet = self::parseNumber($get('unit_price_net'));
-            $unitPriceGross = $hasVat ? $unitPriceNet * (1 + self::VAT) : $unitPriceNet;
-            $totalGross = $unitPriceGross * $quantity;
+        $toNet = fn(float $gross): float => $hasVat ? ($gross / $vatMul) : $gross;
+        $toGross = fn(float $net): float => $hasVat ? ($net * $vatMul) : $net;
 
-            $set('real_unit_price_net', $unitPriceNet);
-        } else if ($fieldName === 'unit_price_gross') {
-            // Calculate prices based on unit gross price
-            $unitPriceGross = self::parseNumber($get('unit_price_gross'));
-            $unitPriceNet = $hasVat ? $unitPriceGross / (1 + self::VAT) : $unitPriceGross;
-            $totalGross = $unitPriceGross * $quantity;
+        $unitPriceNet = $unitPriceNet ?? match ($fieldName) {
+            'unit_price_net'     => self::parseNumber($get('unit_price_net')),
+            'unit_price_gross'   => $toNet(self::parseNumber($get('unit_price_gross'))),
+            'total_price_gross'  => $toNet(self::parseNumber($get('total_price_gross')) / $quantity),
+            default              => (float) $get('real_unit_price_net'),
+        };
 
-            $set('real_unit_price_net', $unitPriceNet);
-        } else if ($fieldName === 'total_price_gross') {
-            // Calculate prices based on total gross price
-            $totalGross = self::parseNumber($get('total_price_gross'));
-            $unitPriceGross = $totalGross / $quantity;
-            $unitPriceNet = $hasVat ? $unitPriceGross / (1 + self::VAT) : $unitPriceGross;
+        $set('real_unit_price_net', $unitPriceNet);
 
-            $set('real_unit_price_net', $unitPriceNet);
-        } else if ($fieldName === 'quantity' || $fieldName === 'has_vat') {
-            $unitPriceNet = (float) $get('real_unit_price_net');
-            $unitPriceGross = $hasVat ? $unitPriceNet * (1 + self::VAT) : $unitPriceNet;
-            $totalGross = $unitPriceGross * $quantity;
-        }
+        $unitPriceGross = $toGross($unitPriceNet);
+        $totalGross     = $unitPriceGross * $quantity;
 
-        // if ($fieldName !== 'unit_price_net') {
         $set('unit_price_net', self::parseNumber($unitPriceNet));
-        // }
-        // if ($fieldName !== 'unit_price_gross') {
         $set('unit_price_gross', self::parseNumber($unitPriceGross));
-        // }
-        // if ($fieldName !== 'total_price_gross') {
         $set('total_price_gross', self::parseNumber($totalGross));
-        // }
 
         self::updateOrderTotals(get: $get, set: $set);
     }
