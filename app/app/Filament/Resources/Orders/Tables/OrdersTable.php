@@ -128,7 +128,7 @@ class OrdersTable {
                     EditAction::make()
                         ->url(fn($record) => OrderResource::getUrl('edit', [
                             'record' => $record,
-                            'return' => URL::full(),
+                            'return' => self::currentListUrl(),
                         ])),
 
                     Action::make('download-quote')
@@ -189,6 +189,10 @@ class OrdersTable {
                         }),
                 ]),
             ])
+            ->recordUrl(fn($record) => OrderResource::getUrl('edit', [
+                'record' => $record,
+                'return' => self::currentListUrl(),
+            ]))
             ->headerActions([
                 Action::make('selectAllStatuses')
                     ->label('Seleziona tutti gli stati')
@@ -241,5 +245,18 @@ class OrdersTable {
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function currentListUrl(): string {
+        // When Livewire is updating, the request path is /livewire-*/update.
+        // But Livewire sends the "Referer" header with the real page URL.
+        $referer = request()->header('referer');
+
+        if (filled($referer) && ! str_contains($referer, '/livewire')) {
+            return $referer;
+        }
+
+        // Fallback: build from the known list route
+        return OrderResource::getUrl('index');
     }
 }

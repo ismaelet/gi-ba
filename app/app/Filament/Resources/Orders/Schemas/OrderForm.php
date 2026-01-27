@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Dom\Text;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -20,6 +21,8 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Livewire\Component;
 
 class OrderForm {
     private const VAT = 0.22;
@@ -43,6 +46,29 @@ class OrderForm {
                                     'info'  => $customer?->info  ?? '',
                                 ]);
                             })
+                            ->suffixAction(
+                                Action::make('copy')
+                                    ->icon(Heroicon::ClipboardDocumentList)
+                                    ->tooltip('Copia telefono')
+                                    ->color('gray')
+                                    ->disabled(fn(Get $get) => blank(data_get($get('customer_data'), 'phone')))
+                                    ->action(function (Get $get, $livewire) {
+                                        $customerId = $get('customer_id');
+
+                                        $name = Customer::whereKey($customerId)->value('name');
+
+                                        if (! $name) {
+                                            return;
+                                        }
+
+                                        $livewire->dispatch('clipboard:copy', text: $name);
+
+                                        Notification::make()
+                                            ->title('Copiato negli appunti')
+                                            ->success()
+                                            ->send();
+                                    })
+                            )
 
                             // Customer creation form
                             ->createOptionForm([
@@ -86,7 +112,8 @@ class OrderForm {
                                 TextInput::make('phone')
                                     ->label('Numero di telefono')
                                     ->placeholder('Numero di telefono')
-                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('phone', $record?->customer?->phone ?? '')),
+                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('phone', $record?->customer?->phone ?? ''))
+                                    ->copyable(),
                                 Textarea::make('info')
                                     ->label('Dettagli cliente')
                                     ->placeholder('Dettagli cliente')
