@@ -56,7 +56,7 @@ class OrderForm {
                             ->suffixAction(
                                 Action::make('copy')
                                     ->icon(Heroicon::ClipboardDocumentList)
-                                    ->tooltip('Copia telefono')
+                                    ->tooltip('Copia nome cliente')
                                     ->color('gray')
                                     ->disabled(fn(Get $get) => blank(data_get($get('customer_data'), 'phone')))
                                     ->action(function (Get $get, $livewire) {
