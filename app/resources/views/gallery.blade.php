@@ -163,7 +163,7 @@
 					>
 
 						<img
-							src="{{ client_url('/uploads/collections/' . $collection->id . '_m.jpg') }}"
+							src="{{ storage_asset('collections/' . $collection->id . '_m.jpg') }}"
 							alt=""
 							loading="lazy"
 							class="img-cover"
