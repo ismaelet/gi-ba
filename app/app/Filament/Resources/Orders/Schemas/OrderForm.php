@@ -94,7 +94,8 @@ class OrderForm {
                         Checkbox::make('billed')
                             ->label('Fatturato'),
                         Checkbox::make('print_descriptions')
-                            ->label('Stampa dettagli articoli'),
+                            ->label('Stampa dettagli articoli')
+                            ->default(true),
                         Checkbox::make('print_notes')
                             ->label('Stampa note'),
                         Checkbox::make('print_status')
@@ -102,7 +103,8 @@ class OrderForm {
                         Checkbox::make('always_print_prices')
                             ->label('Stampa i prezzi nella bolla'),
                         Checkbox::make('print_total')
-                            ->label('Stampa il totale'),
+                            ->label('Stampa il totale')
+                            ->default(true),
                     ]),
 
                 Fieldset::make('Acconti e sconti')
@@ -133,6 +135,7 @@ class OrderForm {
 
                 Repeater::make('order_items')
                     ->label('Articoli dell\'ordine')
+                    ->addActionLabel('+')
                     ->relationship()
                     ->live(debounce: 500)
                     ->afterStateUpdated(function (Get $get, Set $set) {
@@ -173,6 +176,7 @@ class OrderForm {
 
                         Select::make('status')
                             ->label('Stato')
+                            ->default('1')
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
                                     ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
