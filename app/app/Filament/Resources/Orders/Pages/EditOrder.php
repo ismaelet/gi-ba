@@ -46,6 +46,9 @@ class EditOrder extends EditRecord {
      */
     protected function afterSave(): void {
         $this->updateOrder();
+
+        // Redirect to the list page
+        $this->redirect($this->returnUrl);
     }
 
     protected function duplicateRecord(): void {

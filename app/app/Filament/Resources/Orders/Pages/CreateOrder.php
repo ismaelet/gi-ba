@@ -26,4 +26,9 @@ class CreateOrder extends CreateRecord {
     protected function afterCreate(): void {
         $this->updateOrder();
     }
+
+    protected function getRedirectUrl(): string {
+        return $this->returnUrl
+            ?: static::getResource()::getUrl('index');
+    }
 }

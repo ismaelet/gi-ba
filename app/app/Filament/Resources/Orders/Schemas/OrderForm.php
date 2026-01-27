@@ -231,10 +231,10 @@ class OrderForm {
 
                                 $product = filled($state) ? Product::find($state) : null;
                                 $customer = Customer::find($get('../../customer_id'));
-                                $unitPriceNet = (float) $customer ? OrderItem::where('product_id', $state)
+                                $unitPriceNet = (float) ($customer ? OrderItem::where('product_id', $state)
                                     ->whereHas('order.customer', fn($query) => $query->whereKey($customer->getKey()))
                                     ->orderByDesc('created_at')
-                                    ->value('unit_price_net') : $product?->price;
+                                    ->value('unit_price_net') : $product?->price);
 
                                 self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
                             })
