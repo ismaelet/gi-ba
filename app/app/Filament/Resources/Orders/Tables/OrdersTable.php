@@ -89,6 +89,10 @@ class OrdersTable {
                         $statuses = array_values(array_filter($data['statuses'] ?? []));
 
                         if ($statuses === []) {
+                            $query->where(function (Builder $q) use ($statuses) {
+                                $q->whereNull('orders.status');
+                            });
+
                             return;
                         }
 
@@ -259,15 +263,50 @@ class OrdersTable {
     }
 
     private static function currentListUrl(): string {
-        // When Livewire is updating, the request path is /livewire-*/update.
-        // But Livewire sends the "Referer" header with the real page URL.
-        $referer = request()->header('referer');
-
-        if (filled($referer) && ! str_contains($referer, '/livewire')) {
-            return $referer;
+        // If we're already carrying a return, reuse it (prevents nesting)
+        $return = request()->query('return');
+        if (filled($return)) {
+            return self::sanitizeReturnUrl($return) ?? OrderResource::getUrl('index');
         }
 
-        // Fallback: build from the known list route
+        // On the list page, this includes filters/search/sort query string:
+        $referer = request()->header('referer');
+
+        // If referer exists, use it (but sanitize + ensure it's the index path)
+        if (filled($referer)) {
+            $sanitized = self::sanitizeReturnUrl($referer);
+
+            if (filled($sanitized) && self::isOrdersIndexPath($sanitized)) {
+                return $sanitized;
+            }
+        }
+
+        // Fallback: index (no filters)
         return OrderResource::getUrl('index');
+    }
+
+    private static function sanitizeReturnUrl(string $url): ?string {
+        $parts = parse_url($url);
+
+        $path = $parts['path'] ?? null;
+        if (! filled($path)) {
+            return null;
+        }
+
+        $query = [];
+        if (! empty($parts['query'])) {
+            parse_str($parts['query'], $query);
+            unset($query['return']); // prevent nesting
+        }
+
+        $qs = $query ? ('?' . http_build_query($query)) : '';
+        return $path . $qs;
+    }
+
+    private static function isOrdersIndexPath(string $relativeUrl): bool {
+        $path = parse_url($relativeUrl, PHP_URL_PATH) ?: '';
+        $indexPath = parse_url(OrderResource::getUrl('index'), PHP_URL_PATH) ?: '';
+
+        return $path === $indexPath;
     }
 }
