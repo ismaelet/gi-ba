@@ -39,7 +39,7 @@ class Order extends Model {
      * Relationship: The order items for the order
      */
     public function order_items(): HasMany {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class)->orderBy('status');
     }
 
     /**
