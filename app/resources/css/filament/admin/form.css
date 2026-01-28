@@ -54,12 +54,62 @@ html:has(.fi-resource-orders) {
 	}
 
 	/* Repeater */
+	.fi-fo-repeater-items {
+		gap: 0.5rem;
+	}
+
 	.fi-fo-repeater-item {
+		/* General structure */
 		display: grid;
 		grid-template-columns: max-content minmax(0, 1fr);
 		gap: 0.5rem;
 		background: none;
 		box-shadow: none;
+
+		@media (width >= 64rem) {
+			grid-template-columns: max-content repeat(30, minmax(0, 1fr));
+
+			&:first-child {
+				grid-template-rows: auto auto;
+			}
+		}
+
+		.fi-fo-repeater-item-content {
+			display: contents;
+
+			> .fi-sc {
+				display: grid;
+				grid-template-columns: subgrid;
+				grid-template-rows: subgrid;
+				grid-row: 1 / -1;
+				grid-column: 2 / -1;
+				gap: calc(var(--spacing) * 2);
+			}
+
+			.fi-grid-col:not(.fi-hidden),
+			.fi-sc-component,
+			.fi-fo-field {
+				display: grid;
+				grid-template-rows: subgrid;
+				grid-row: 1 / -1;
+			}
+		}
+
+		/* Delete button */
+		.fi-fo-repeater-item-header {
+			display: grid;
+			grid-template-columns: subgrid;
+			grid-template-rows: subgrid;
+			grid-column: 1;
+			grid-row: 1 / -1;
+			padding: 0;
+
+			.fi-fo-repeater-item:first-child & {
+				.fi-fo-repeater-item-header-end-actions {
+					grid-row: 2;
+				}
+			}
+		}
 
 		/* Labels */
 		&:not(:first-child) {
@@ -68,33 +118,31 @@ html:has(.fi-resource-orders) {
 			}
 		}
 
-		/* Content */
-		.fi-fo-repeater-item-content {
-			border: 1px solid var(--color-slate-800);
-			border-radius: var(--radius-lg);
-		}
-
-		.fi-sc {
-			gap: calc(var(--spacing) * 2);
-		}
-
 		/* Checkbox */
 		.fi-sc-component:has(input[type='checkbox']) {
-			display: flex;
-			align-items: flex-end;
 			justify-content: center;
-			translate: 0 -0.5rem;
-		}
 
-		/* Delete button */
-		.fi-fo-repeater-item-header {
-			display: contents;
+			.fi-fo-field,
+			.fi-fo-field-label-col {
+				align-items: center;
+			}
+
+			.fi-fo-repeater-item:first-child & {
+				.fi-fo-field {
+					grid-row: 2;
+				}
+			}
 		}
 
 		.fi-ac-icon-btn-action {
 			width: unset;
 			height: unset;
 			margin: unset;
+		}
+
+		/* Select inputs */
+		.fi-select-input-value-label {
+			@apply line-clamp-1;
 		}
 	}
 }
