@@ -19,11 +19,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Livewire\Component;
 
 class OrdersTable {
@@ -31,7 +30,7 @@ class OrdersTable {
         return $table
             ->defaultSort('id', 'desc')
             ->query(
-                Order::query()->with('order_items.product')
+                Order::query()
             )
             ->columns([
                 TextColumn::make('id')
@@ -87,9 +86,21 @@ class OrdersTable {
                             ->default([1, 2, 3, 4, 5, 6]),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! empty($data['statuses'])) {
-                            $query->whereIn('status', $data['statuses']);
+                        $statuses = array_values(array_filter($data['statuses'] ?? []));
+
+                        if ($statuses === []) {
+                            return;
                         }
+
+                        $query->where(function (Builder $q) use ($statuses) {
+                            $q->whereIn('orders.status', $statuses)
+                                ->orWhereExists(function (QueryBuilder $sub) use ($statuses) {
+                                    $sub->selectRaw('1')
+                                        ->from('order_items')
+                                        ->whereColumn('order_items.order_id', 'orders.id')
+                                        ->whereIn('order_items.status', $statuses);
+                                });
+                        });
                     })->columnSpan(2),
 
                 TernaryFilter::make('billed')
