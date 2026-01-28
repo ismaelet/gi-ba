@@ -60,7 +60,13 @@ class EditOrder extends EditRecord {
                 'created_at',
                 'updated_at',
                 'status',
-                'billed'
+                'billed',
+                'total_discount',
+                'down_payment',
+                'down_payment_with_vat',
+                'fixed_discount',
+                'discount_with_vat',
+                'percentage_discount',
             ]);
 
             $copy->created_at = now();
