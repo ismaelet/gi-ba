@@ -120,7 +120,14 @@ html:has(.fi-resource-orders) {
 
 		/* Checkbox */
 		.fi-sc-component:has(input[type='checkbox']) {
-			justify-content: center;
+			justify-items: center;
+
+			.fi-fo-repeater-item:first-child &::before {
+				content: 'IVA';
+				font-size: var(--text-sm);
+				line-height: var(--tw-leading, var(--text-sm--line-height));
+				font-weight: var(--font-weight-medium);
+			}
 
 			.fi-fo-field,
 			.fi-fo-field-label-col {
@@ -131,6 +138,13 @@ html:has(.fi-resource-orders) {
 				.fi-fo-field {
 					grid-row: 2;
 				}
+			}
+
+			.fi-fo-field-label-content {
+				display: none;
+			}
+
+			.fi-fo-field-label-ctn {
 			}
 		}
 
@@ -143,6 +157,63 @@ html:has(.fi-resource-orders) {
 		/* Select inputs */
 		.fi-select-input-value-label {
 			@apply line-clamp-1;
+		}
+	}
+
+	/* Total panel */
+	.total-panel {
+		display: grid;
+		justify-content: end;
+
+		> .fi-sc {
+			width: fit-content;
+			grid-template-columns: repeat(2, auto);
+			row-gap: 0.5rem;
+			column-gap: 3rem;
+
+			.fi-grid-col:not(.fi-hidden),
+			.fi-sc-component,
+			.fi-sc-component,
+			.fi-fo-field {
+				display: grid;
+				grid-template-columns: subgrid;
+				grid-column: 1 / -1;
+			}
+		}
+
+		.fi-fo-field-label-col {
+			display: block;
+			height: unset;
+		}
+
+		.fi-fo-field-label-content {
+			color: var(--color-gray-500);
+			font-size: 1.125rem;
+		}
+
+		.fi-fo-field-content-col,
+		.fi-input-wrp {
+			display: contents;
+		}
+
+		.fi-input-wrp-content-ctn {
+			display: flex;
+			min-width: unset;
+		}
+
+		.fi-input-wrp-content-ctn::after {
+			content: '€';
+			font-size: 1.125rem;
+		}
+
+		.fi-input {
+			width: 5rem;
+			padding: 0;
+			background: none;
+			border: none;
+			outline: none;
+			box-shadow: none;
+			font-size: 1.125rem;
 		}
 	}
 }

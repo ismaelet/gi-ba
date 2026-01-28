@@ -313,7 +313,7 @@ class OrderForm {
                                     self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
                                 });
                             })
-                            ->columnSpan(2),
+                            ->columnSpan(1),
 
                         TextInput::make('total_price_gross')
                             ->label('Totale')
@@ -334,7 +334,8 @@ class OrderForm {
                     ->defaultItems(1)
                     ->required(),
 
-                Fieldset::make('Totale')
+                Group::make()
+                    ->extraAttributes(['class' => 'total-panel'])
                     ->schema([
                         TextInput::make('price_net')
                             ->label('Imponibile')
@@ -348,11 +349,13 @@ class OrderForm {
                             ->readOnly(),
                         TextInput::make('down_payment')
                             ->label('Acconto')
+                            ->visible(fn($state) => self::parseToFloat($state) > 0)
                             ->dehydrated(false)
                             ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
                             ->readOnly(),
                         TextInput::make('total_discount')
                             ->label('Sconto')
+                            ->visible(fn($state) => self::parseToFloat($state) > 0)
                             ->dehydrated(false)
                             ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
                             ->readOnly(),

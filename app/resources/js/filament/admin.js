@@ -1,3 +1,6 @@
+/**
+ * Clipboard Copy Event Listener
+ */
 window.addEventListener('clipboard:copy', async (e) => {
 	const text = e.detail?.text ?? ''
 	if (!text) return
@@ -17,6 +20,20 @@ window.addEventListener('clipboard:copy', async (e) => {
 })
 
 document.addEventListener('DOMContentLoaded', () => {
+	// Set the title attribute for file select inputs to show full filename on hover
+	const fileSelectInputs = document.querySelectorAll('.fi-select-input')
+
+	fileSelectInputs.forEach((input) => {
+		input.addEventListener('mouseover', () => {
+			const label = input.querySelector('.fi-select-input-value-label')
+
+			if (label) {
+				input.title = label.textContent
+			}
+		})
+	})
+
+	// Auto open file picker on repeater item add
 	document.addEventListener('click', (e) => {
 		const addButton = e.target.closest('.fi-fo-repeater-add .fi-ac-btn-action')
 		if (!addButton) return
