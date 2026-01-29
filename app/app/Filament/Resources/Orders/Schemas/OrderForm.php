@@ -96,7 +96,16 @@ class OrderForm {
                                     ->autosize(),
                             ])
                             ->createOptionUsing(function (array $data): int {
-                                $customer = \App\Models\Customer::create($data);
+                                if (Customer::where('name', $data['name'])->exists()) {
+                                    Notification::make()
+                                        ->title('Errore: esiste già un cliente con questo nome')
+                                        ->danger()
+                                        ->send();
+
+                                    return Customer::where('name', $data['name'])->value('id');
+                                }
+
+                                $customer = Customer::create($data);
 
                                 Notification::make()
                                     ->title('Cliente creato')
@@ -238,7 +247,41 @@ class OrderForm {
 
                                 self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
                             })
-                            ->columnSpan(6),
+                            ->columnSpan(6)
+
+                            // Create product option
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('Nome prodotto')
+                                    ->placeholder('Nome prodotto')
+                                    ->required()
+                                    ->maxLength(255)
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                if (Product::where('name', $data['name'])->exists()) {
+                                    Notification::make()
+                                        ->title('Errore: esiste già un prodotto con questo nome')
+                                        ->danger()
+                                        ->send();
+
+                                    return Product::where('name', $data['name'])->value('id');
+                                }
+
+                                $product = Product::create($data);
+
+                                Notification::make()
+                                    ->title('Prodotto creato')
+                                    ->success()
+                                    ->send();
+
+                                return $product->getKey();
+                            })
+                            ->createOptionAction(function ($action) {
+                                return $action
+                                    ->label('Nuovo prodotto')
+                                    ->modalHeading('Crea prodotto')
+                                    ->modalSubmitActionLabel('Crea');
+                            }),
 
                         TextInput::make('info')
                             ->label('Dettagli')
@@ -264,7 +307,9 @@ class OrderForm {
 
                         Select::make('status')
                             ->label('Stato')
-                            ->default('1')
+                            ->default(function (Get $get) {
+                                return $get('../../status') ?? '1';
+                            })
                             ->live()
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
@@ -485,7 +530,7 @@ class OrderForm {
         return (float) str_replace(',', '.', preg_replace('/[^0-9,\.]/', '', $number ?: 0));
     }
 
-    private static function extraAttributesForPrices(): array {
+    public static function extraAttributesForPrices(): array {
         return [
             'type' => 'text',
             'inputmode' => 'decimal',
@@ -504,7 +549,7 @@ class OrderForm {
         ];
     }
 
-    private static function extraAttributesForInt(): array {
+    public static function extraAttributesForInt(): array {
         return [
             'type' => 'text',
             'inputmode' => 'numeric',
