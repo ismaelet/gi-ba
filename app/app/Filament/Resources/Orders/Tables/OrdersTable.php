@@ -76,6 +76,7 @@ class OrdersTable {
                     ->sortable()
                     ->dateTime('d/m/Y'),
             ])
+            ->searchable(['customer.info', 'customer.phone', 'order_items.info'])
             ->filters([
                 Filter::make('status')
                     ->schema([
