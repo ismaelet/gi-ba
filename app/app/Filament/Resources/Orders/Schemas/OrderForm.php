@@ -238,7 +238,7 @@ class OrderForm {
 
                                 self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
                             })
-                            ->columnSpan(10)
+                            ->columnSpan(9)
 
                             // Copy product name action
                             ->suffixAction(
@@ -290,6 +290,7 @@ class OrderForm {
                                     ->modalSubmitActionLabel('Crea');
                             }),
 
+                        // Product info
                         TextInput::make('info')
                             ->label('Dettagli')
                             ->placeholder('Informazioni aggiuntive sul prodotto')
@@ -530,31 +531,62 @@ class OrderForm {
     }
 
     private static function parseNumber(?string $number): string {
-        return number_format((float) str_replace(',', '.', preg_replace('/[^0-9,\.]/', '', $number ?: 0)), 2, '.', '');
+        return number_format((float) self::sanitizeNumber($number), 2, '.', '');
     }
 
     private static function parseToFloat(?string $number): float {
-        return (float) str_replace(',', '.', preg_replace('/[^0-9,\.]/', '', $number ?: 0));
+        return (float) self::sanitizeNumber($number);
+    }
+
+    private static function sanitizeNumber(?string $number): string {
+        $value = str_replace(',', '.', $number ?? '0');
+
+        // keep digits, dot and minus
+        $value = preg_replace('/[^0-9\.-]/', '', $value);
+
+        // allow only ONE minus, and only at the beginning
+        $value = preg_replace('/(?!^)-/', '', $value);
+
+        // allow only ONE dot
+        $value = preg_replace('/(\..*)\./', '$1', $value);
+
+        return $value;
     }
 
     public static function extraAttributesForPrices(): array {
         return [
             'type' => 'text',
             'inputmode' => 'decimal',
-            'oninput' => "let v = this.value
+            'oninput' => "
+            let v = this.value
+                .replace(/,/g, '.')
+                // keep digits, dot and minus
+                .replace(/[^0-9.-]/g, '')
+                // allow only ONE minus, and only at start
+                .replace(/(?!^)-/g, '')
+                // allow only ONE dot
+                .replace(/(\..*)\./g, '$1');
+
+            const parts = v.split('.');
+            if (parts.length === 2) {
+                parts[1] = parts[1].slice(0, 2);
+            }
+
+            this.value = parts.join('.');
+        ",
+            'onblur' => "
+            let v = parseFloat(
+                this.value
                     .replace(/,/g, '.')
-                    .replace(/[^0-9.]/g, '')
-                    .replace(/(\..*)\./g, '$1');
-                const parts = v.split('.');
-                if (parts.length === 2) parts[1] = parts[1].slice(0, 2);
-                this.value = parts.join('.');
-            ",
-            'onblur' => "let v = parseFloat(this.value.replace(/,/g, '.').replace(/[^0-9.]/g, ''));
-                if (isNaN(v)) v = 0;
-                this.value = v.toFixed(2);
-            ",
+                    .replace(/[^0-9.-]/g, '')
+            );
+
+            if (isNaN(v)) v = 0;
+            this.value = v.toFixed(2);
+        ",
         ];
     }
+
 
     public static function extraAttributesForInt(): array {
         return [
