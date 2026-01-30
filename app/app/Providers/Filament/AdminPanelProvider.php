@@ -2,12 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -47,6 +49,14 @@ class AdminPanelProvider extends PanelProvider {
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->userMenuItems([
+                Action::make('emergency_exit')
+                    ->action(fn() => redirect()->route('admin.emergency-exit'))
+                    ->color('danger')
+                    ->label('Emergency Exit')
+                    ->requiresConfirmation()
+                    ->icon(Heroicon::ArrowLeftOnRectangle),
             ])
             ->sidebarCollapsibleOnDesktop()
             ->favicon(asset('favicon.ico'))

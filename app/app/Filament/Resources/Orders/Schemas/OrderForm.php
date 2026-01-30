@@ -58,17 +58,8 @@ class OrderForm {
                                     ->icon(Heroicon::ClipboardDocumentList)
                                     ->tooltip('Copia nome cliente')
                                     ->color('gray')
-                                    ->disabled(fn(Get $get) => blank(data_get($get('customer_data'), 'phone')))
                                     ->action(function (Get $get, $livewire) {
-                                        $customerId = $get('customer_id');
-
-                                        $name = Customer::whereKey($customerId)->value('name');
-
-                                        if (!$name) {
-                                            return;
-                                        }
-
-                                        $livewire->dispatch('clipboard:copy', text: $name);
+                                        $livewire->dispatch('clipboard:copy', text: Customer::whereKey($get('customer_id'))->value('name'));
 
                                         Notification::make()
                                             ->title('Copiato negli appunti')
@@ -247,7 +238,23 @@ class OrderForm {
 
                                 self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
                             })
-                            ->columnSpan(6)
+                            ->columnSpan(10)
+
+                            // Copy product name action
+                            ->suffixAction(
+                                Action::make('copy')
+                                    ->icon(Heroicon::ClipboardDocumentList)
+                                    ->tooltip('Copia nome prodotto')
+                                    ->color('gray')
+                                    ->action(function (Get $get, $livewire) {
+                                        $livewire->dispatch('clipboard:copy', text: Product::whereKey($get('product_id'))->value('name'));
+
+                                        Notification::make()
+                                            ->title('Copiato negli appunti')
+                                            ->success()
+                                            ->send();
+                                    })
+                            )
 
                             // Create product option
                             ->createOptionForm([
@@ -291,7 +298,7 @@ class OrderForm {
                                 'x-on:focus'      => '$el.title = $el.value',
                                 'x-on:input'      => '$el.title = $el.value',
                             ])
-                            ->columnSpan(10),
+                            ->columnSpan(8),
 
                         TextInput::make('quantity')
                             ->label('Qty')
