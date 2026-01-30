@@ -38,7 +38,7 @@ class EditOrder extends EditRecord {
     public function mount($record): void {
         parent::mount($record);
 
-        $this->returnUrl = $this->getNormalizeReturnUrl();
+        // $this->returnUrl = $this->getNormalizeReturnUrl();
     }
 
     /**

@@ -20,7 +20,7 @@ class CreateOrder extends CreateRecord {
     public function mount(): void {
         parent::mount();
 
-        $this->returnUrl = $this->getNormalizeReturnUrl();
+        // $this->returnUrl = $this->getNormalizeReturnUrl();
     }
 
     protected function afterCreate(): void {

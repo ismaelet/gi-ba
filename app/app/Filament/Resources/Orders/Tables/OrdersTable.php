@@ -36,6 +36,9 @@ class OrdersTable {
                 TextColumn::make('id')
                     ->label('ID')
                     ->sortable()
+                    ->extraAttributes(fn(Order $record): array => [
+                        'id' => 'order-id-' . $record->id,
+                    ])
                     ->searchable(),
 
                 TextColumn::make('customer.name')
@@ -143,7 +146,7 @@ class OrdersTable {
                     EditAction::make()
                         ->url(fn($record) => OrderResource::getUrl('edit', [
                             'record' => $record,
-                            'return' => self::currentListUrl(),
+                            'return' => self::currentListUrl($record),
                         ])),
 
                     Action::make('download-quote')
@@ -206,7 +209,7 @@ class OrdersTable {
             ])
             ->recordUrl(fn($record) => OrderResource::getUrl('edit', [
                 'record' => $record,
-                'return' => self::currentListUrl(),
+                'return' => self::currentListUrl($record),
             ]))
             ->headerActions([
                 Action::make('selectAllStatuses')
@@ -262,11 +265,12 @@ class OrdersTable {
             ]);
     }
 
-    private static function currentListUrl(): string {
-        // If we're already carrying a return, reuse it (prevents nesting)
+    private static function currentListUrl(Order $record): string {
         $return = request()->query('return');
+        $fragment = 'order-id-' . $record->id;
+
         if (filled($return)) {
-            return self::sanitizeReturnUrl($return) ?? OrderResource::getUrl('index');
+            return (self::sanitizeReturnUrl($return) ?? OrderResource::getUrl('index')) . '#' . $fragment;
         }
 
         // On the list page, this includes filters/search/sort query string:
@@ -277,12 +281,12 @@ class OrdersTable {
             $sanitized = self::sanitizeReturnUrl($referer);
 
             if (filled($sanitized) && self::isOrdersIndexPath($sanitized)) {
-                return $sanitized;
+                return $sanitized . '#' . $fragment;
             }
         }
 
         // Fallback: index (no filters)
-        return OrderResource::getUrl('index');
+        return OrderResource::getUrl('index') . '#' . $fragment;
     }
 
     private static function sanitizeReturnUrl(string $url): ?string {

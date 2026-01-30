@@ -142,3 +142,10 @@
 .bg-billed-true {
 	background-color: var(--color-billed-true);
 }
+
+/*
+* Scrolling
+*/
+html {
+	scroll-padding-top: 6rem;
+}
