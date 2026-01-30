@@ -29,6 +29,7 @@ class OrdersTable {
     public static function configure(Table $table): Table {
         return $table
             ->defaultSort('id', 'desc')
+            ->defaultPaginationPageOption(50)
             ->query(
                 Order::query()
             )
