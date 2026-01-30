@@ -9,12 +9,6 @@ use Livewire\Attributes\Url;
 trait HandleOrderPageLogic {
 
     /**
-     * Property: The URL to return to after saving the record
-     */
-    #[Url(as: 'return')]
-    public ?string $returnUrl = null;
-
-    /**
      * Update the order and related data
      */
     protected function updateOrder(): void {
@@ -43,45 +37,24 @@ trait HandleOrderPageLogic {
     }
 
     /**
-     * Normalize a candidate return URL to ensure it's safe and valid
+     * Store the return URL in the session
      */
-    protected function getNormalizeReturnUrl(): string {
-        $candidate = request()->query('return') ?? request()->header('referer') ?? url()->previous();
+    protected function storeReturnUrlInSession(): void {
+        $returnUrl = request()->query('return_url');
 
-        $indexUrl  = static::getResource()::getUrl('index');
-        $indexPath = parse_url($indexUrl, PHP_URL_PATH) ?? $indexUrl;
+        if ($returnUrl && Str::startsWith($returnUrl, ['/admin', static::getResource()::getUrl('index')])) {
+            session()->put('orders.return_url', $returnUrl);
+        }
+    }
 
-        $fallback = $indexPath;
-
-        if (!filled($candidate)) {
-            return $fallback;
+    /**
+     * Get the return URL from the session or default to the index page
+     */
+    protected function getReturnUrlFromSession(): string {
+        if (session()->has('orders.return_url')) {
+            return session()->pull('orders.return_url');
         }
 
-        $parts = parse_url($candidate);
-        if ($parts === false) {
-            return $fallback;
-        }
-
-        $path = $parts['path'] ?? null;
-        if (!filled($path)) {
-            return $fallback;
-        }
-
-        if (!empty($parts['host'])) {
-            $appHost = parse_url(config('app.url'), PHP_URL_HOST);
-            if ($appHost && !Str::is($appHost, $parts['host'])) {
-                return $fallback;
-            }
-        }
-
-        if (rtrim($path, '/') !== rtrim($indexPath, '/')) {
-            return $fallback;
-        }
-
-        $query = isset($parts['query']) && filled($parts['query'])
-            ? ('?' . $parts['query'])
-            : '';
-
-        return $indexPath . $query;
+        return static::getResource()::getUrl('index');
     }
 }

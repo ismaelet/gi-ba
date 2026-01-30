@@ -36,9 +36,9 @@ class EditOrder extends EditRecord {
      * Filament Method: Mount the edit page with the given record
      */
     public function mount($record): void {
-        parent::mount($record);
+        $this->storeReturnUrlInSession();
 
-        // $this->returnUrl = $this->getNormalizeReturnUrl();
+        parent::mount($record);
     }
 
     /**
@@ -48,7 +48,9 @@ class EditOrder extends EditRecord {
         $this->updateOrder();
 
         // Redirect to the list page
-        $this->redirect($this->returnUrl);
+        $this->redirect(
+            $this->getReturnUrlFromSession()
+        );
     }
 
     protected function duplicateRecord(): void {

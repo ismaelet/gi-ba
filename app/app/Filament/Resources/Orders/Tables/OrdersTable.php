@@ -144,9 +144,9 @@ class OrdersTable {
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make()
-                        ->url(fn($record) => OrderResource::getUrl('edit', [
+                        ->url(fn(Order $record, Component $livewire) => OrderResource::getUrl('edit', [
                             'record' => $record,
-                            'return' => self::currentListUrl($record),
+                            'return_url' => self::currentListUrl($record, $livewire),
                         ])),
 
                     Action::make('download-quote')
@@ -207,9 +207,9 @@ class OrdersTable {
                         }),
                 ]),
             ])
-            ->recordUrl(fn($record) => OrderResource::getUrl('edit', [
+            ->recordUrl(fn(Order $record, Component $livewire) => OrderResource::getUrl('edit', [
                 'record' => $record,
-                'return' => self::currentListUrl($record),
+                'return_url' => self::currentListUrl($record, $livewire),
             ]))
             ->headerActions([
                 Action::make('selectAllStatuses')
@@ -265,18 +265,28 @@ class OrdersTable {
             ]);
     }
 
-    private static function currentListUrl(Order $record): string {
-        $return = request()->query('return');
+    private static function currentListUrl(Order $record, ?Component $livewire = null): string {
         $fragment = 'order-id-' . $record->id;
 
-        if (filled($return)) {
-            return (self::sanitizeReturnUrl($return) ?? OrderResource::getUrl('index')) . '#' . $fragment;
+        // 1) Best: build from Livewire state (this updates when you paginate)
+        if ($livewire) {
+            $filtersFormState = $livewire->getTableFiltersForm()?->getState() ?? [];
+
+            $params = array_filter([
+                'filters' => $filtersFormState ?: null,
+                'search' => method_exists($livewire, 'getTableSearch') ? ($livewire->getTableSearch() ?: null) : null,
+                'sortColumn' => method_exists($livewire, 'getTableSortColumn') ? ($livewire->getTableSortColumn() ?: null) : null,
+                'sortDirection' => method_exists($livewire, 'getTableSortDirection') ? ($livewire->getTableSortDirection() ?: null) : null,
+
+                // pagination: Filament uses tablePage in most setups
+                'page' => method_exists($livewire, 'getTablePage') ? ($livewire->getTablePage() ?: null) : null,
+            ], fn($v) => $v !== null);
+
+            return OrderResource::getUrl('index', $params) . '#' . $fragment;
         }
 
-        // On the list page, this includes filters/search/sort query string:
+        // 2) Fallback: referer (only works for full page loads)
         $referer = request()->header('referer');
-
-        // If referer exists, use it (but sanitize + ensure it's the index path)
         if (filled($referer)) {
             $sanitized = self::sanitizeReturnUrl($referer);
 
@@ -285,7 +295,7 @@ class OrdersTable {
             }
         }
 
-        // Fallback: index (no filters)
+        // 3) Final fallback
         return OrderResource::getUrl('index') . '#' . $fragment;
     }
 
@@ -300,7 +310,7 @@ class OrdersTable {
         $query = [];
         if (! empty($parts['query'])) {
             parse_str($parts['query'], $query);
-            unset($query['return']); // prevent nesting
+            unset($query['return_url']);
         }
 
         $qs = $query ? ('?' . http_build_query($query)) : '';

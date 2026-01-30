@@ -18,9 +18,9 @@ class CreateOrder extends CreateRecord {
      * Filament Method: Mount the edit page with the given record
      */
     public function mount(): void {
-        parent::mount();
+        $this->storeReturnUrlInSession();
 
-        // $this->returnUrl = $this->getNormalizeReturnUrl();
+        parent::mount();
     }
 
     protected function afterCreate(): void {
@@ -28,7 +28,6 @@ class CreateOrder extends CreateRecord {
     }
 
     protected function getRedirectUrl(): string {
-        return $this->returnUrl
-            ?: static::getResource()::getUrl('index');
+        return $this->getReturnUrlFromSession();
     }
 }
