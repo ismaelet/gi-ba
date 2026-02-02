@@ -2,428 +2,37 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
-use App\Models\Customer;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use Dom\Text;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 
 class OrderForm {
+
+    use CustomerSchema, OrderSchema, DiscountsSchema, OrderItemsSchema, TotalSchema;
+
+    /**
+     * Property: The VAT rate used for calculations
+     */
     private const VAT = 0.22;
 
     public static function configure(Schema $schema): Schema {
         return $schema
             ->components([
-                Hidden::make('_internal_update')
-                    ->dehydrated(false)
-                    ->live()
-                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                        dump('Internal update state changed to: ' . ($state ? 'true' : 'false'));
-                    })
-                    ->default(false),
+                // Customer data fieldset
+                self::getCustomerSchema(),
 
-                Fieldset::make('Dati del cliente')
-                    ->schema([
-                        Select::make('customer_id')
-                            ->label('Cliente')
-                            ->relationship('customer', 'name')
-                            ->searchable(['name', 'phone'])
-                            ->required()
-                            ->live()
-                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                                $customer = filled($state) ? Customer::find($state) : null;
+                // Order data fieldset
+                self::getOrderSchema(),
 
-                                $set('customer_data', [
-                                    'phone' => $customer?->phone ?? '',
-                                    'info'  => $customer?->info  ?? '',
-                                ]);
-                            })
-                            ->suffixAction(
-                                Action::make('copy')
-                                    ->icon(Heroicon::ClipboardDocumentList)
-                                    ->tooltip('Copia nome cliente')
-                                    ->color('gray')
-                                    ->action(function (Get $get, $livewire) {
-                                        $livewire->dispatch('clipboard:copy', text: Customer::whereKey($get('customer_id'))->value('name'));
+                // Discounts and down payment fieldset
+                self::getDiscountsSchema(),
 
-                                        Notification::make()
-                                            ->title('Copiato negli appunti')
-                                            ->success()
-                                            ->send();
-                                    })
-                            )
+                // Order items repeater
+                self::getOrderItemsSchema(),
 
-                            // Customer creation form
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label('Nome completo')
-                                    ->placeholder('Nome completo')
-                                    ->required()
-                                    ->maxLength(255),
-
-                                TextInput::make('phone')
-                                    ->label('Numero di telefono')
-                                    ->placeholder('Numero di telefono')
-                                    ->maxLength(50),
-
-                                Textarea::make('info')
-                                    ->label('Dettagli cliente')
-                                    ->placeholder('Dettagli cliente')
-                                    ->autosize(),
-                            ])
-                            ->createOptionUsing(function (array $data): int {
-                                if (Customer::where('name', $data['name'])->exists()) {
-                                    Notification::make()
-                                        ->title('Errore: esiste già un cliente con questo nome')
-                                        ->danger()
-                                        ->send();
-
-                                    return Customer::where('name', $data['name'])->value('id');
-                                }
-
-                                $customer = Customer::create($data);
-
-                                Notification::make()
-                                    ->title('Cliente creato')
-                                    ->success()
-                                    ->send();
-
-                                return $customer->getKey();
-                            })
-                            ->createOptionAction(function ($action) {
-                                return $action
-                                    ->label('Nuovo cliente')
-                                    ->modalHeading('Crea cliente')
-                                    ->modalSubmitActionLabel('Crea');
-                            }),
-
-                        Group::make()
-                            ->statePath('customer_data')
-                            ->visible(fn(Get $get) => filled($get('customer_id')))
-                            ->schema([
-                                TextInput::make('phone')
-                                    ->label('Numero di telefono')
-                                    ->placeholder('Numero di telefono')
-                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('phone', $record?->customer?->phone ?? ''))
-                                    ->copyable(),
-                                Textarea::make('info')
-                                    ->label('Dettagli cliente')
-                                    ->placeholder('Dettagli cliente')
-                                    ->autosize()
-                                    ->afterStateHydrated(fn(?Order $record, Set $set) => $set('info', $record?->customer?->info ?? '')),
-                            ]),
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
-
-                Fieldset::make('Dati dell\'ordine')
-                    ->schema([
-                        TextInput::make('id')
-                            ->label('Numero dell\'ordine')
-                            ->placeholder('Numero dell\'ordine')
-                            ->readOnly()
-                            ->dehydrated(false)
-                            ->visible(fn(?Order $record) => filled($record))
-                            ->copyable(),
-
-                        DatePicker::make('created_at')
-                            ->label('Data')
-                            ->default(now())
-                            ->readOnly()
-                            ->columnSpan(fn(?Order $record) => filled($record) ? 1 : 2),
-
-                        Select::make('status')
-                            ->label('Stato')
-                            ->default('1')
-                            ->options(
-                                collect(config('ecommerce.order_statuses'))
-                                    ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
-                                    ->toArray()
-                            )
-                            ->extraInputAttributes(fn(callable $get) => [
-                                'class' => 'text-status-' . $get('status'),
-                            ])
-                            ->live()
-                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                                self::updateOrderItemsStatuses($state, $get, $set);
-                            })
-                            ->required()
-                            ->columnSpanFull(),
-
-                        Checkbox::make('billed')
-                            ->label('Fatturato'),
-                        Checkbox::make('print_descriptions')
-                            ->label('Stampa dettagli articoli')
-                            ->default(true),
-                        Checkbox::make('print_notes')
-                            ->label('Stampa note'),
-                        Checkbox::make('print_status')
-                            ->label('Stampa stato ordine'),
-                        Checkbox::make('always_print_prices')
-                            ->label('Stampa i prezzi nella bolla'),
-                        Checkbox::make('print_total')
-                            ->label('Stampa il totale')
-                            ->default(true),
-                    ]),
-
-                Fieldset::make('Acconti e sconti')
-                    ->schema([
-                        TextInput::make('down_payment')
-                            ->label('Acconto')
-                            ->suffix('€')
-                            ->default('0.00')
-                            ->step(0.01)
-                            ->formatStateUsing(fn($state) => self::parseNumber($state)),
-                        Checkbox::make('down_payment_with_vat')
-                            ->label('L\'acconto è comprensivo di IVA'),
-                        TextInput::make('fixed_discount')
-                            ->label('Sconto fisso')
-                            ->suffix('€')
-                            ->default('0.00')
-                            ->step(0.01)
-                            ->formatStateUsing(fn($state) => self::parseNumber($state)),
-                        Checkbox::make('discount_with_vat')
-                            ->label('Lo sconto fisso è comprensivo di IVA'),
-                        TextInput::make('percentage_discount')
-                            ->label('Sconto percentuale')
-                            ->suffix('%')
-                            ->numeric()
-                            ->step(0.01)
-                            ->default('0'),
-                    ])->columns(1),
-
-                Repeater::make('order_items')
-                    ->label('Articoli dell\'ordine')
-                    ->addActionLabel('+')
-                    ->relationship()
-                    ->schema([
-                        Hidden::make('real_unit_price_net')
-                            ->dehydrated(false)
-                            ->afterStateHydrated(function (Set $set, ?OrderItem $record) {
-                                $set('real_unit_price_net', $record?->unit_price_net);
-                            }),
-
-                        Select::make('product_id')
-                            ->label('Prodotto')
-                            ->relationship('product', 'name')
-                            ->searchable()
-                            ->required()
-                            ->live()
-                            ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                                if ((float) $get('unit_price_net') > 0) {
-                                    return;
-                                }
-
-                                $product = filled($state) ? Product::find($state) : null;
-                                $customer = Customer::find($get('../../customer_id'));
-                                $unitPriceNet = (float) ($customer ? OrderItem::where('product_id', $state)
-                                    ->whereHas('order.customer', fn($query) => $query->whereKey($customer->getKey()))
-                                    ->orderByDesc('created_at')
-                                    ->value('unit_price_net') : $product?->price);
-
-                                self::updatePrices(get: $get, set: $set, unitPriceNet: $unitPriceNet);
-                            })
-                            ->columnSpan(9)
-
-                            // Copy product name action
-                            ->suffixAction(
-                                Action::make('copy')
-                                    ->icon(Heroicon::ClipboardDocumentList)
-                                    ->tooltip('Copia nome prodotto')
-                                    ->color('gray')
-                                    ->action(function (Get $get, $livewire) {
-                                        $livewire->dispatch('clipboard:copy', text: Product::whereKey($get('product_id'))->value('name'));
-
-                                        Notification::make()
-                                            ->title('Copiato negli appunti')
-                                            ->success()
-                                            ->send();
-                                    })
-                            )
-
-                            // Create product option
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label('Nome prodotto')
-                                    ->placeholder('Nome prodotto')
-                                    ->required()
-                                    ->maxLength(255)
-                            ])
-                            ->createOptionUsing(function (array $data): int {
-                                if (Product::where('name', $data['name'])->exists()) {
-                                    Notification::make()
-                                        ->title('Errore: esiste già un prodotto con questo nome')
-                                        ->danger()
-                                        ->send();
-
-                                    return Product::where('name', $data['name'])->value('id');
-                                }
-
-                                $product = Product::create($data);
-
-                                Notification::make()
-                                    ->title('Prodotto creato')
-                                    ->success()
-                                    ->send();
-
-                                return $product->getKey();
-                            })
-                            ->createOptionAction(function ($action) {
-                                return $action
-                                    ->label('Nuovo prodotto')
-                                    ->modalHeading('Crea prodotto')
-                                    ->modalSubmitActionLabel('Crea');
-                            }),
-
-                        // Product info
-                        TextInput::make('info')
-                            ->label('Dettagli')
-                            ->placeholder('Informazioni aggiuntive sul prodotto')
-                            ->extraInputAttributes([
-                                'x-on:mouseenter' => '$el.title = $el.value',
-                                'x-on:focus'      => '$el.title = $el.value',
-                                'x-on:input'      => '$el.title = $el.value',
-                            ])
-                            ->columnSpan(8),
-
-                        TextInput::make('quantity')
-                            ->label('Qty')
-                            ->default(1)
-                            ->live(onBlur: true)
-                            ->extraInputAttributes(self::extraAttributesForInt())
-                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
-                                self::runInternally($get, $set, function () use ($component, $get, $set) {
-                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
-                                });
-                            })
-                            ->columnSpan(2),
-
-                        Select::make('status')
-                            ->label('Stato')
-                            ->default(function (Get $get) {
-                                return $get('../../status') ?? '1';
-                            })
-                            ->live()
-                            ->options(
-                                collect(config('ecommerce.order_statuses'))
-                                    ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
-                                    ->toArray()
-                            )
-                            ->extraInputAttributes(fn(callable $get) => ['class' => 'text-status-' . $get('status'),])
-                            ->afterStateUpdated(fn(callable $set, callable $get) => self::updateOrderStatus($get, $set))
-                            ->required()
-                            ->columnSpan(4),
-
-                        TextInput::make('unit_price_net')
-                            ->label('Pr. netto')
-                            ->default(0)
-                            ->live(onBlur: true)
-                            ->extraInputAttributes(self::extraAttributesForPrices())
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
-                                self::runInternally($get, $set, function () use ($component, $get, $set) {
-                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
-                                });
-                            })
-                            ->columnSpan(2),
-
-                        TextInput::make('unit_price_gross')
-                            ->label('Pr. ivato')
-                            ->default(0)
-                            ->live(onBlur: true)
-                            ->extraInputAttributes(self::extraAttributesForPrices())
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
-                                self::runInternally($get, $set, function () use ($component, $get, $set) {
-                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
-                                });
-                            })
-                            ->columnSpan(2),
-
-                        Checkbox::make('has_vat')
-                            ->label('IVA')
-                            ->default(true)
-                            ->live()
-                            ->afterStateUpdated(function (Checkbox $component, Get $get, Set $set) {
-                                self::runInternally($get, $set, function () use ($component, $get, $set) {
-                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
-                                });
-                            })
-                            ->columnSpan(1),
-
-                        TextInput::make('total_price_gross')
-                            ->label('Totale')
-                            ->default(0)
-                            ->live(onBlur: true)
-                            ->extraInputAttributes(self::extraAttributesForPrices())
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->dehydrateStateUsing(fn($state) => self::parseToFloat($state))
-                            ->afterStateUpdated(function (TextInput $component, Get $get, Set $set) {
-                                self::runInternally($get, $set, function () use ($component, $get, $set) {
-                                    self::updatePrices(get: $get, set: $set, fieldName: $component->getName());
-                                });
-                            })
-                            ->columnSpan(2),
-                    ])
-                    ->columns(30)
-                    ->columnSpanFull()
-                    ->defaultItems(1)
-                    ->required(),
-
-                Group::make()
-                    ->extraAttributes(['class' => 'total-panel'])
-                    ->schema([
-                        TextInput::make('price_net')
-                            ->label('Imponibile')
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->dehydrated(false)
-                            ->readOnly(),
-                        TextInput::make('vat')
-                            ->label('IVA')
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->dehydrated(false)
-                            ->readOnly(),
-                        TextInput::make('down_payment')
-                            ->label('Acconto')
-                            ->visible(fn($state) => self::parseToFloat($state) > 0)
-                            ->dehydrated(false)
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->readOnly(),
-                        TextInput::make('total_discount')
-                            ->label('Sconto')
-                            ->visible(fn($state) => self::parseToFloat($state) > 0)
-                            ->dehydrated(false)
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->readOnly(),
-                        TextInput::make('price_gross')
-                            ->label('Totale ordine')
-                            ->dehydrated(false)
-                            ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
-                            ->readOnly(),
-                    ])->columns(5)
-                    ->columnSpanFull(),
+                // Order totals panel
+                self::getTotalSchema(),
             ]);
-    }
-
-    private static function runInternally(Get $get, Set $set, callable $fn): void {
-        $fn();
     }
 
     /**
@@ -460,7 +69,7 @@ class OrderForm {
      * Update the order totals based on the order items
      */
     private static function updateOrderTotals(Get $get, Set $set): void {
-        $items = $get('../../order_items') ?? [];
+        $items = $get(self::getElement($get, 'order_items')) ?? [];
 
         $sumNet = 0.0;
         $sumGross = 0.0;
@@ -468,23 +77,34 @@ class OrderForm {
         foreach ($items as $item) {
             $qty = max(1, (int) ($item['quantity'] ?? 1));
 
-            $unitNet = $item['real_unit_price_net'] ?? 0;
-            $unitGross = $item['has_vat'] ? $unitNet * (1 + self::VAT) : $unitNet;
+            $unitNet = (float) ($item['real_unit_price_net'] ?? 0);
+            $unitGross = !empty($item['has_vat']) ? $unitNet * (1 + self::VAT) : $unitNet;
 
             $sumNet += $unitNet * $qty;
             $sumGross += $unitGross * $qty;
         }
 
-        $set('../../price_net', self::parseNumber($sumNet));
-        $set('../../price_gross', self::parseNumber($sumGross));
-        $set('../../vat', self::parseNumber($sumGross - $sumNet));
+        // Discounts
+        $downPayment         = self::parseToFloat($get(self::getElement($get, 'down_payment')));
+        $fixedDiscount       = self::parseToFloat($get(self::getElement($get, 'fixed_discount')));
+        $percentageDiscount  = self::parseToFloat($get(self::getElement($get, 'percentage_discount')));
+
+        $totalDiscount = $fixedDiscount + ($sumGross * ($percentageDiscount / 100));
+        $finalGross = $sumGross - $totalDiscount - $downPayment;
+
+        // Set totals
+        $set(self::getElement($get, 'price_net'), self::parseNumber((string) $sumNet));
+        $set(self::getElement($get, 'vat'), self::parseNumber((string) ($sumGross - $sumNet)));
+        $set(self::getElement($get, 'down_payment'), self::parseNumber((string) $downPayment));
+        $set(self::getElement($get, 'total_discount'), self::parseNumber((string) $totalDiscount));
+        $set(self::getElement($get, 'price_gross'), self::parseNumber((string) $finalGross));
     }
 
     /**
      * Update the order item statuses based on the order status
      */
     private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
-        $items = $get('order_items') ?? [];
+        $items = $get(self::getElement($get, 'order_items')) ?? [];
 
         // Update every repeater item's status
         $items = array_map(function (array $item) use ($state) {
@@ -499,8 +119,8 @@ class OrderForm {
      * Update the order status based on the order item statuses
      */
     public static function updateOrderStatus(Get $get, Set $set): void {
-        $items = $get('../../order_items') ?? [];
-
+        $items = $get(self::getElement($get, 'order_items')) ?? [];
+        $statusElement = '../../status';
         $statuses = [];
 
         foreach ($items as $item) {
@@ -523,21 +143,45 @@ class OrderForm {
 
         $min = (string) min($statuses);
 
-        if ((string) $get('../../status') === $min) {
+        if ((string) $get($statusElement) === $min) {
             return;
         }
 
-        $set('../../status', $min);
+        $set($statusElement, $min);
     }
 
+    /**
+     * Get an element value trying different relative paths
+     */
+    private static function getElement(Get $get, string $elementName): ?string {
+        foreach (['', '../', '../../', '../../../'] as $prefix) {
+            $element = $get($prefix . $elementName);
+
+            if ($element !== null) {
+                return $prefix . $elementName;
+            }
+        }
+
+        return $elementName;
+    }
+
+    /**
+     * Sanitize and format a number to 2 decimal places string
+     */
     private static function parseNumber(?string $number): string {
         return number_format((float) self::sanitizeNumber($number), 2, '.', '');
     }
 
+    /**
+     * Sanitize and convert a number to float
+     */
     private static function parseToFloat(?string $number): float {
         return (float) self::sanitizeNumber($number);
     }
 
+    /**
+     * Sanitize a number string, keeping only valid characters
+     */
     private static function sanitizeNumber(?string $number): string {
         $value = str_replace(',', '.', $number ?? '0');
 
@@ -553,6 +197,9 @@ class OrderForm {
         return $value;
     }
 
+    /**
+     * Extra attributes for price input fields
+     */
     public static function extraAttributesForPrices(): array {
         return [
             'type' => 'text',
@@ -587,7 +234,9 @@ class OrderForm {
         ];
     }
 
-
+    /**
+     * Extra attributes for integer input fields
+     */
     public static function extraAttributesForInt(): array {
         return [
             'type' => 'text',
