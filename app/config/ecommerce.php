@@ -23,4 +23,10 @@ return [
         '9' => ['tag' => 'billed', 'label' => 'Archiviato'],
         '99' => ['tag' => 'canceled', 'label' => 'Cancellato'],
     ],
+
+    'supplier_order_statuses' => [
+        '1' => ['tag' => 'to-order', 'label' => 'Da ordinare'],
+        '2' => ['tag' => 'in-cart', 'label' => 'Nel carrello'],
+        '3' => ['tag' => 'ordered', 'label' => 'Ordinato'],
+    ],
 ];

@@ -39,7 +39,7 @@ class CustomerResource extends Resource {
     /**
      * Property: The navigation sort order
      */
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema {
         return CustomerForm::configure($schema);

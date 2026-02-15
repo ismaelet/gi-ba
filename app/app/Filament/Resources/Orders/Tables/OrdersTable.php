@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -111,6 +112,11 @@ class OrdersTable {
                                 });
                         });
                     })->columnSpan(2),
+
+                SelectFilter::make('customer')
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
+                    ->searchable(),
 
                 TernaryFilter::make('billed')
                     ->label('Fatturato')

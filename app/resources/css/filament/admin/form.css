@@ -1,219 +1,225 @@
-html:has(.fi-resource-orders) {
-	--sidebar-width: 15rem;
+html:has(.fi-resource-orders),
+html:has(.fi-resource-supplier-orders) {
+  --sidebar-width: 15rem;
 }
 
-.fi-main:has(.fi-resource-orders) {
-	width: 100%;
-	max-width: unset;
+.fi-resource-orders,
+.fi-resource-supplier-orders {
+  /* Status selectors */
+  .fi-select-input option[value=""] {
+    color: var(--color-white);
+  }
+
+  .fi-select-input option[value="1"] {
+    color: var(--color-status-1);
+  }
+
+  .fi-select-input option[value="2"] {
+    color: var(--color-status-2);
+  }
+
+  .fi-select-input option[value="3"] {
+    color: var(--color-status-3);
+  }
+
+  .fi-select-input option[value="4"] {
+    color: var(--color-status-4);
+  }
+
+  .fi-select-input option[value="5"] {
+    color: var(--color-status-5);
+  }
+
+  .fi-select-input option[value="6"] {
+    color: var(--color-status-6);
+  }
+
+  .fi-select-input option[value="7"] {
+    color: var(--color-status-7);
+  }
+
+  .fi-select-input option[value="8"] {
+    color: var(--color-status-8);
+  }
+
+  .fi-select-input option[value="9"] {
+    color: var(--color-status-9);
+  }
+
+  .fi-select-input option[value="99"] {
+    color: var(--color-status-99);
+  }
+
+  /* Repeater */
+  .fi-fo-repeater-items {
+    gap: 0.5rem;
+  }
+
+  .fi-fo-repeater-item {
+    /* General structure */
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.5rem;
+    background: none;
+    box-shadow: none;
+
+    @media (width >= 64rem) {
+      grid-template-columns: max-content repeat(30, minmax(0, 1fr));
+
+      &:first-child {
+        grid-template-rows: auto auto;
+      }
+    }
+
+    .fi-fo-repeater-item-content {
+      display: contents;
+
+      > .fi-sc {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-template-rows: subgrid;
+        grid-row: 1 / -1;
+        grid-column: 2 / -1;
+        gap: calc(var(--spacing) * 2);
+      }
+
+      .fi-grid-col:not(.fi-hidden),
+      .fi-sc-component,
+      .fi-fo-field {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: 1 / -1;
+      }
+    }
+
+    /* Delete button */
+    .fi-fo-repeater-item-header {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      grid-column: 1;
+      grid-row: 1 / -1;
+      padding: 0;
+
+      .fi-fo-repeater-item:first-child & {
+        .fi-fo-repeater-item-header-end-actions {
+          grid-row: 2;
+        }
+      }
+    }
+
+    /* Labels */
+    &:not(:first-child) {
+      .fi-fo-field-label-col:not(:has(input[type="checkbox"])) {
+        display: none;
+      }
+    }
+
+    /* Checkbox */
+    .fi-sc-component:has(input[type="checkbox"]) {
+      justify-items: center;
+
+      .fi-fo-repeater-item:first-child &::before {
+        content: "IVA";
+        font-size: var(--text-sm);
+        line-height: var(--tw-leading, var(--text-sm--line-height));
+        font-weight: var(--font-weight-medium);
+      }
+
+      .fi-fo-field,
+      .fi-fo-field-label-col {
+        align-items: center;
+      }
+
+      .fi-fo-repeater-item:first-child & {
+        .fi-fo-field {
+          grid-row: 2;
+        }
+      }
+
+      .fi-fo-field-label-content {
+        display: none;
+      }
+    }
+
+    .fi-ac-icon-btn-action {
+      width: unset;
+      height: unset;
+      margin: unset;
+    }
+
+    /* Select inputs */
+    .fi-select-input-value-label {
+      @apply line-clamp-1;
+    }
+  }
+
+  /* Total panel */
+  .total-panel {
+    display: grid;
+    justify-content: end;
+
+    > .fi-sc {
+      width: fit-content;
+      grid-template-columns: repeat(2, auto);
+      row-gap: 0.5rem;
+      column-gap: 3rem;
+
+      .fi-grid-col:not(.fi-hidden),
+      .fi-sc-component,
+      .fi-sc-component,
+      .fi-fo-field {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+      }
+    }
+
+    .fi-fo-field-label-col {
+      display: block;
+      height: unset;
+    }
+
+    .fi-fo-field-label-content {
+      color: var(--color-gray-500);
+      font-size: 1.125rem;
+    }
+
+    .fi-fo-field-content-col,
+    .fi-input-wrp {
+      display: contents;
+    }
+
+    .fi-input-wrp-content-ctn {
+      display: flex;
+      min-width: unset;
+    }
+
+    .fi-input-wrp-content-ctn::after {
+      content: "€";
+      font-size: 1.125rem;
+    }
+
+    .fi-input {
+      width: 5rem;
+      padding: 0;
+      background: none;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      font-size: 1.125rem;
+    }
+  }
 }
 
-.fi-resource-orders {
-	/* Status selectors */
-	.fi-select-input option[value=''] {
-		color: var(--color-white);
-	}
+.fi-resource-supplier-orders {
+  .fi-fo-repeater-item {
+    @media (width >= 64rem) {
+      grid-template-columns: max-content repeat(8, minmax(0, 1fr));
 
-	.fi-select-input option[value='1'] {
-		color: var(--color-status-1);
-	}
-
-	.fi-select-input option[value='2'] {
-		color: var(--color-status-2);
-	}
-
-	.fi-select-input option[value='3'] {
-		color: var(--color-status-3);
-	}
-
-	.fi-select-input option[value='4'] {
-		color: var(--color-status-4);
-	}
-
-	.fi-select-input option[value='5'] {
-		color: var(--color-status-5);
-	}
-
-	.fi-select-input option[value='6'] {
-		color: var(--color-status-6);
-	}
-
-	.fi-select-input option[value='7'] {
-		color: var(--color-status-7);
-	}
-
-	.fi-select-input option[value='8'] {
-		color: var(--color-status-8);
-	}
-
-	.fi-select-input option[value='9'] {
-		color: var(--color-status-9);
-	}
-
-	.fi-select-input option[value='99'] {
-		color: var(--color-status-99);
-	}
-
-	/* Repeater */
-	.fi-fo-repeater-items {
-		gap: 0.5rem;
-	}
-
-	.fi-fo-repeater-item {
-		/* General structure */
-		display: grid;
-		grid-template-columns: max-content minmax(0, 1fr);
-		gap: 0.5rem;
-		background: none;
-		box-shadow: none;
-
-		@media (width >= 64rem) {
-			grid-template-columns: max-content repeat(30, minmax(0, 1fr));
-
-			&:first-child {
-				grid-template-rows: auto auto;
-			}
-		}
-
-		.fi-fo-repeater-item-content {
-			display: contents;
-
-			> .fi-sc {
-				display: grid;
-				grid-template-columns: subgrid;
-				grid-template-rows: subgrid;
-				grid-row: 1 / -1;
-				grid-column: 2 / -1;
-				gap: calc(var(--spacing) * 2);
-			}
-
-			.fi-grid-col:not(.fi-hidden),
-			.fi-sc-component,
-			.fi-fo-field {
-				display: grid;
-				grid-template-rows: subgrid;
-				grid-row: 1 / -1;
-			}
-		}
-
-		/* Delete button */
-		.fi-fo-repeater-item-header {
-			display: grid;
-			grid-template-columns: subgrid;
-			grid-template-rows: subgrid;
-			grid-column: 1;
-			grid-row: 1 / -1;
-			padding: 0;
-
-			.fi-fo-repeater-item:first-child & {
-				.fi-fo-repeater-item-header-end-actions {
-					grid-row: 2;
-				}
-			}
-		}
-
-		/* Labels */
-		&:not(:first-child) {
-			.fi-fo-field-label-col:not(:has(input[type='checkbox'])) {
-				display: none;
-			}
-		}
-
-		/* Checkbox */
-		.fi-sc-component:has(input[type='checkbox']) {
-			justify-items: center;
-
-			.fi-fo-repeater-item:first-child &::before {
-				content: 'IVA';
-				font-size: var(--text-sm);
-				line-height: var(--tw-leading, var(--text-sm--line-height));
-				font-weight: var(--font-weight-medium);
-			}
-
-			.fi-fo-field,
-			.fi-fo-field-label-col {
-				align-items: center;
-			}
-
-			.fi-fo-repeater-item:first-child & {
-				.fi-fo-field {
-					grid-row: 2;
-				}
-			}
-
-			.fi-fo-field-label-content {
-				display: none;
-			}
-
-			.fi-fo-field-label-ctn {
-			}
-		}
-
-		.fi-ac-icon-btn-action {
-			width: unset;
-			height: unset;
-			margin: unset;
-		}
-
-		/* Select inputs */
-		.fi-select-input-value-label {
-			@apply line-clamp-1;
-		}
-	}
-
-	/* Total panel */
-	.total-panel {
-		display: grid;
-		justify-content: end;
-
-		> .fi-sc {
-			width: fit-content;
-			grid-template-columns: repeat(2, auto);
-			row-gap: 0.5rem;
-			column-gap: 3rem;
-
-			.fi-grid-col:not(.fi-hidden),
-			.fi-sc-component,
-			.fi-sc-component,
-			.fi-fo-field {
-				display: grid;
-				grid-template-columns: subgrid;
-				grid-column: 1 / -1;
-			}
-		}
-
-		.fi-fo-field-label-col {
-			display: block;
-			height: unset;
-		}
-
-		.fi-fo-field-label-content {
-			color: var(--color-gray-500);
-			font-size: 1.125rem;
-		}
-
-		.fi-fo-field-content-col,
-		.fi-input-wrp {
-			display: contents;
-		}
-
-		.fi-input-wrp-content-ctn {
-			display: flex;
-			min-width: unset;
-		}
-
-		.fi-input-wrp-content-ctn::after {
-			content: '€';
-			font-size: 1.125rem;
-		}
-
-		.fi-input {
-			width: 5rem;
-			padding: 0;
-			background: none;
-			border: none;
-			outline: none;
-			box-shadow: none;
-			font-size: 1.125rem;
-		}
-	}
+      &:first-child {
+        grid-template-rows: auto auto;
+      }
+    }
+  }
 }
