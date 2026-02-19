@@ -9,8 +9,8 @@ use App\Models\OrderItem;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -151,12 +151,6 @@ class OrdersTable {
             ->deferFilters(false)
             ->recordActions([
                 ActionGroup::make([
-                    EditAction::make()
-                        ->url(fn(Order $record, Component $livewire) => OrderResource::getUrl('edit', [
-                            'record' => $record,
-                            'return_url' => self::currentListUrl($record, $livewire),
-                        ])),
-
                     Action::make('download-quote')
                         ->label('Scarica preventivo')
                         ->icon(Heroicon::ArrowDownTray)
@@ -167,13 +161,13 @@ class OrdersTable {
                     Action::make('download-delivery-note')
                         ->label('Scarica bolla')
                         ->icon(Heroicon::ArrowDownTray)
-                        ->color('warning')
+                        ->color('indigo')
                         ->url(fn(Order $record) => route('admin.orders.delivery-note.download', ['order' => $record->id]))
                         ->openUrlInNewTab(),
 
                     Action::make('merge')
                         ->label('Unisci')
-                        ->color('danger')
+                        ->color('amber')
                         ->icon(Heroicon::ArrowsPointingIn)
                         ->modalSubmitActionLabel('Unisci ordini')
                         ->schema(fn(Order $record) => [
@@ -213,6 +207,7 @@ class OrdersTable {
 
                             $record->delete();
                         }),
+                    DeleteAction::make(),
                 ]),
             ])
             ->recordUrl(fn(Order $record, Component $livewire) => OrderResource::getUrl('edit', [
