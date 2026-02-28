@@ -55,7 +55,7 @@ html:has(.fi-resource-supplier-orders) {
     gap: 0.5rem;
   }
 
-  .fi-fo-repeater-item {
+  .order-repeater-item .fi-fo-repeater-item {
     /* General structure */
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr);

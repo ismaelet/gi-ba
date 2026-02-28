@@ -8,7 +8,7 @@ use Filament\Schemas\Schema;
 
 class OrderForm {
 
-    use CustomerSchema, OrderSchema, DiscountsSchema, OrderItemsSchema, TotalSchema;
+    use CustomerSchema, OrderSchema, DiscountsSchema, AddToSupplierButton, OrderItemsSchema, TotalSchema;
 
     /**
      * Property: The VAT rate used for calculations
@@ -26,6 +26,9 @@ class OrderForm {
 
                 // Discounts and down payment fieldset
                 self::getDiscountsSchema(),
+
+                // Add to supplier button
+                self::getAddToSupplierButton(),
 
                 // Order items repeater
                 self::getOrderItemsSchema(),

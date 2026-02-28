@@ -22,6 +22,7 @@ trait OrderItemsSchema {
             ->label('Articoli dell\'ordine')
             ->addActionLabel('+')
             ->relationship()
+            ->extraAttributes(['class' => 'order-repeater-item'])
             ->schema([
                 Hidden::make('real_unit_price_net')
                     ->dehydrated(false)
