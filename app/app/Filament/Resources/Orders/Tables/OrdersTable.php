@@ -173,7 +173,7 @@ class OrdersTable {
                         ->schema(fn(Order $record) => [
                             Select::make('target_order_id')
                                 ->label('Unisci con ordine')
-                                ->aboveContent('Gli aricoli verranno tutti trasferiti nell\'ordine qui. I dati che verranno mantenuti saranno quelli dell\'ordine selezionato qui sotto.')
+                                ->aboveContent('Gli aricoli dell\'ordine selezionato qui sotto verranno tutti trasferiti in quest\'ordine. I dati che verranno mantenuti saranno quelli di quest\'ordine, non quelli dell\'ordine selezionato sotto.')
                                 ->searchable()
                                 ->getSearchResultsUsing(
                                     fn(string $search) => Order::query()
@@ -198,14 +198,14 @@ class OrdersTable {
                         ->action(function (Order $record, array $data): void {
                             $targetOrder = Order::find($data['target_order_id']);
 
-                            OrderItem::where('order_id', $record->id)
+                            OrderItem::where('order_id', $targetOrder->id)
                                 ->update([
-                                    'order_id' => $targetOrder->id,
+                                    'order_id' => $record->id,
                                 ]);
 
-                            $targetOrder->recalculateTotals();
+                            $record->recalculateTotals();
 
-                            $record->delete();
+                            $targetOrder->delete();
                         }),
                     DeleteAction::make(),
                 ]),
