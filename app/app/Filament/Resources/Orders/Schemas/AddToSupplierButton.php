@@ -126,6 +126,7 @@ trait AddToSupplierButton {
                                         'product_id' => (int) $line['product_id'],
                                         'quantity' => (int) $line['quantity'],
                                         'status' => 1,
+                                        'info' => $line['info'] ?? '',
                                     ]);
                                 }
                             }
