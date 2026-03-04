@@ -17,6 +17,7 @@ trait OrderItemsSchema {
             ->label('Articoli dell\'ordine')
             ->addActionLabel('+')
             ->relationship()
+            ->extraAttributes(['class' => 'order-repeater-item'])
             ->schema([
                 Select::make('product_id')
                     ->label('Prodotto')

@@ -213,7 +213,7 @@ html:has(.fi-resource-supplier-orders) {
 }
 
 .fi-resource-supplier-orders {
-  .fi-fo-repeater-item {
+  .order-repeater-item .fi-fo-repeater-item {
     @media (width >= 64rem) {
       grid-template-columns: max-content repeat(8, minmax(0, 1fr));
 
