@@ -25,7 +25,11 @@ class Order extends Model {
      * Relationship: The order items for the order
      */
     public function order_items(): HasMany {
-        return $this->hasMany(OrderItem::class, 'supplier_order_id')->orderBy('status');
+        return $this->hasMany(OrderItem::class, 'supplier_order_id')
+            ->select('supplier_order_items.*')
+            ->join('products', 'supplier_order_items.product_id', '=', 'products.id')
+            ->orderBy('status')
+            ->orderBy('products.name');
     }
 
     /**
