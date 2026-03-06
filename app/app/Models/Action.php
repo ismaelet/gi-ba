@@ -7,22 +7,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Action extends Model {
 
-	/**
-	 * The attributes that are mass assignable.
-	 * 
-	 * @var array
-	 */
-	protected $fillable = [
-		'user_id',
-		'action'
-	];
+    /**
+     * The attributes that are mass assignable
+     */
+    protected $fillable = [
+        'user_id',
+        'action'
+    ];
 
-	/**
-     * Get the user that performed the action.
-     *
-     * @return BelongsTo
+    /**
+     * Get the user that performed the action
      */
     public function user(): BelongsTo {
-		return $this->belongsTo(User::class);
-	}
+        return $this->belongsTo(User::class);
+    }
 }

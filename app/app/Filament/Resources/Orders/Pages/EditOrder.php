@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Filament\Resources\Orders\OrderResource;
+use App\Models\Action as ModelsAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class EditOrder extends EditRecord {
@@ -51,6 +53,11 @@ class EditOrder extends EditRecord {
         $this->redirect(
             $this->getReturnUrlFromSession()
         );
+
+        ModelsAction::create([
+            'user_id' => Auth::id(),
+            'action' => "Ha modificato l'ordine #{$this->record->id}"
+        ]);
     }
 
     protected function duplicateRecord(): void {

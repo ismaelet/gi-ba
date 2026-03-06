@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\SupplierOrders\Pages;
 
 use App\Filament\Resources\SupplierOrders\SupplierOrderResource;
+use App\Models\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 
 class EditSupplierOrder extends EditRecord {
 
@@ -40,5 +42,10 @@ class EditSupplierOrder extends EditRecord {
         $this->redirect(
             $this->getReturnUrlFromSession()
         );
+
+        Action::create([
+            'user_id' => Auth::id(),
+            'action' => "Ha modificato il carrello del fornitore {$this->record->supplier->name} (#{$this->record->id})"
+        ]);
     }
 }
