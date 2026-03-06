@@ -14,6 +14,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -29,11 +31,16 @@ use Livewire\Component;
 class OrdersTable {
     public static function configure(Table $table): Table {
         return $table
-            ->defaultSort('id', 'desc')
-            ->defaultPaginationPageOption(50)
+            /**
+             * Query
+             */
             ->query(
                 Order::query()
             )
+
+            /**
+             * Columns
+             */
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
@@ -78,7 +85,22 @@ class OrdersTable {
                     ->dateTime('d/m/Y'),
             ])
             ->searchable(['customer.info', 'customer.phone', 'order_items.info'])
+
+            /**
+             * Sort
+             */
+            ->defaultSort('id', 'desc')
+
+            /**
+             * Pagination
+             */
+            ->defaultPaginationPageOption(50)
+
+            /**
+             * Filters
+             */
             ->filters([
+                // status filter
                 Filter::make('status')
                     ->schema([
                         CheckboxList::make('statuses')
@@ -113,17 +135,20 @@ class OrdersTable {
                         });
                     })->columnSpan(2),
 
+                // Customer filter
                 SelectFilter::make('customer')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
                     ->searchable(),
 
+                // Billed filter
                 TernaryFilter::make('billed')
                     ->label('Fatturato')
                     ->placeholder('Tutti')
                     ->trueLabel('Solo fatturati')
                     ->falseLabel('Solo non fatturati'),
 
+                // Creation date filter
                 Filter::make('created_at')
                     ->label('Data creazione')
                     ->schema([
@@ -146,9 +171,42 @@ class OrdersTable {
                                 $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+
+                // Price filter
+                Filter::make('price')
+                    ->schema([
+                        Group::make([
+                            TextInput::make('price_from')
+                                ->label('Prezzo minimo')
+                                ->placeholder('0')
+                                ->suffix('€')
+                                ->numeric(),
+
+                            TextInput::make('price_until')
+                                ->label('Prezzo massimo')
+                                ->placeholder('0')
+                                ->suffix('€')
+                                ->numeric(),
+                        ])->columns(2)
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['price_from'] ?? null,
+                                fn(Builder $query, $price) => $query->where('price_gross', '>=', $price)
+                            )
+                            ->when(
+                                $data['price_until'] ?? null,
+                                fn(Builder $query, $price) => $query->where('price_gross', '<=', $price)
+                            );
+                    }),
             ], layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(4)
             ->deferFilters(false)
+
+            /**
+             * Actions
+             */
             ->recordActions([
                 ActionGroup::make([
                     Action::make('download-quote')
