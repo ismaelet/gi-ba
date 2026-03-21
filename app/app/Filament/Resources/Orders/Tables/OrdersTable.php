@@ -84,7 +84,7 @@ class OrdersTable {
                     ->sortable()
                     ->dateTime('d/m/Y'),
             ])
-            ->searchable(['customer.info', 'customer.phone', 'order_items.info'])
+            ->searchable(['customer.info', 'customer.phone', 'order_items.info', 'price_gross'])
 
             /**
              * Sort
