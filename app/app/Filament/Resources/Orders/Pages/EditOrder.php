@@ -30,6 +30,11 @@ class EditOrder extends EditRecord {
     protected int $originalQuantity = 0;
 
     /**
+     * Property: Store the original gross price of the order for comparison after saving
+     */
+    protected float $originalPriceGross = 0.0;
+
+    /**
      * Filament Method: Get the header actions for the edit page
      */
     protected function getHeaderActions(): array {
@@ -54,11 +59,12 @@ class EditOrder extends EditRecord {
     }
 
     /**
-     * Filament Method: Mutate form data before saving the record, storing the original status for later comparison
+     * Filament Method: Mutate the form data before saving the record, storing original values for comparison
      */
     protected function mutateFormDataBeforeSave(array $data): array {
         $this->originalStatus = $this->record->statusName();
         $this->originalQuantity = $this->record->quantity;
+        $this->originalPriceGross = $this->record->price_gross;
 
         return $data;
     }
@@ -67,33 +73,54 @@ class EditOrder extends EditRecord {
      * Filament Method: Actions to perform after saving the record
      */
     protected function afterSave(): void {
+        // Update the order's totals
         $this->updateOrder();
 
-        $newStatus = $this->record->statusName();
+        // Log the action with details about the changes made
+        $this->logAction();
 
-        $message = "Ha modificato l'ordine #{$this->record->id}";
-        $additionalMessages = [];
-
-        if ($this->originalStatus !== $newStatus) {
-            $additionalMessages[] = " cambiando lo stato da '{$this->originalStatus}' a '{$newStatus}'";
-        }
-
-        if ($this->originalQuantity !== $this->record->quantity) {
-            $additionalMessages[] = " cambiando la quantità di prodotti da {$this->originalQuantity} a {$this->record->quantity}";
-        }
-
-        $fullMessage = $message . (!empty($additionalMessages) ? ' ' . implode(' e ', $additionalMessages) : '');
-
-        ModelsAction::create([
-            'user_id' => Auth::id(),
-            'action' => $fullMessage,
-        ]);
-
+        // Redirect back to the previous page or a specific URL after saving
         $this->redirect(
             $this->getReturnUrlFromSession()
         );
     }
 
+    /**
+     * Custom Method: Log the action of editing the order, including details about what was changed
+     */
+    protected function logAction(): void {
+        // Generate a log message based on the changes made to the order
+        $actionTextParts = [];
+
+        if ($this->originalStatus !== $this->record->statusName()) {
+            $actionTextParts[] = " cambiando lo stato da '{$this->originalStatus}' a '{$this->record->statusName()}'";
+        }
+
+        if ($this->originalQuantity !== $this->record->quantity) {
+            $actionTextParts[] = " cambiando la quantità di prodotti da {$this->originalQuantity} a {$this->record->quantity}";
+        }
+
+        if ($this->originalPriceGross !== $this->record->price_gross) {
+            $actionTextParts[] = " cambiando il prezzo totale da " . price($this->originalPriceGross) . " a " . price($this->record->price_gross);
+        }
+
+        if (empty($actionTextParts)) {
+            return;
+        }
+
+        $baseActionText = "Ha modificato l'ordine #{$this->record->id}";
+        $actionText = $baseActionText . ' ' . implode(' e ', $actionTextParts);
+
+        // Log the action in the database
+        ModelsAction::create([
+            'user_id' => Auth::id(),
+            'action' => $actionText,
+        ]);
+    }
+
+    /**
+     * Custom Method: Duplicate the current order record along with its associated order items, and redirect to the edit page of the new copy
+     */
     protected function duplicateRecord(): void {
         DB::transaction(function () {
             $original = $this->record->load('order_items');
