@@ -20,6 +20,16 @@ class EditOrder extends EditRecord {
     protected static string $resource = OrderResource::class;
 
     /**
+     * Property: Store the original status of the order for comparison after saving
+     */
+    protected string $originalStatus;
+
+    /**
+     * Property: Store the original quantity of the order for comparison after saving
+     */
+    protected int $originalQuantity = 0;
+
+    /**
      * Filament Method: Get the header actions for the edit page
      */
     protected function getHeaderActions(): array {
@@ -44,20 +54,44 @@ class EditOrder extends EditRecord {
     }
 
     /**
+     * Filament Method: Mutate form data before saving the record, storing the original status for later comparison
+     */
+    protected function mutateFormDataBeforeSave(array $data): array {
+        $this->originalStatus = $this->record->statusName();
+        $this->originalQuantity = $this->record->quantity;
+
+        return $data;
+    }
+
+    /**
      * Filament Method: Actions to perform after saving the record
      */
     protected function afterSave(): void {
         $this->updateOrder();
 
-        // Redirect to the list page
-        $this->redirect(
-            $this->getReturnUrlFromSession()
-        );
+        $newStatus = $this->record->statusName();
+
+        $message = "Ha modificato l'ordine #{$this->record->id}";
+        $additionalMessages = [];
+
+        if ($this->originalStatus !== $newStatus) {
+            $additionalMessages[] = " cambiando lo stato da '{$this->originalStatus}' a '{$newStatus}'";
+        }
+
+        if ($this->originalQuantity !== $this->record->quantity) {
+            $additionalMessages[] = " cambiando la quantità di prodotti da {$this->originalQuantity} a {$this->record->quantity}";
+        }
+
+        $fullMessage = $message . (!empty($additionalMessages) ? ' ' . implode(' e ', $additionalMessages) : '');
 
         ModelsAction::create([
             'user_id' => Auth::id(),
-            'action' => "Ha modificato l'ordine #{$this->record->id}"
+            'action' => $fullMessage,
         ]);
+
+        $this->redirect(
+            $this->getReturnUrlFromSession()
+        );
     }
 
     protected function duplicateRecord(): void {
