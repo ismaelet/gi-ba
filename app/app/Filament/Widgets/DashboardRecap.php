@@ -8,8 +8,14 @@ use Illuminate\Support\Str;
 
 class DashboardRecap extends Widget {
 
+    /**
+     * Property: the column span of the widget
+     */
     protected int | string | array $columnSpan = 'full';
 
+    /**
+     * Property: the view for the widget
+     */
     protected string $view = 'filament.widgets.dashboard-recap';
 
     /**
@@ -36,19 +42,17 @@ class DashboardRecap extends Widget {
      * Get the total billed withdrawn amount
      */
     public function billedWithdrawn(): float {
-        return OrderItem::whereHas('order', function ($query) {
-            $query->where('billed', 1)
-                ->where('status', 6);
-        })->sum('total_price_gross');
+        return OrderItem::whereHas('order', fn($query) => $query->where('billed', true))
+            ->where('status', 6)
+            ->sum('total_price_gross');
     }
 
     /**
      * Get the total not billed withdrawn amount
      */
     public function notBilledWithdrawn(): float {
-        return OrderItem::whereHas('order', function ($query) {
-            $query->where('billed', 0)
-                ->where('status', 6);
-        })->sum('total_price_gross');
+        return OrderItem::whereHas('order', fn($query) => $query->where('billed', false))
+            ->where('status', 6)
+            ->sum('total_price_gross');
     }
 }
