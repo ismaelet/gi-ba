@@ -5,51 +5,6 @@ html:has(.fi-resource-supplier-orders) {
 
 .fi-resource-orders,
 .fi-resource-supplier-orders {
-  /* Status selectors */
-  .fi-select-input option[value=""] {
-    color: var(--color-white);
-  }
-
-  .fi-select-input option[value="1"] {
-    color: var(--color-status-1);
-  }
-
-  .fi-select-input option[value="2"] {
-    color: var(--color-status-2);
-  }
-
-  .fi-select-input option[value="3"] {
-    color: var(--color-status-3);
-  }
-
-  .fi-select-input option[value="4"] {
-    color: var(--color-status-4);
-  }
-
-  .fi-select-input option[value="5"] {
-    color: var(--color-status-5);
-  }
-
-  .fi-select-input option[value="6"] {
-    color: var(--color-status-6);
-  }
-
-  .fi-select-input option[value="7"] {
-    color: var(--color-status-7);
-  }
-
-  .fi-select-input option[value="8"] {
-    color: var(--color-status-8);
-  }
-
-  .fi-select-input option[value="9"] {
-    color: var(--color-status-9);
-  }
-
-  .fi-select-input option[value="99"] {
-    color: var(--color-status-99);
-  }
-
   /* Repeater */
   .fi-fo-repeater-items {
     gap: 0.5rem;
@@ -222,4 +177,58 @@ html:has(.fi-resource-supplier-orders) {
       }
     }
   }
+}
+
+.status-selector:has(option[value=""]:checked),
+.status-selector option[value=""] {
+  color: white;
+}
+.status-selector:has(option[value="1"]:checked),
+.status-selector option[value="1"] {
+  color: var(--color-status-1);
+}
+
+.status-selector:has(option[value="2"]:checked),
+.status-selector option[value="2"] {
+  color: var(--color-status-2);
+}
+
+.status-selector:has(option[value="3"]:checked),
+.status-selector option[value="3"] {
+  color: var(--color-status-3);
+}
+
+.status-selector:has(option[value="4"]:checked),
+.status-selector option[value="4"] {
+  color: var(--color-status-4);
+}
+
+.status-selector:has(option[value="5"]:checked),
+.status-selector option[value="5"] {
+  color: var(--color-status-5);
+}
+
+.status-selector:has(option[value="6"]:checked),
+.status-selector option[value="6"] {
+  color: var(--color-status-6);
+}
+
+.status-selector:has(option[value="7"]:checked),
+.status-selector option[value="7"] {
+  color: var(--color-status-7);
+}
+
+.status-selector:has(option[value="8"]:checked),
+.status-selector option[value="8"] {
+  color: var(--color-status-8);
+}
+
+.status-selector:has(option[value="9"]:checked),
+.status-selector option[value="9"] {
+  color: var(--color-status-9);
+}
+
+.status-selector:has(option[value="99"]:checked),
+.status-selector option[value="99"] {
+  color: var(--color-status-99);
 }

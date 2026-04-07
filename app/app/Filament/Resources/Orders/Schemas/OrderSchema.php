@@ -37,13 +37,11 @@ trait OrderSchema {
                             ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
                             ->toArray()
                     )
-                    ->extraInputAttributes(fn(callable $get) => [
-                        'class' => 'text-status-' . $get('status'),
-                    ])
-                    ->live()
+                    ->extraInputAttributes(fn() => ['class' => 'status-selector'])
                     ->afterStateUpdated(function ($state, Get $get, Set $set) {
                         self::updateOrderItemsStatuses($state, $get, $set);
                     })
+                    ->live()
                     ->required()
                     ->columnSpanFull(),
 

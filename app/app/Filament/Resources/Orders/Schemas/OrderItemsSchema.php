@@ -22,6 +22,11 @@ trait OrderItemsSchema {
             ->label('Articoli dell\'ordine')
             ->addActionLabel('+')
             ->relationship()
+            ->live()
+            ->afterStateUpdated(function (Get $get, Set $set) {
+                self::updateOrderStatus($get, $set);
+                self::updateOrderTotals($get, $set);
+            })
             ->extraAttributes(['class' => 'order-repeater-item'])
             ->schema([
                 Hidden::make('real_unit_price_net')
@@ -145,7 +150,7 @@ trait OrderItemsSchema {
                             ->mapWithKeys(fn(array $status, string $key): array => [$key => $status['label']])
                             ->toArray()
                     )
-                    ->extraInputAttributes(fn(callable $get) => ['class' => 'text-status-' . $get('status'),])
+                    ->extraInputAttributes(fn() => ['class' => 'status-selector'])
                     ->afterStateUpdated(fn(callable $set, callable $get) => self::updateOrderStatus($get, $set))
                     ->required()
                     ->columnSpan(4),

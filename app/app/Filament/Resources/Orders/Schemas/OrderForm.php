@@ -123,11 +123,11 @@ class OrderForm {
      */
     public static function updateOrderStatus(Get $get, Set $set): void {
         $items = $get(self::getElement($get, 'order_items')) ?? [];
-        $statusElement = '../../status';
+        $statusElement = self::getParentElement($get, 'status');
         $statuses = [];
 
         foreach ($items as $item) {
-            if (! array_key_exists('status', $item)) {
+            if (!array_key_exists('status', $item)) {
                 continue;
             }
 
@@ -162,6 +162,21 @@ class OrderForm {
 
             if ($element !== null) {
                 return $prefix . $elementName;
+            }
+        }
+
+        return $elementName;
+    }
+
+    /**
+     * Get the parent element path for a given element, trying different relative paths
+     */
+    private static function getParentElement(Get $get, string $elementName): string {
+        foreach (['../', '../../', '../../../', '../../../../'] as $prefix) {
+            $path = $prefix . $elementName;
+
+            if ($get($path) !== null) {
+                return $path;
             }
         }
 
