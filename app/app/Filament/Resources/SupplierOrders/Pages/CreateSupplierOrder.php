@@ -23,8 +23,6 @@ class CreateSupplierOrder extends CreateRecord {
     }
 
     protected function afterCreate(): void {
-        $this->updateOrder();
-
         Action::create([
             'user_id' => Auth::id(),
             'action' => "Ha creato il carrello del fornitore {$this->record->supplier->name} (#{$this->record->id})"
