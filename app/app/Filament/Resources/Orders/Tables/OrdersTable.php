@@ -108,45 +108,52 @@ class OrdersTable {
                             ->options(
                                 collect(config('ecommerce.order_statuses'))
                                     ->mapWithKeys(fn($status, $key) => [$key => $status['label']])
-                                    ->toArray()
+                                    ->union([
+                                        1001 => 'Fatturato',
+                                        1002 => 'Non fatturato',
+                                    ])
                             )
                             ->columns(4)
-                            ->default([1, 2, 3, 4, 5, 6]),
+                            ->default([1, 2, 3, 4, 5, 6, 1002]),
                     ])
                     ->query(function (Builder $query, array $data) {
                         $statuses = array_values(array_filter($data['statuses'] ?? []));
 
-                        if ($statuses === []) {
-                            $query->where(function (Builder $q) use ($statuses) {
+                        // numeric statuses
+                        $realStatuses = array_filter($statuses, fn($s) => $s < 1000);
+
+                        if ($realStatuses === []) {
+                            $query->where(function (Builder $q) {
                                 $q->whereNull('orders.status');
                             });
-
-                            return;
+                        } else {
+                            $query->where(function (Builder $q) use ($realStatuses) {
+                                $q->whereIn('orders.status', $realStatuses)
+                                    ->orWhereExists(function (QueryBuilder $sub) use ($realStatuses) {
+                                        $sub->selectRaw('1')
+                                            ->from('order_items')
+                                            ->whereColumn('order_items.order_id', 'orders.id')
+                                            ->whereIn('order_items.status', $realStatuses);
+                                    });
+                            });
                         }
 
-                        $query->where(function (Builder $q) use ($statuses) {
-                            $q->whereIn('orders.status', $statuses)
-                                ->orWhereExists(function (QueryBuilder $sub) use ($statuses) {
-                                    $sub->selectRaw('1')
-                                        ->from('order_items')
-                                        ->whereColumn('order_items.order_id', 'orders.id')
-                                        ->whereIn('order_items.status', $statuses);
-                                });
-                        });
+                        // billed / not billed
+                        if (in_array(1001, $statuses) && !in_array(1002, $statuses)) {
+                            $query->where('billed', true);
+                        }
+
+                        if (in_array(1002, $statuses) && !in_array(1001, $statuses)) {
+                            $query->where('billed', false);
+                        }
                     })->columnSpan(2),
 
                 // Customer filter
                 SelectFilter::make('customer')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->searchable(),
-
-                // Billed filter
-                TernaryFilter::make('billed')
-                    ->label('Fatturato')
-                    ->placeholder('Tutti')
-                    ->trueLabel('Solo fatturati')
-                    ->falseLabel('Solo non fatturati'),
+                    ->searchable()
+                    ->columnSpan(2),
 
                 // Creation date filter
                 Filter::make('created_at')

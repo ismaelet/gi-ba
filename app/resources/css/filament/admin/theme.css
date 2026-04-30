@@ -22,8 +22,8 @@
   --color-status-9: oklch(0.85 0.03 220);
   --color-status-99: oklch(0.75 0.2 340);
   --color-status-all: var(--color-slate-400);
-  --color-billed-false: #d5abe2;
-  --color-billed-true: #e934e0;
+  --color-billed-false: oklch(0.85 0.12 200);
+  --color-billed-true: oklch(0.85 0.12 60);
 }
 
 .text-status-1,

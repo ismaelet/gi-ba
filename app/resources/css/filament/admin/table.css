@@ -64,6 +64,16 @@
       --color-white: var(--color-status-99);
     }
 
+    &:has(input[value="1001"]) {
+      --primary-500: var(--color-billed-true);
+      --color-white: var(--color-billed-true);
+    }
+
+    &:has(input[value="1002"]) {
+      --primary-500: var(--color-billed-false);
+      --color-white: var(--color-billed-false);
+    }
+
     .fi-select-input-option[data-value="1"] {
       color: var(--color-status-1);
     }

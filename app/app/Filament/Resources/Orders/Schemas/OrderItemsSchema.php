@@ -21,6 +21,15 @@ trait OrderItemsSchema {
         return Repeater::make('order_items')
             ->label('Articoli dell\'ordine')
             ->addActionLabel('+')
+            ->addAction(
+                fn(Action $action) => $action
+                    ->requiresConfirmation()
+                    ->modalHidden(fn(Get $get): bool => ! $get('billed'))
+                    ->modalHeading('Aggiungi articolo')
+                    ->modalDescription('L\'ordine è già fatturato. Sei sicuro di voler aggiungere un nuovo articolo?')
+                    ->modalSubmitActionLabel('Aggiungi')
+                    ->modalCancelActionLabel('Annulla')
+            )
             ->relationship()
             ->live()
             ->afterStateUpdated(function (Get $get, Set $set) {
