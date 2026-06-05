@@ -58,12 +58,12 @@ class ActionResource extends Resource {
                     ->label('Utente')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('action')
-                    ->label('Azione')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Data')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('action')
+                    ->label('Azione')
                     ->searchable()
                     ->sortable(),
             ])
