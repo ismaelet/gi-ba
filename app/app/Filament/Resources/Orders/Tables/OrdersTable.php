@@ -22,10 +22,10 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class OrdersTable {
@@ -36,6 +36,10 @@ class OrdersTable {
              */
             ->query(
                 Order::query()
+                    ->with([
+                        'customer',
+                        'ordered_order_items',
+                    ])
             )
 
             /**
@@ -56,7 +60,9 @@ class OrdersTable {
                     ->searchable()
                     ->html()
                     ->wrap()
-                    ->formatStateUsing(fn(string $state, Order $record): string => $state . '<br>' . $record->customer->phone),
+                    ->formatStateUsing(function (?string $state, Order $record): string {
+                        return e($state ?? '—') . '<br>' . e($record->customer?->phone ?? '—');
+                    }),
 
                 OrderItemsColumn::make('order_items.product.name')
                     ->searchable()
@@ -261,16 +267,18 @@ class OrdersTable {
                                 ->required(),
                         ])
                         ->action(function (Order $record, array $data): void {
-                            $targetOrder = Order::find($data['target_order_id']);
+                            DB::transaction(function () use ($record, $data): void {
+                                $targetOrder = Order::findOrFail($data['target_order_id']);
 
-                            OrderItem::where('order_id', $targetOrder->id)
-                                ->update([
-                                    'order_id' => $record->id,
-                                ]);
+                                OrderItem::where('order_id', $targetOrder->id)
+                                    ->update([
+                                        'order_id' => $record->id,
+                                    ]);
 
-                            $record->recalculateTotals();
+                                $record->recalculateTotals();
 
-                            $targetOrder->delete();
+                                $targetOrder->delete();
+                            });
                         }),
                     DeleteAction::make(),
                 ]),
