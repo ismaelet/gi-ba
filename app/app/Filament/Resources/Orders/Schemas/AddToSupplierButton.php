@@ -39,7 +39,7 @@ trait AddToSupplierButton {
                             ->columns(20)
                             ->default(function ($livewire): array {
                                 $state = $livewire->form->getRawState();
-                                $items = $state['order_items'] ?? [];
+                                $items = $state['ordered_order_items'] ?? [];
 
                                 if (empty($items)) {
                                     return [];

@@ -72,7 +72,7 @@ class OrderForm {
      * Update the order totals based on the order items
      */
     private static function updateOrderTotals(Get $get, Set $set): void {
-        $items = $get(self::getElement($get, 'order_items')) ?? [];
+        $items = $get(self::getElement($get, 'ordered_order_items')) ?? [];
 
         $sumNet = 0.0;
         $sumGross = 0.0;
@@ -107,7 +107,7 @@ class OrderForm {
      * Update the order item statuses based on the order status
      */
     private static function updateOrderItemsStatuses($state, Get $get, Set $set): void {
-        $items = $get(self::getElement($get, 'order_items')) ?? [];
+        $items = $get(self::getElement($get, 'ordered_order_items')) ?? [];
 
         // Update every repeater item's status
         $items = array_map(function (array $item) use ($state) {
@@ -115,14 +115,14 @@ class OrderForm {
             return $item;
         }, $items);
 
-        $set('order_items', $items);
+        $set('ordered_order_items', $items);
     }
 
     /**
      * Update the order status based on the order item statuses
      */
     public static function updateOrderStatus(Get $get, Set $set): void {
-        $items = $get(self::getElement($get, 'order_items')) ?? [];
+        $items = $get(self::getElement($get, 'ordered_order_items')) ?? [];
         $statusElement = self::getParentElement($get, 'status');
         $statuses = [];
 
