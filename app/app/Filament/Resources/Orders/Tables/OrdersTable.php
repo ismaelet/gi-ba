@@ -120,7 +120,7 @@ class OrdersTable {
                                     ])
                             )
                             ->columns(4)
-                            ->default([1, 2, 3, 4, 5, 6, 1002]),
+                            ->default([1, 2, 3, 4, 5, 6, 1001, 1002]),
                     ])
                     ->query(function (Builder $query, array $data) {
                         $statuses = array_values(array_filter($data['statuses'] ?? []));

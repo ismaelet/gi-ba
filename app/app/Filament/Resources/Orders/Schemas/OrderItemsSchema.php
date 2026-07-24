@@ -18,7 +18,7 @@ use Filament\Support\Icons\Heroicon;
 
 trait OrderItemsSchema {
     protected static function getOrderItemsSchema(): Repeater {
-        return Repeater::make('order_items')
+        return Repeater::make('ordered_order_items')
             ->label('Articoli dell\'ordine')
             ->addActionLabel('+')
             ->addAction(

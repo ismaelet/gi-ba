@@ -53,7 +53,9 @@ class Order extends Model {
             ->select('order_items.*')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->orderBy('order_items.status')
-            ->orderBy('products.name');
+            ->orderBy('products.name')
+            ->orderBy('order_items.quantity')
+            ->orderBy('order_items.created_at');
     }
 
     /**
