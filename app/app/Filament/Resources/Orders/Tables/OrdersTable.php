@@ -237,7 +237,7 @@ class OrdersTable {
                         ->openUrlInNewTab(),
 
                     Action::make('merge')
-                        ->label('Unisci')
+                        ->label('Unisci a quest\'ordine')
                         ->color('amber')
                         ->icon(Heroicon::ArrowsPointingIn)
                         ->modalSubmitActionLabel('Unisci ordini')

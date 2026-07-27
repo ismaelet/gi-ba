@@ -25,12 +25,57 @@ trait CustomerSchema {
                     ->searchable(['name', 'phone'])
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function ($state, Get $get, Set $set) {
-                        $customer = filled($state) ? Customer::find($state) : null;
+                    ->afterStateUpdated(function (
+                        $state,
+                        $old,
+                        ?Order $record,
+                        Get $get,
+                        Set $set,
+                        $livewire,
+                    ): void {
+                        if (blank($state)) {
+                            $set('customer_data', [
+                                'phone' => '',
+                                'info' => '',
+                            ]);
+
+                            return;
+                        }
+
+                        $hasOpenOrder = Order::query()
+                            ->where('customer_id', $state)
+                            ->where('status', '<', 7)
+                            ->when(
+                                $record,
+                                fn($query) => $query->whereKeyNot($record->getKey()),
+                            )
+                            ->exists();
+
+                        if ($hasOpenOrder) {
+                            // Restore the previous selection until the user confirms.
+                            $set('customer_id', $old);
+
+                            $previousCustomer = filled($old)
+                                ? Customer::find($old)
+                                : null;
+
+                            $set('customer_data', [
+                                'phone' => $previousCustomer?->phone ?? '',
+                                'info' => $previousCustomer?->info ?? '',
+                            ]);
+
+                            $livewire->mountAction('confirmCustomerSelection', [
+                                'customerId' => $state,
+                            ]);
+
+                            return;
+                        }
+
+                        $customer = Customer::find($state);
 
                         $set('customer_data', [
                             'phone' => $customer?->phone ?? '',
-                            'info'  => $customer?->info  ?? '',
+                            'info' => $customer?->info ?? '',
                         ]);
                     })
                     ->suffixAction(

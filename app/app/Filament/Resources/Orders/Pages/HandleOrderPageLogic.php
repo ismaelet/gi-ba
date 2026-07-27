@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Models\Customer;
+use Filament\Actions\Action;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
 
@@ -56,5 +57,31 @@ trait HandleOrderPageLogic {
         }
 
         return static::getResource()::getUrl('index');
+    }
+
+    public function confirmCustomerSelectionAction(): Action {
+        return Action::make('confirmCustomerSelection')
+            ->modalHeading('Ordine già esistente')
+            ->modalDescription(
+                'Esiste già un ordine aperto per questo cliente. Creare comunque un nuovo ordine?'
+            )
+            ->modalSubmitActionLabel('Crea comunque')
+            ->modalCancelActionLabel('Annulla')
+            ->color('warning')
+            ->requiresConfirmation()
+            ->action(function (array $arguments): void {
+                $customer = Customer::find($arguments['customerId']);
+
+                if (! $customer) {
+                    return;
+                }
+
+                $this->data['customer_id'] = $customer->getKey();
+
+                $this->data['customer_data'] = [
+                    'phone' => $customer->phone ?? '',
+                    'info' => $customer->info ?? '',
+                ];
+            });
     }
 }
