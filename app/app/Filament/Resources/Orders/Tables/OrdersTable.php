@@ -15,6 +15,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -226,15 +227,59 @@ class OrdersTable {
                         ->label('Scarica preventivo')
                         ->icon(Heroicon::ArrowDownTray)
                         ->color('info')
-                        ->url(fn(Order $record) => route('admin.orders.quote.download', ['order' => $record->id]))
-                        ->openUrlInNewTab(),
+                        ->modalHeading('Scarica preventivo')
+                        ->modalSubmitActionLabel('Scarica')
+                        ->schema([
+                            Toggle::make('use_order_date')
+                                ->label('Usa la data di creazione dell’ordine')
+                                ->helperText('Se disattivato, verrà utilizzata la data odierna.')
+                                ->default(false),
+                        ])
+                        ->action(function (
+                            Order $record,
+                            array $data,
+                            Component $livewire,
+                        ): void {
+                            $url = route('admin.orders.quote.download', [
+                                'order' => $record->id,
+                                'date_source' => ($data['use_order_date'] ?? false)
+                                    ? 'order'
+                                    : 'today',
+                            ]);
+
+                            $livewire->js(
+                                'window.open(' . json_encode($url) . ', "_blank")',
+                            );
+                        }),
 
                     Action::make('download-delivery-note')
                         ->label('Scarica bolla')
                         ->icon(Heroicon::ArrowDownTray)
                         ->color('indigo')
-                        ->url(fn(Order $record) => route('admin.orders.delivery-note.download', ['order' => $record->id]))
-                        ->openUrlInNewTab(),
+                        ->modalHeading('Scarica bolla')
+                        ->modalSubmitActionLabel('Scarica')
+                        ->schema([
+                            Toggle::make('use_order_date')
+                                ->label('Usa la data di creazione dell’ordine')
+                                ->helperText('Se disattivato, verrà utilizzata la data odierna.')
+                                ->default(false),
+                        ])
+                        ->action(function (
+                            Order $record,
+                            array $data,
+                            Component $livewire,
+                        ): void {
+                            $url = route('admin.orders.delivery-note.download', [
+                                'order' => $record->id,
+                                'date_source' => ($data['use_order_date'] ?? false)
+                                    ? 'order'
+                                    : 'today',
+                            ]);
+
+                            $livewire->js(
+                                'window.open(' . json_encode($url) . ', "_blank")',
+                            );
+                        }),
 
                     Action::make('merge')
                         ->label('Unisci a quest\'ordine')

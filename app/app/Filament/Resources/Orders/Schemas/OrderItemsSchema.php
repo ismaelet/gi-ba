@@ -31,7 +31,6 @@ trait OrderItemsSchema {
                     ->modalCancelActionLabel('Annulla')
             )
             ->relationship()
-            ->live()
             ->afterStateUpdated(function (Get $get, Set $set) {
                 self::updateOrderStatus($get, $set);
                 self::updateOrderTotals($get, $set);
@@ -128,6 +127,7 @@ trait OrderItemsSchema {
                 TextInput::make('info')
                     ->label('Dettagli')
                     ->placeholder('Informazioni aggiuntive sul prodotto')
+                    ->autocomplete(false)
                     ->extraInputAttributes([
                         'x-on:mouseenter' => '$el.title = $el.value',
                         'x-on:focus'      => '$el.title = $el.value',
@@ -138,6 +138,7 @@ trait OrderItemsSchema {
                 TextInput::make('quantity')
                     ->label('Qty')
                     ->default(1)
+                    ->autocomplete(false)
                     ->live(onBlur: true)
                     ->extraInputAttributes(self::extraAttributesForInt())
                     ->afterStateUpdated(fn(TextInput $component, Get $get, Set $set) =>
@@ -167,6 +168,7 @@ trait OrderItemsSchema {
                 TextInput::make('unit_price_net')
                     ->label('Pr. netto')
                     ->default(0)
+                    ->autocomplete(false)
                     ->live(onBlur: true)
                     ->extraInputAttributes(self::extraAttributesForPrices())
                     ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
@@ -184,6 +186,7 @@ trait OrderItemsSchema {
                 TextInput::make('unit_price_gross')
                     ->label('Pr. ivato')
                     ->default(0)
+                    ->autocomplete(false)
                     ->live(onBlur: true)
                     ->extraInputAttributes(self::extraAttributesForPrices())
                     ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))
@@ -215,6 +218,7 @@ trait OrderItemsSchema {
                 TextInput::make('total_price_gross')
                     ->label('Totale')
                     ->default(0)
+                    ->autocomplete(false)
                     ->live(onBlur: true)
                     ->extraInputAttributes(self::extraAttributesForPrices())
                     ->afterStateHydrated(fn($state, TextInput $component) => $component->state(self::parseNumber($state)))

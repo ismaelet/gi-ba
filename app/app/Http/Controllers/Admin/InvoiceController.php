@@ -14,7 +14,8 @@ class InvoiceController extends Controller {
     public function downloadQuote(Request $request, Order $order) {
         return $this->generateInvoice(
             order: $order,
-            type: 'quote'
+            type: 'quote',
+            dateSource: $request->input('date_source')
         );
     }
 
@@ -24,13 +25,16 @@ class InvoiceController extends Controller {
     public function downloadDeliveryNote(Request $request, Order $order) {
         return $this->generateInvoice(
             order: $order,
-            type: 'delivery_note'
+            type: 'delivery_note',
+            dateSource: $request->input('date_source')
         );
     }
 
-    private function generateInvoice(Order $order, string $type) {
+    private function generateInvoice(Order $order, string $type, ?string $dateSource) {
         $order->load('customer', 'order_items.product');
         $title = $type == 'quote' ? 'Preventivo' : 'Bolla di consegna';
+        $dateSource = in_array($dateSource, ['order', 'today']) ? $dateSource : 'today';
+        $date = $dateSource == 'order' ? $order->created_at : now();
 
         // Products
         $productsHtml = [];
@@ -75,7 +79,7 @@ class InvoiceController extends Controller {
 
         $html = file_get_contents(resource_path('html/invoice.html'));
         $html = str_replace('{{ title }}', $title, $html);
-        $html = str_replace('{{ date }}', date("d/m/Y"), $html);
+        $html = str_replace('{{ date }}', $date->format("d/m/Y"), $html);
         $html = str_replace('{{ quote-number }}', $order->idCode(), $html);
         $html = str_replace('{{ cart-net-price }}', price($order->price_net), $html);
         $html = str_replace('{{ cart-vat }}', price($order->vat), $html);

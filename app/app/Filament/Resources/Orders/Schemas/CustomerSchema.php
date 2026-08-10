@@ -44,7 +44,8 @@ trait CustomerSchema {
 
                         $hasOpenOrder = Order::query()
                             ->where('customer_id', $state)
-                            ->where('status', '<', 7)
+                            ->where('billed', false)
+                            ->whereNotIn('status', [6, 7, 8, 99])
                             ->when(
                                 $record,
                                 fn($query) => $query->whereKeyNot($record->getKey()),

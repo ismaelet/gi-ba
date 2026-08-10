@@ -225,29 +225,17 @@ class OrderForm {
             'oninput' => "
             let v = this.value
                 .replace(/,/g, '.')
-                // keep digits, dot and minus
                 .replace(/[^0-9.-]/g, '')
-                // allow only ONE minus, and only at start
                 .replace(/(?!^)-/g, '')
-                // allow only ONE dot
                 .replace(/(\..*)\./g, '$1');
 
             const parts = v.split('.');
+
             if (parts.length === 2) {
                 parts[1] = parts[1].slice(0, 2);
             }
 
             this.value = parts.join('.');
-        ",
-            'onblur' => "
-            let v = parseFloat(
-                this.value
-                    .replace(/,/g, '.')
-                    .replace(/[^0-9.-]/g, '')
-            );
-
-            if (isNaN(v)) v = 0;
-            this.value = v.toFixed(2);
         ",
         ];
     }
