@@ -45,7 +45,12 @@ trait OrderItemsSchema {
 
                 Select::make('product_id')
                     ->label('Prodotto')
-                    ->relationship('product', 'name')
+                    ->options(
+                        Product::query()
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray()
+                    )
                     ->searchable()
                     ->required()
                     ->live()

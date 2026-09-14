@@ -59,11 +59,16 @@ class OrdersTable {
                     ->label('Cliente')
                     ->sortable()
                     ->searchable()
-                    ->html()
+                    ->wrap(),
+
+                TextColumn::make('customer.phone')
+                    ->label('Telefono')
                     ->wrap()
-                    ->formatStateUsing(function (?string $state, Order $record): string {
-                        return e($state ?? '—') . '<br>' . e($record->customer?->phone ?? '—');
-                    }),
+                    ->copyable()
+                    ->copyMessage('Numero copiato')
+                    ->copyMessageDuration(1500)
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
 
                 OrderItemsColumn::make('order_items.product.name')
                     ->searchable()
@@ -73,23 +78,31 @@ class OrdersTable {
                     ->label('Totale')
                     ->sortable()
                     ->money('eur')
-                    ->default(0),
+                    ->default(0)
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
 
                 TextColumn::make('status')
                     ->label('Stato')
                     ->sortable()
                     ->badge()
                     ->formatStateUsing(fn(string $state): string => config('ecommerce.order_statuses')[$state]['label'] ?? $state)
-                    ->color(fn(int $state): string => 'status-' . $state),
+                    ->color(fn(int $state): string => 'status-' . $state)
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
 
                 ToggleColumn::make('billed')
                     ->label('Fatturato')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
 
                 TextColumn::make('created_at')
                     ->label('Data')
                     ->sortable()
-                    ->dateTime('d/m/Y'),
+                    ->dateTime('d/m/Y')
+                    ->toggleable()
+                    ->toggledHiddenByDefault(false),
             ])
             ->searchable(['customer.info', 'customer.phone', 'order_items.info', 'price_gross'])
 
