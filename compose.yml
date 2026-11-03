@@ -20,7 +20,7 @@ services:
       APP_DEBUG: true
       APP_LOCALE: it
       APP_FALLBACK_LOCALE: en
-      APP_KEY: REDACTED_LARAVEL_APP_KEY
+      APP_KEY: ${APP_KEY}
 
       SESSION_DRIVER: file
 
@@ -35,8 +35,8 @@ services:
       MAIL_HOST: "smtp.titan.email"
       MAIL_PORT: 465
       MAIL_ENCRYPTION: SSL
-      MAIL_USERNAME: no-reply@giebapromotion.com
-      MAIL_PASSWORD: "REDACTED_SMTP_PASSWORD"
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM_ADDRESS: no-reply@giebapromotion.com
       MAIL_FROM_NAME: GI&BA
 
